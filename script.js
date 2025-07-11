@@ -13,6 +13,7 @@ async function fetchKoreanNews() {
         'https://www.yonhapnewstv.co.kr/browse/feed/', // 연합뉴스TV
         'https://www.hani.co.kr/rss/', // 한겨레
         'https://www.khan.co.kr/rss/rssdata/total_news.xml', // 경향신문
+        'https://www.chosun.com/arc/outboundfeeds/rss/category/politics/?outputType=xml' // 조선일보
     ];
 
     try {
