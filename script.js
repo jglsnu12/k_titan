@@ -8,7 +8,7 @@ async function fetchNews() {
     const apiKey = '6c141a3bf180fef4f3b57f0d560c1e4e'; 
 
     // GNews API를 이용해 한국의 최신 헤드라인 뉴스를 가져옵니다.
-    const url = `https://gnews.io/api/v4/top-headlines?lang=en&country=kr&max=20&apikey=${apiKey}`;
+    const url = `https://gnews.io/api/v4/top-headlines?lang=en&country=us&max=20&apikey=${apiKey}`;
 
     try {
         const response = await fetch(url);
