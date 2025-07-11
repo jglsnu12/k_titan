@@ -69,7 +69,7 @@ async function fetchEnglishNews() {
     const apiKey = '6c141a3bf180fef4f3b57f0d560c1e4e'; 
     
     // 💡 max 파라미터를 20에서 40으로 수정
-    const url = `https://gnews.io/api/v4/top-headlines?lang=en&max=40&apikey=${apiKey}`;
+    const url = `https://gnews.io/api/v4/lang=en&max=40&apikey=${apiKey}`;
 
     try {
         const response = await fetch(url);
