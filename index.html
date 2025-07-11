@@ -8,13 +8,25 @@
 </head>
 <body>
     <header>
-        <h1>국제정세</h1>
+        <h1>국제정세 대시보드</h1>
     </header>
 
-    <main>
-        <div id="news-container">
-            <p class="loading">최신 뉴스를 불러오는 중...</p>
-        </div>
+    <main class="news-grid">
+        
+        <section class="news-section">
+            <h2>국내 주요 뉴스</h2>
+            <div id="korean-news-container" class="news-column">
+                <p class="loading">국내 뉴스를 불러오는 중...</p>
+            </div>
+        </section>
+
+        <section class="news-section">
+            <h2>해외 주요 뉴스 (영문)</h2>
+            <div id="english-news-container" class="news-column">
+                <p class="loading">해외 뉴스를 불러오는 중...</p>
+            </div>
+        </section>
+
     </main>
 
     <script src="script.js"></script>
