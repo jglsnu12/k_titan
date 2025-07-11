@@ -3,31 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>국제정세 대시보드</title>
+    <title>국제정세 분석 대시보드</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <h1>국제정세 대시보드</h1>
-    </header>
 
-    <main class="news-grid">
-        
-        <section class="news-section">
-            <h2>국내 주요 뉴스</h2>
-            <div id="korean-news-container" class="news-column">
-                <p class="loading">국내 뉴스를 불러오는 중...</p>
+    <div class="main-container">
+        <nav class="side-nav">
+            <h1>메뉴</h1>
+            <button class="tab-button active" data-tab="home">홈</button>
+            <button class="tab-button" data-tab="dashboard">뉴스 대시보드</button>
+        </nav>
+
+        <main class="content-area">
+            <div id="home-content" class="tab-content active">
+                <header class="content-header">
+                    <h1>국제정세 분석 대시보드: 개요</h1>
+                </header>
+                
+                <section class="content-section">
+                    <h2>연구개발 배경</h2>
+                    <p>본 대시보드는 국방부 정책실 산하 국방정책과, 해외정책과 등의 국제정세 분석 담당 부처의 업무 효율성 및 정확성 제고를 위해 개발되었습니다.</p>
+                    
+                    <h3>필요성</h3>
+                    <ul>
+                        <li><strong>실시간 분석:</strong> 기존의 인력 중심 분석에서 벗어나, AI를 통해 방대한 정세 데이터를 실시간으로 처리하고 변화의 '징후'를 감지합니다.</li>
+                        <li><strong>비정형 데이터 활용:</strong> 영상, 신호정보, 보고서, SNS 등 정형화되지 않은 시계열 데이터까지 동시에 분석하여 분석의 깊이를 더합니다.</li>
+                        <li><strong>데이터 정량화:</strong> 과거 정책 수립에 활용되던 정성적 분석을 넘어, PMESII 스코어 등 AI 모델을 활용한 정량화된 분석 및 대응을 지원합니다.</li>
+                    </ul>
+
+                    <h3>정책 근거</h3>
+                    <p>2022 국방백서에 명시된 '경험과 직관이 아닌 통계분석 등 데이터 기반의 과학적 의사결정으로의 전환 준비' 및 'AI 학습 및 빅데이터 분석용 데이터 구축 시범사업'의 일환으로 추진되었습니다.</p>
+                </section>
+                
+                <section class="content-section">
+                    <h2>시스템 구성도</h2>
+                    <p>본 시스템은 외부 웹 데이터 및 군사 데이터를 수집, 처리하여 언어 모델을 통해 분석하고, 그 결과를 대시보드로 시각화하여 제공하는 파이프라인으로 구성됩니다.</p>
+                    <img src="https://i.imgur.com/vHq6PqJ.jpg" alt="시스템 구성도" style="width: 100%; max-width: 800px; border: 1px solid #ccc;">
+                </section>
             </div>
-        </section>
 
-        <section class="news-section">
-            <h2>해외 주요 뉴스 (영문)</h2>
-            <div id="english-news-container" class="news-column">
-                <p class="loading">해외 뉴스를 불러오는 중...</p>
+            <div id="dashboard-content" class="tab-content">
+                 <header class="content-header">
+                    <h1>실시간 뉴스 대시보드</h1>
+                </header>
+                <div class="news-grid">
+                    <section class="news-section">
+                        <h2>국내 주요 뉴스</h2>
+                        <div id="korean-news-container" class="news-column">
+                            <p class="loading">국내 뉴스를 불러오는 중...</p>
+                        </div>
+                    </section>
+                    <section class="news-section">
+                        <h2>해외 주요 뉴스 (영문)</h2>
+                        <div id="english-news-container" class="news-column">
+                            <p class="loading">해외 뉴스를 불러오는 중...</p>
+                        </div>
+                    </section>
+                </div>
             </div>
-        </section>
-
-    </main>
+        </main>
+    </div>
 
     <script src="script.js"></script>
 </body>
