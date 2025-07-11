@@ -4,11 +4,8 @@ document.addEventListener('DOMContentLoaded', fetchNews);
 async function fetchNews() {
     const newsContainer = document.getElementById('news-container');
     
-    // 🚨 여기에 1단계에서 발급받은 본인의 실제 API 키를 입력하세요!
-    const apiKey = 'f845bb0b7bf14bcfab8bc14e34a526dd'; 
-
     // 주요 국가(미국, 중국, 일본, 러시아, 한국)의 최신 헤드라인 뉴스를 가져옵니다.
-    const url = `https://newsapi.org/v2/top-headlines?country=us&category=general&pageSize=5&apiKey=${apiKey}`;
+    const url = `https://newsapi.org/v2/top-headlines?country=us&apiKey=f845bb0b7bf14bcfab8bc14e34a526dd`;
 
     try {
         const response = await fetch(url);
