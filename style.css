@@ -10,7 +10,6 @@ header {
     padding: 20px;
     text-align: center;
     border-bottom: 1px solid #dddfe2;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
@@ -19,33 +18,49 @@ h1 {
     color: #000;
 }
 
-main {
-    max-width: 800px;
+/* --- 💡 CSS 핵심 수정 부분 --- */
+
+/* 2단 그리드 컨테이너 */
+.news-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 2개의 열을 동일한 비율로 생성 */
+    gap: 30px; /* 열 사이의 간격 */
+    max-width: 1600px;
     margin: 20px auto;
     padding: 0 20px;
 }
 
-#news-container {
-    display: grid;
-    gap: 20px;
+/* 각 뉴스 섹션의 제목 */
+.news-section h2 {
+    font-size: 1.8rem;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #ccc;
+    margin-top: 0;
 }
+
+/* 화면 너비가 900px 이하일 때 1단으로 변경 (모바일 대응) */
+@media (max-width: 900px) {
+    .news-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* --- 기존 기사 카드 스타일 (변경 없음) --- */
 
 .news-article {
     background-color: #fff;
     border: 1px solid #dddfe2;
     border-radius: 8px;
     padding: 16px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s;
-}
-
-.news-article:hover {
-    transform: translateY(-5px);
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .news-article h2 {
     font-size: 1.25rem;
     margin: 0 0 8px 0;
+    padding-bottom: 0;
+    border-bottom: none;
 }
 
 .news-article a {
@@ -62,4 +77,8 @@ main {
 .article-meta {
     font-size: 0.8rem;
     color: #606770;
+}
+
+.loading {
+    color: #888;
 }
