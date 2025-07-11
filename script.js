@@ -4,19 +4,45 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchEnglishNews();
 });
 
-// 1. 국내 뉴스 가져오기 (RSS)
+// 1. 국내 뉴스 가져오기 (여러 RSS 피드를 합치는 방식으로 변경)
 async function fetchKoreanNews() {
     const newsContainer = document.getElementById('korean-news-container');
-    const url = 'https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fnews.google.com%2Frss%3Fhl%3Dko%26gl%3DKR%26ceid%3DKR%3Ako';
+    
+    // 💡 여러 언론사의 RSS 피드 주소 목록
+    const rssFeeds = [
+        'https://www.yonhapnewstv.co.kr/browse/feed/', // 연합뉴스TV
+        'https://www.hani.co.kr/rss/', // 한겨레
+        'https://www.khan.co.kr/rss/rssdata/total_news.xml', // 경향신문
+        'https://rss.hankookilbo.com/daily/dh_politics.xml' // 한국일보 정치
+    ];
 
     try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
-        const data = await response.json();
-        if (data.status !== 'ok') throw new Error('RSS 피드를 가져오는 데 실패했습니다.');
+        // Promise.all을 사용해 모든 RSS 피드를 동시에 요청하고 기다립니다.
+        const responses = await Promise.all(
+            rssFeeds.map(feedUrl => 
+                fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feedUrl)}`)
+            )
+        );
+
+        // 모든 응답이 성공적인지 확인합니다.
+        for (const response of responses) {
+            if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+        }
+
+        const jsonResults = await Promise.all(responses.map(res => res.json()));
+
+        // 각 피드의 뉴스 아이템들을 하나의 배열로 합칩니다.
+        const allItems = jsonResults.flatMap(result => result.items || []);
+
+        // 합친 뉴스들을 최신순으로 정렬합니다.
+        allItems.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+        
+        // 상위 40개만 선택합니다.
+        const limitedItems = allItems.slice(0, 40);
 
         newsContainer.innerHTML = ''; // 로딩 메시지 삭제
-        data.items.forEach(item => {
+
+        limitedItems.forEach(item => {
             const articleElement = document.createElement('div');
             articleElement.className = 'news-article';
             const description = item.content.replace(/<[^>]*>?/gm, '').substring(0, 150) + '...';
@@ -24,23 +50,26 @@ async function fetchKoreanNews() {
                 <a href="${item.link}" target="_blank" rel="noopener noreferrer"><h2>${item.title}</h2></a>
                 <p>${description || '내용 요약 없음'}</p>
                 <div class="article-meta">
-                    <span>출처: ${item.author}</span> | <span>${new Date(item.pubDate).toLocaleString()}</span>
+                    <span>출처: ${item.author || '언론사'}</span> | <span>${new Date(item.pubDate).toLocaleString()}</span>
                 </div>`;
             newsContainer.appendChild(articleElement);
         });
+
     } catch (error) {
         console.error('국내 뉴스 로딩 실패:', error);
         newsContainer.innerHTML = `<p>국내 뉴스를 불러오는 데 실패했습니다. (에러: ${error.message})</p>`;
     }
 }
 
-// 2. 해외 뉴스 가져오기 (GNews)
+// 2. 해외 뉴스 가져오기 (GNews - 요청 개수 40개로 수정)
 async function fetchEnglishNews() {
     const newsContainer = document.getElementById('english-news-container');
     
-    // 🚨 여기에 GNews에서 발급받은 본인의 실제 API 키를 입력하세요!
-    const apiKey = '6c141a3bf180fef4f3b57f0d560c1e4e'; 
-    const url = `https://gnews.io/api/v4/top-headlines?lang=en&max=20&apikey=${apiKey}`;
+    // 🚨 GNews API 키를 확인해주세요.
+    const apiKey = 'YOUR_GNEWS_API_KEY'; 
+    
+    // 💡 max 파라미터를 20에서 40으로 수정
+    const url = `https://gnews.io/api/v4/top-headlines?lang=en&max=40&apikey=${apiKey}`;
 
     try {
         const response = await fetch(url);
