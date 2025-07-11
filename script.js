@@ -4,14 +4,13 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchEnglishNews();
 });
 
-// 1. 국내 뉴스 가져오기 (여러 RSS 피드를 합치는 방식으로 변경)
+// 1. 국내 뉴스 가져오기 (이전과 동일)
 async function fetchKoreanNews() {
     const newsContainer = document.getElementById('korean-news-container');
     
-    // 💡 여러 언론사의 RSS 피드 주소 목록
+    // 여러 언론사의 RSS 피드 주소 목록
     const rssFeeds = [
         'https://www.yonhapnewstv.co.kr/browse/feed/', // 연합뉴스TV
-        'https://www.hani.co.kr/rss/', // 한겨레
         'https://www.khan.co.kr/rss/rssdata/total_news.xml', // 경향신문
         'https://www.chosun.com/arc/outboundfeeds/rss/category/politics/?outputType=xml' // 조선일보
     ];
@@ -61,26 +60,42 @@ async function fetchKoreanNews() {
     }
 }
 
-// 2. 해외 뉴스 가져오기 (GNews - 요청 개수 40개로 수정)
+// 2. 해외 뉴스 가져오기 (GNews - 여러 카테고리를 합치는 방식으로 변경)
 async function fetchEnglishNews() {
     const newsContainer = document.getElementById('english-news-container');
     
     // 🚨 GNews API 키를 확인해주세요.
-    const apiKey = '6c141a3bf180fef4f3b57f0d560c1e4e'; 
+    const apiKey = '6c141a3bf180fef4f3b57f0d560c1e4e'; // 여기에 본인의 GNews API 키를 입력하세요.
     
-    // 💡 max 파라미터를 20에서 40으로 수정
-    const url = `https://gnews.io/api/v4/lang=en&max=40&apikey=${apiKey}`;
+    // 💡 가져올 뉴스의 카테고리 목록
+    const categories = ['general', 'world', 'nation'];
 
     try {
-        const response = await fetch(url);
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(`API Error: ${errorData.errors.join(', ')}`);
+        // Promise.all을 사용해 모든 카테고리 뉴스를 동시에 요청합니다.
+        const responses = await Promise.all(
+            categories.map(category => 
+                fetch(`https://gnews.io/api/v4/top-headlines?lang=en&category=${category}&max=10&apikey=${apiKey}`)
+            )
+        );
+
+        for (const response of responses) {
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(`API Error in category ${response.url}: ${errorData.errors.join(', ')}`);
+            }
         }
-        const data = await response.json();
+
+        const jsonResults = await Promise.all(responses.map(res => res.json()));
+
+        // 각 카테고리의 뉴스 기사들을 하나의 배열로 합칩니다.
+        const allArticles = jsonResults.flatMap(result => result.articles || []);
+
+        // 합친 뉴스들을 최신순으로 정렬합니다.
+        allArticles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
 
         newsContainer.innerHTML = ''; // 로딩 메시지 삭제
-        data.articles.forEach(article => {
+
+        allArticles.forEach(article => {
             const articleElement = document.createElement('div');
             articleElement.className = 'news-article';
             articleElement.innerHTML = `
