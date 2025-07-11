@@ -66,7 +66,7 @@ async function fetchEnglishNews() {
     const newsContainer = document.getElementById('english-news-container');
     
     // 🚨 GNews API 키를 확인해주세요.
-    const apiKey = 'YOUR_GNEWS_API_KEY'; 
+    const apiKey = '6c141a3bf180fef4f3b57f0d560c1e4e'; 
     
     // 💡 max 파라미터를 20에서 40으로 수정
     const url = `https://gnews.io/api/v4/top-headlines?lang=en&max=40&apikey=${apiKey}`;
