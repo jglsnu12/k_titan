@@ -1,4 +1,4 @@
-// --- 💡 탭 전환 로직 (새로 추가) ---
+// --- 💡 탭 전환 로직 ---
 document.addEventListener('DOMContentLoaded', () => {
     const tabs = document.querySelectorAll('.tab-button');
     const contents = document.querySelectorAll('.tab-content');
@@ -16,10 +16,34 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 뉴스 대시보드 API 호출은 페이지 로딩 시 한 번만 실행
+    // ✨ 데이터 로딩 함수들 호출
+    fetchAnalysisReport(); // AI 분석 보고서 불러오기
     fetchKoreanNews();
     fetchEnglishNews();
 });
+
+
+// --- ✨ AI 분석 보고서 가져오기 함수 (새로 추가) ---
+async function fetchAnalysisReport() {
+    const reportContainer = document.getElementById('analysis-report-container');
+    // GitHub 리포지토리의 원본(raw) 파일 주소
+    const reportUrl = 'https://raw.githubusercontent.com/jglsnu12/k_titan/main/final_analysis_report.txt';
+
+    try {
+        const response = await fetch(reportUrl);
+        if (!response.ok) {
+            // 파일을 못찾거나 다른 에러가 발생했을 경우
+            throw new Error(`HTTP Error: ${response.status}`);
+        }
+        const reportText = await response.text();
+
+        // 텍스트의 줄바꿈을 HTML <br> 태그로 변경하여 형식 유지
+        reportContainer.innerHTML = reportText.replace(/\n/g, '<br>');
+
+    } catch (error) {
+        reportContainer.innerHTML = `<p>종합 분석 보고서를 불러오는 데 실패했습니다. (에러: ${error.message})</p>`;
+    }
+}
 
 
 // --- 기존 뉴스 API 호출 함수들 (변경 없음) ---
