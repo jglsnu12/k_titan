@@ -4,16 +4,19 @@ document.addEventListener('DOMContentLoaded', fetchNews);
 async function fetchNews() {
     const newsContainer = document.getElementById('news-container');
     
-    // 주요 국가(미국, 중국, 일본, 러시아, 한국)의 최신 헤드라인 뉴스를 가져옵니다.
-    const url = `https://newsapi.org/v2/top-headlines?country=us&apiKey=f845bb0b7bf14bcfab8bc14e34a526dd`;
+    // 🚨 1단계에서 발급받은 GNews의 API 키를 입력하세요!
+    const apiKey = '6c141a3bf180fef4f3b57f0d560c1e4e'; 
+
+    // GNews API를 이용해 한국의 최신 헤드라인 뉴스를 가져옵니다.
+    const url = `https://gnews.io/api/v4/top-headlines?lang=ko&country=kr&max=20&apikey=${apiKey}`;
 
     try {
         const response = await fetch(url);
         
-        // API 키가 유효하지 않을 경우를 대비
-        if (response.status === 401) {
-            newsContainer.innerHTML = '<p>오류: NewsAPI 키가 유효하지 않습니다. script.js 파일을 확인해주세요.</p>';
-            return;
+        if (!response.ok) {
+            // 응답이 성공적이지 않을 경우, 에러 상태를 텍스트로 보여주기 위함
+            const errorData = await response.json();
+            throw new Error(`API Error: ${errorData.errors.join(', ')}`);
         }
 
         const data = await response.json();
@@ -41,6 +44,6 @@ async function fetchNews() {
 
     } catch (error) {
         console.error('뉴스를 가져오는 데 실패했습니다:', error);
-        newsContainer.innerHTML = '<p>뉴스를 불러오는 데 실패했습니다. 인터넷 연결이나 API 키를 확인해주세요.</p>';
+        newsContainer.innerHTML = `<p>뉴스를 불러오는 데 실패했습니다. 인터넷 연결이나 GNews API 키를 확인해주세요. (에러: ${error.message})</p>`;
     }
 }
