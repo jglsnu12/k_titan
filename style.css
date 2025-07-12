@@ -86,14 +86,14 @@ ul {
     border: 1px solid var(--border-color, rgba(224, 224, 224, 0.8)); /* 테두리도 살짝 투명하게 */
     border-radius: var(--border-radius, 12px); /* 더 둥근 모서리 */
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25); /* 더 부드럽고 큰 그림자 */
-    z-index: 9998; /* 버튼보다는 낮지만 다른 요소보다 높게 */
+    z-index: 9998; !important; /* 버튼보다는 낮지만 다른 요소보다 높게 */
     display: flex;
     flex-direction: column;
     overflow: hidden; /* 내용이 넘치면 숨김 */
 
     /* 초기에는 숨김 */
-    opacity: 0;
-    visibility: hidden;
+    opacity: 0 !important;       /* <--- !important 추가 */
+    visibility: hidden !important; /* <--- !important 추가 */
     transform: translateY(20px) scale(0.95);
     transition: opacity 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), 
                 visibility 0.3s step-end, 
@@ -102,8 +102,8 @@ ul {
 
 /* 활성화 시 애니메이션은 그대로 */
 .ai-chat-popup.active {
-    opacity: 1;
-    visibility: visible;
+    opacity: 1 !important;       /* <--- !important 추가 */
+    visibility: visible !important; /* <--- !important 추가 */
     transform: translateY(0) scale(1);
     transition: opacity 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), 
                 visibility 0.3s step-start, 
