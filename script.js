@@ -34,7 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (chatToggleButton) { // 요소가 존재하는지 확인 (안전성)
         chatToggleButton.classList.remove('active-tab-button'); // 혹시 모를 상황 대비하여 클래스 제거
-        chatToggleButton.style.display = 'none'; // CSS !important가 있음에도 강제로 JS에서 초기 숨김
     }
     if (aiChatPopup) {
         aiChatPopup.classList.remove('active'); // 팝업 닫기
@@ -55,7 +54,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 // ✨ 제안사항 탭에서는 챗봇 버튼을 숨김
                 if (chatToggleButton) {
                     chatToggleButton.classList.remove('active-tab-button');
-                    chatToggleButton.style.display = 'none';
                 }
                 // 혹시 챗봇 팝업이 열려있다면 닫습니다.
                 if (aiChatPopup && aiChatPopup.classList.contains('active')) {
@@ -71,7 +69,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 // ✨ '국제정세 대시보드' 탭 활성화 시 챗봇 버튼 표시
                 if (chatToggleButton) {
                     chatToggleButton.classList.add('active-tab-button');
-                    chatToggleButton.style.display = 'flex'; // 명시적으로 display 설정
                 }
             } else {
                 // ✨ 다른 탭 활성화 시 챗봇 버튼 숨김
