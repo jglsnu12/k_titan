@@ -258,7 +258,7 @@ ul {
     margin-bottom: 32px;
 }
 .calendar-body {
-    max-height: 220px;
+    max-height: 440px;
     overflow-y: auto;
     padding-right: 10px;
 }
@@ -433,14 +433,12 @@ ul {
 /* 그리드 컨테이너 설정 */
 #dashboard-content.tab-content.active {
     display: grid;
-    /* 좌측은 남는 공간 모두, 우측은 400px 고정 */
-    grid-template-columns: 1fr 400px; 
+    /* 좌측은 남는 공간 모두, 우측은 600px 고정 */
+    grid-template-columns: 1fr 600px; 
     /* 상단 행은 자동 높이, 하단 행은 남는 공간 모두 */
     grid-template-rows: auto 1fr; 
     gap: 30px; /* 각 섹션 사이의 간격 */
-    /* content-area의 padding이 있으므로 여기서는 제거 */
     padding: 0; 
-    /* content-area 높이를 꽉 채우도록 설정 */
     height: calc(100% - 75px); 
 }
 
