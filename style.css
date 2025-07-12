@@ -81,8 +81,8 @@ ul {
     right: 30px;     /* 우측에서 30px */
     width: 350px;
     height: 500px;
-    background-color: var(--card-bg-color, #ffffff); /* Fallback 배경색 */
-    border: 1px solid var(--border-color, #e0e0e0);
+    background-color: rgba(255, 255, 255, 0.9); /* 흰색 배경에 90% 불투명도 적용 */
+    border: 1px solid var(--border-color, rgba(224, 224, 224, 0.8)); /* 테두리도 살짝 투명하게 */
     border-radius: var(--border-radius, 12px); /* 더 둥근 모서리 */
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25); /* 더 부드럽고 큰 그림자 */
     z-index: 9998; /* 버튼보다는 낮지만 다른 요소보다 높게 */
@@ -99,6 +99,7 @@ ul {
                 transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* 좀 더 부드러운 애니메이션 */
 }
 
+/* 활성화 시 애니메이션은 그대로 */
 .ai-chat-popup.active {
     opacity: 1;
     visibility: visible;
@@ -107,6 +108,9 @@ ul {
                 visibility 0.3s step-start, 
                 transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* 나타날 때 애니메이션 */
 }
+
+
+
 
 .chat-header {
     display: flex;
