@@ -632,42 +632,32 @@ ul {
     font-size: 1.1rem;
 
 
-/* --- 13. 푸터 스타일 (가로 정렬로 수정) --- */
+/* --- 13. 푸터 스타일 (가로 정렬 최종 수정) --- */
 .site-footer {
     background-color: #343a40;
     color: #adb5bd;
-    padding: 20px 40px; /* 상하 패딩을 약간 줄여 한 줄에 맞게 조정 */
+    padding: 20px 40px;
+    text-align: center;
     font-size: 0.85rem;
     flex-shrink: 0;
 }
 
-.footer-content {
-    display: flex; /* Flexbox 레이아웃 적용 */
+.footer-content p {
+    display: flex; /* p 태그 내부의 span들을 가로로 정렬 */
     justify-content: center; /* 가운데 정렬 */
-    align-items: center; /* 세로축 중앙 정렬 */
+    align-items: center; /* 세로 중앙 정렬 */
     flex-wrap: wrap; /* 창이 좁아지면 줄바꿈 허용 */
-    gap: 15px; /* 각 항목 사이의 간격 */
+    gap: 0 15px; /* 각 항목 사이의 좌우 간격 */
+    margin: 0;
 }
 
-/* 푸터의 각 정보(p 태그)가 더 이상 블록 전체를 차지하지 않도록 함 */
-.footer-content p {
-    margin: 0; 
+/* 구분선 스타일 */
+.footer-content .separator {
+    color: #6c757d;
 }
 
 /* 저작권 문구는 폰트를 약간 더 작게 */
 .footer-copyright {
     font-size: 0.8rem;
     color: #6c757d;
-}
-
-/* 각 정보 사이의 구분선 스타일 */
-.footer-info .separator {
-    /* CSS에서 직접 구분선을 만듦 */
-    display: inline-block;
-    margin: 0 5px;
-    color: #6c757d;
-    font-size: 12px;
-}
-.footer-info .separator::before {
-    content: "|";
 }
