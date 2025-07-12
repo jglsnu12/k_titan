@@ -478,34 +478,31 @@ ul {
     overflow-y: auto; /* 내용이 넘치면 세로 스크롤바 생성 */
 }
 
-/* 뉴스 섹션 내부 스타일 조정 */
 .dashboard-news .news-grid {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 30px;          /* 국내/해외 뉴스 제목 사이 간격 */
+    flex-grow: 1;       /* 부모 컨테이너의 높이를 꽉 채움 */
+    overflow-y: auto;   /* 이 컨테이너에만 스크롤바를 적용 */
+    padding-right: 10px;/* 스크롤바 공간을 위한 여백 */
 }
-.dashboard-news h2, .dashboard-calendar h2 {
-    margin-bottom: 15px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
+
 .dashboard-news .news-column h3 {
     font-size: 1.1rem;
     font-weight: 600;
     margin-bottom: 10px;
 }
-/* 국내 뉴스 목록 (첫 번째) 높이 조정 */
-.dashboard-news .news-column:first-of-type .news-list {
-    height: 600px; /* 기존 300px에서 약 1.6배 증가 */
-    overflow-y: auto;
-    padding-right: 10px;
+
+/* 각 뉴스 목록은 이제 높이를 강제하지 않고 내용만큼 길어집니다. */
+.dashboard-news .news-list {
+   /* height와 overflow 속성을 제거하여 내부 스크롤을 없앰 */
 }
-/* 해외 뉴스 목록 (두 번째) 높이 조정 */
-.dashboard-news .news-column:last-of-type .news-list {
-    height: 600px; /* 국내 뉴스 영역이 늘어난 만큼 높이를 줄여 균형을 맞춤 */
-    overflow-y: auto;
-    padding-right: 10px;
+
+.dashboard-news h2, .dashboard-calendar h2 {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 /* 캘린더 내부 아이템 스타일 (예시) */
