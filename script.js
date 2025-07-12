@@ -4,6 +4,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
+
 // ⚠️ 본인의 Firebase 설정 키를 아래에 붙여넣으세요.
 const firebaseConfig = {
   apiKey: "AIzaSyAgSSLC7PW5RSY_pUQskc502D4HT31leRc",
