@@ -69,30 +69,42 @@
 
             <div id="suggestions-content" class="tab-content">
                 <header class="content-header">
-                    <h1>제안사항</h1>
+                    <h1>제안 및 문의 게시판</h1>
+                    <button id="show-write-modal" class="submit-button">새 글 작성하기</button>
                 </header>
-                <section class="content-section card">
-                    <p>본 프로젝트의 개선을 위한 아이디어나 제안사항을 자유롭게 남겨주세요.</p>
-                    <form id="suggestion-form" action="https://formspree.io/f/mrbknajk" method="POST">
-                        <div class="form-group">
-                            <label for="email">메일 (필수)</label>
-                            <input type="email" id="email" name="email" required>
+                <section class="content-section">
+                    <div id="posts-container">
                         </div>
-                        <div class="form-group">
-                            <label for="contact">연락처 (선택)</label>
-                            <input type="tel" id="contact" name="contact">
-                        </div>
-                        <div class="form-group">
-                            <label for="suggestion">제안 내용</label>
-                            <textarea id="suggestion" name="suggestion" rows="10" required></textarea>
-                        </div>
-                        <button type="submit" class="submit-button">제안하기</button>
-                    </form>
                 </section>
             </div>
+            
         </main>
     </div>
-
-    <script src="script.js"></script>
+    
+    <div id="write-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>새 제안사항 작성</h2>
+            <form id="post-form">
+                <div class="form-group">
+                    <label for="post-author">작성자</label>
+                    <input type="text" id="post-author" required>
+                </div>
+                <div class="form-group">
+                    <label for="post-password">비밀번호 (수정/삭제용)</label>
+                    <input type="password" id="post-password" required>
+                </div>
+                <div class="form-group">
+                    <label for="post-content">내용</label>
+                    <textarea id="post-content" rows="8" required></textarea>
+                </div>
+                <div class="modal-buttons">
+                    <button type="submit" class="submit-button">등록하기</button>
+                    <button type="button" id="close-modal" class="cancel-button">취소</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script src="script.js" type="module"></script>
 </body>
 </html>
