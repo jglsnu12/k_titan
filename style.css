@@ -662,3 +662,8 @@ ul {
     font-size: 0.8rem;
     color: #6c757d;
 }
+
+/* 홈 탭 '연구개발 배경' 단락 들여쓰기 추가 */
+#home-content .card p {
+    padding-left: 20px;
+}
