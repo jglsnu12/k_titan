@@ -1,177 +1,98 @@
-@@ -1,7 +1,153 @@
-/* ... 기존 스타일은 그대로 둡니다 ... */
-/* 기본 스타일 */
-body {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    background-color: #f0f2f5;
-    color: #1c1e21;
-    margin: 0;
-    height: 100vh;
-    display: flex;
-}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>국제정세 분석 대시보드</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-/* --- 💡 전체 레이아웃 구조 스타일 --- */
-.main-container {
-    display: flex;
-    width: 100%;
-    height: 100%;
-}
+    <div class="main-container">
+        <nav class="side-nav">
+            <h1>K-TITAN</h1>
+            <button class="tab-button active" data-tab="home">홈</button>
+            <button class="tab-button" data-tab="dashboard">뉴스 대시보드</button>
+            <button class="tab-button" data-tab="suggestions">제안사항</button>
+        </nav>
 
-/* 좌측 내비게이션 바 */
-.side-nav {
-    width: 240px;
-    background-color: #2c3e50;
-    color: #ecf0f1;
-    padding: 20px;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-    flex-shrink: 0; /* 창 크기가 줄어도 너비 유지 */
-}
+        <main class="content-area">
+            <div id="home-content" class="tab-content active">
+                <header class="content-header">
+                    <h1>국제정세 분석 대시보드</h1>
+                </header>
+                
+                <section class="content-section card">
+                    <h2>연구개발 배경</h2>
+                    <p>본 대시보드는 국방부 정책실 산하 국방정책과, 해외정책과 등의 국제정세 분석 담당 부처의 업무 효율성 및 정확성 제고를 위해 개발되었습니다. 2022 국방백서에 명시된 '경험과 직관이 아닌 통계분석 등 데이터 기반의 과학적 의사결정으로의 전환 준비' 및 'AI 학습 및 빅데이터 분석용 데이터 구축 시범사업'의 일환으로 추진 중인 프로젝트입니다.</p>
+                </section>
+                
+                <section class="content-section card">
+                    <h2>대시보드의 필요성</h2>
+                    <ul>
+                        <li><strong>실시간 분석:</strong> 기존의 인력 중심 분석에서 벗어나, AI를 통해 방대하며 시시각각 변하는 정세 데이터를 실시간으로 처리하고 변화의 '징후'를 감지합니다.</li>
+                        <li><strong>비정형 데이터 활용:</strong> 이제 기사나 국가 기관이 배포하는 자료를 넘어 영상, 신호정보, 보고서, SNS 등 정형화되지 않은 데이터까지 국제 정세에 영향을 미치고 있습니다. 따라서 미래에는 임의의 비정형 데이터를 분석하여 분석의 깊이를 더할 필요가 있습니다.</li>
+                        <li><strong>데이터 정량화:</strong> PMESII 및 DIME 분석과 같은 국제정세 분석 프레임워크는 다소 정성적이며 주관적인 성격을 지닙니다. 과거 정책 수립에 활용되던 분석을 넘어, 국제정세 안정성 스코어 등 AI 모델을 활용한 정량화 분석 및 대응을 지원합니다.</li>
+                        <li><strong>전략적 사고:</strong> 인공지능 언어 모델은 방대한 과거 역사를 기반으로 사고하여 현재 우리에게 당면한 과제를 해결할 힌트를 줄 수 있고 미래의 대응 전략을 추천할 수 있습니다. 모든 케이스를 기억할 수 없는 사람의 사고 한계를 극복하고 정책 담당자의 직관과 상호 보완할 수 있는 영역을 제공합니다.</li>
+                    </ul>
+                </section>
+            </div>
 
-.side-nav h1 {
-    font-size: 1.8rem;
-    text-align: center;
-    color: #fff;
-    margin-bottom: 30px;
-}
+            <div id="dashboard-content" class="tab-content">
+                 <header class="content-header">
+                    <h1>실시간 뉴스 대시보드</h1>
+                </header>
+                
+                <section class="content-section card" id="analysis-report-section">
+                    <h2>종합 분석 보고서 (AI-Generated)</h2>
+                    <div id="analysis-report-container" class="report-box">
+                        <p class="loading">종합 분석 보고서를 불러오는 중...</p>
+                    </div>
+                </section>
 
-/* 탭 버튼 스타일 */
-.tab-button {
-    display: block;
-    width: 100%;
-    padding: 15px;
-    margin-bottom: 10px;
-    background-color: #34495e;
-    color: #ecf0f1;
-    border: none;
-    border-radius: 5px;
-    text-align: left;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
+                <div class="news-grid">
+                    <section class="news-section">
+                        <h2>국내 주요 뉴스</h2>
+                        <div id="korean-news-container" class="news-column"><p class="loading">국내 뉴스를 불러오는 중...</p></div>
+                    </section>
+                    <section class="news-section">
+                        <h2>해외 주요 뉴스 (영문)</h2>
+                        <div id="english-news-container" class="news-column"><p class="loading">해외 뉴스를 불러오는 중...</p></div>
+                    </section>
+                </div>
+            </div>
 
-.tab-button:hover {
-    background-color: #4a627a;
-}
+            <div id="suggestions-content" class="tab-content">
+                <header class="content-header">
+                    <h1>제안사항</h1>
+                </header>
+                <section class="content-section card">
+                    <p>본 프로젝트의 개선을 위한 아이디어나 제안사항을 자유롭게 남겨주세요.</p>
+                    <form id="suggestion-form" action="https://formspree.io/f/mrbknajk" method="POST">
+                        <div class="form-group">
+                            <label for="email">메일 (필수)</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contact">연락처 (선택)</label>
+                            <input type="tel" id="contact" name="contact">
+                        </div>
+                        <div class="form-group">
+                            <label for="suggestion">제안 내용</label>
+                            <textarea id="suggestion" name="suggestion" rows="10" required></textarea>
+                        </div>
+                        <button type="submit" class="submit-button">제안하기</button>
+                    </form>
+                </section>
+            </div>
+        </main>
+    </div>
 
-/* 활성화된 탭 버튼 스타일 */
-.tab-button.active {
-    background-color: #3498db;
-    color: #fff;
-    font-weight: bold;
-}
-
-/* 우측 콘텐츠 영역 */
-.content-area {
-    flex-grow: 1; /* 남은 공간 모두 차지 */
-    overflow-y: auto; /* 내용이 길어지면 스크롤바 생성 */
-    padding: 30px;
-}
-
-/* 탭 콘텐츠 기본 숨김 */
-.tab-content {
-    display: none;
-}
-/* 활성화된 탭 콘텐츠만 보이기 */
-.tab-content.active {
-    display: block;
-}
-
-
-/* --- 기존 스타일 약간 수정 --- */
-.content-header {
-    margin-bottom: 20px;
-    border-bottom: 2px solid #ddd;
-}
-.content-header h1 {
-    font-size: 2.5rem;
-}
-
-.content-section h2 {
-    font-size: 2rem;
-    color: #2c3e50;
-}
-.content-section h3 {
-    font-size: 1.5rem;
-    color: #34495e;
-}
-.content-section ul {
-    padding-left: 20px;
-}
-.content-section li {
-    margin-bottom: 10px;
-}
-
-.news-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 30px;
-}
-
-@media (max-width: 1200px) {
-    .news-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 768px) {
-    .main-container {
-        flex-direction: column;
-    }
-    .side-nav {
-        width: 100%;
-        height: auto;
-        display: flex;
-        align-items: center;
-        padding: 10px;
-    }
-    .side-nav h1 {
-        margin: 0;
-        margin-right: auto; /* 제목을 왼쪽으로 밀착 */
-    }
-    .tab-button {
-        width: auto;
-        margin: 0 5px;
-    }
-}
-
-
-/* 뉴스 카드 스타일 (변경 없음) */
-.news-article {
-    background-color: #fff;
-    border: 1px solid #dddfe2;
-    border-radius: 8px;
-    padding: 16px;
-    margin-bottom: 20px;
-}
-.news-article h2 { font-size: 1.25rem; }
-.news-article a { text-decoration: none; color: inherit; }
-.news-article p { font-size: 0.9rem; color: #606770; }
-.article-meta { font-size: 0.8rem; color: #606770; }
-.loading { color: #888; }
-
-/* --- 💡 제안사항 폼 스타일 (새로 추가) --- */
-#suggestion-form {
-    max-width: 700px;
-}
-@@ -42,3 +188,4 @@
-.submit-button:hover {
-    background-color: #2980b9;
-}
-
-/* --- ✨ 종합 분석 보고서 스타일 (새로 추가) --- */
-#analysis-report-section {
-    margin-bottom: 30px; /* 아래 뉴스 섹션과의 간격 */
-}
-
-.report-box {
-    background-color: #f8f9fa; /* 다른 카드와 구분되는 배경색 */
-    border: 1px solid #dee2e6;
-    border-left: 5px solid #3498db; /* 왼쪽에 강조선 */
-    border-radius: 8px;
-    padding: 20px 25px;
-    font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; /* 보고서 가독성을 위한 폰트 */
-    line-height: 1.7; /* 줄 간격 */
-    color: #212529;
-    font-size: 1rem;
-}
+    <script src="script.js"></script>
+</body>
+</html>
