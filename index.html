@@ -44,27 +44,40 @@
             </div>
 
             <div id="dashboard-content" class="tab-content">
-                 <header class="content-header">
-                    <h1>실시간 뉴스 대시보드</h1>
-                </header>
-                
-                <section class="content-section card" id="analysis-report-section">
+                <section class="content-section card dashboard-analysis-report">
                     <h2>종합 분석 보고서 (AI-Generated)</h2>
                     <div id="analysis-report-container" class="report-box">
                         <p class="loading">종합 분석 보고서를 불러오는 중...</p>
                     </div>
                 </section>
 
-                <div class="news-grid">
-                    <section class="news-section">
-                        <h2>국내 주요 뉴스</h2>
-                        <div id="korean-news-container" class="news-column"><p class="loading">국내 뉴스를 불러오는 중...</p></div>
-                    </section>
-                    <section class="news-section">
-                        <h2>해외 주요 뉴스 (영문)</h2>
-                        <div id="english-news-container" class="news-column"><p class="loading">해외 뉴스를 불러오는 중...</p></div>
-                    </section>
-                </div>
+                <section class="content-section card dashboard-calendar">
+                    <h3>📅 주요 국제 정세 캘린더</h3>
+                    <div class="calendar-content">
+                        <div class="upcoming-events">
+                            <h4>다가오는 일정</h4>
+                            <ul id="upcoming-list" class="event-list"></ul>
+                        </div>
+                        <div class="past-events">
+                            <h4>지난 일정</h4>
+                            <ul id="past-list" class="event-list"></ul>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="content-section card dashboard-news">
+                    <h2>실시간 뉴스 대시보드</h2>
+                    <div class="news-grid">
+                        <section class="news-section">
+                            <h3>국내 주요 뉴스</h3>
+                            <div id="korean-news-container" class="news-column"><p class="loading">국내 뉴스를 불러오는 중...</p></div>
+                        </section>
+                        <section class="news-section">
+                            <h3>해외 주요 뉴스 (영문)</h3>
+                            <div id="english-news-container" class="news-column"><p class="loading">해외 뉴스를 불러오는 중...</p></div>
+                        </section>
+                    </div>
+                </section>
             </div>
 
             <div id="suggestions-content" class="tab-content">
