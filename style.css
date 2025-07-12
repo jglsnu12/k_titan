@@ -573,3 +573,154 @@ ul {
     font-size: 1.5rem; 
     font-style: normal; /* 기울임 제거 *
 }
+
+
+/* AI 챗봇 토글 버튼 */
+.chat-toggle-button {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background-color: var(--accent-color); /* 예: 강조 색상 */
+    color: white;
+    border: none;
+    border-radius: 50px; /* 둥근 버튼 */
+    padding: 15px 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000; /* 다른 요소 위로 오도록 */
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.chat-toggle-button:hover {
+    background-color: var(--accent-hover-color);
+    transform: translateY(-2px);
+}
+
+/* AI 챗봇 팝업 창 */
+.ai-chat-popup {
+    position: fixed;
+    bottom: 100px; /* 버튼 위로 띄우기 */
+    right: 30px;
+    width: 350px;
+    height: 500px;
+    background-color: var(--card-bg-color); /* 카드 배경색과 통일 */
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* 내용이 넘치면 숨김 */
+
+    /* 초기에는 숨김 */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px) scale(0.95);
+    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+}
+
+.ai-chat-popup.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+.chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background-color: var(--primary-color); /* 대시보드 주색상과 통일 */
+    color: white;
+    border-bottom: 1px solid var(--border-color);
+    border-top-left-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
+}
+
+.chat-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.chat-close-button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+.chat-close-button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.messages-list {
+    flex-grow: 1;
+    overflow-y: auto; /* 메시지 스크롤 */
+    padding: 15px;
+    background-color: var(--card-bg-color);
+}
+
+.messages-list div {
+    padding: 10px 15px;
+    border-radius: 18px; /* 둥근 말풍선 */
+    margin-bottom: 10px;
+    max-width: 85%;
+    word-wrap: break-word; /* 긴 텍스트 줄바꿈 */
+    line-height: 1.4;
+    font-size: 0.95rem;
+}
+
+.user-message {
+    background-color: var(--primary-color); /* 사용자 메시지는 주색상 */
+    color: white;
+    margin-left: auto; /* 오른쪽 정렬 */
+    border-bottom-right-radius: 5px; /* 끝부분 덜 둥글게 */
+}
+
+.ai-message {
+    background-color: var(--secondary-bg-color); /* AI 메시지는 보조 배경색 */
+    color: var(--text-color);
+    margin-right: auto; /* 왼쪽 정렬 */
+    border-bottom-left-radius: 5px; /* 끝부분 덜 둥글게 */
+}
+
+.chat-input-area {
+    display: flex;
+    padding: 15px;
+    border-top: 1px solid var(--border-color);
+    background-color: var(--card-bg-color);
+}
+
+.chat-input-area input[type="text"] {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 20px; /* 둥근 입력창 */
+    font-size: 1rem;
+    background-color: var(--input-bg-color);
+    color: var(--text-color);
+    margin-right: 10px;
+}
+
+.chat-input-area button {
+    padding: 10px 20px;
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 20px; /* 둥근 버튼 */
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.2s;
+    flex-shrink: 0; /* 버튼이 줄어들지 않도록 */
+}
+
+.chat-input-area button:hover {
+    background-color: var(--accent-hover-color);
+}
+
