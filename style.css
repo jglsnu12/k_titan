@@ -199,7 +199,7 @@ ul {
     text-align: center;
     overflow: hidden;
     /* ✨ 로컬 이미지 파일을 배경으로 사용합니다. */
-    background-image: linear-gradient(rgba(9, 30, 66, 0.7), rgba(9, 30, 66, 0.7)), url('hero-background.jpg');
+    background-image: linear-gradient(rgba(9, 30, 66, 0.7), rgba(9, 30, 66, 0.7)), url('hero-background.jpeg');
     background-size: cover;
     background-position: center;
 }
