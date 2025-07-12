@@ -417,7 +417,12 @@ ul {
         padding: 10px 20px;
     }
     .side-nav h1 {
-        margin: 0 auto 0 0;
+       font-size: 1.6rem;
+       font-weight: 700;
+       color: var(--primary-color);
+       text-align: center;
+       margin-top: 8px;
+       margin-bottom: 60px; /* 아래쪽 여백을 40px에서 60px로 늘립니다. */
     }
     .tab-button {
         width: auto;
