@@ -1,360 +1,524 @@
-// =================================================================
-// ✨ 1. Firebase 연동 및 설정 (파일 최상단에 추가)
-// =================================================================
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import { getFirestore, collection, getDocs, getDoc, addDoc, doc, updateDoc, deleteDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+/* --- ✨ 전체 디자인 최종 코드 ✨ --- */
 
+/* 1. CSS 변수 및 기본 설정 */
+:root {
+    --bg-color: #f7f8fa;
+    --nav-bg-color: #ffffff;
+    --card-bg-color: #ffffff;
+    --primary-color: #0052cc;
+    --primary-hover-color: #0045a8;
+    --text-color: #172b4d;
+    --text-light-color: #6b778c;
+    --border-color: #dfe1e6;
+    --shadow-color: rgba(9, 30, 66, 0.15);
+    /* Calendar specific colors */
+    --calendar-header-color: #4CAF50; /* Green for upcoming */
+    --calendar-past-color: #9E9E9E; /* Grey for past */
+    --calendar-border-color: #e0e6ed;
+    --calendar-bg-light: #f9fbfd;
+}
 
-// ⚠️ 본인의 Firebase 설정 키를 아래에 붙여넣으세요.
-const firebaseConfig = {
-  apiKey: "AIzaSyAgSSLC7PW5RSY_pUQskc502D4HT31leRc",
-  authDomain: "k-titan.firebaseapp.com",
-  projectId: "k-titan",
-  storageBucket: "k-titan.firebasestorage.app",
-  messagingSenderId: "904124999177",
-  appId: "1:904124999177:web:0634ab4babc77b1384bad8"
-};
+* {
+    box-sizing: border-box;
+}
 
-// Firebase 앱 초기화 및 Firestore 서비스 가져오기
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
 
+/* 2. 전체 레이아웃 구조 */
+.main-container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
 
-// --- 💡 탭 전환 로직 ---
-document.addEventListener('DOMContentLoaded', () => {
-    const tabs = document.querySelectorAll('.tab-button');
-    const contents = document.querySelectorAll('.tab-content');
+/* 3. 좌측 내비게이션 바 */
+.side-nav {
+    width: 260px;
+    background-color: var(--nav-bg-color);
+    border-right: 1px solid var(--border-color);
+    padding: 24px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+}
 
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            tabs.forEach(t => t.classList.remove('active'));
-            contents.forEach(c => c.classList.remove('active'));
+.side-nav h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    text-align: center;
+    margin-top: 8px;
+    margin-bottom: 40px;
+}
 
-            tab.classList.add('active');
-            const targetContentId = tab.dataset.tab + '-content';
-            document.getElementById(targetContentId).classList.add('active');
-            // ✨ '제안사항' 탭을 클릭했을 때 loadPosts 함수 호출 (이 부분이 중요!)
-            if (targetContentId === 'suggestions-content') {
-                loadPosts();
-            }
-        });
-    });
+.tab-button {
+    display: block;
+    width: 100%;
+    padding: 14px 18px;
+    margin-bottom: 8px;
+    background-color: transparent;
+    color: var(--text-light-color);
+    border: none;
+    border-radius: 6px;
+    text-align: left;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
 
-    // 데이터 로딩 함수들 호출
-    fetchAnalysisReport();
-    fetchKoreanNews();
-    fetchEnglishNews();
-});
+.tab-button:hover {
+    background-color: #f1f2f4;
+    color: var(--text-color);
+}
 
+.tab-button.active {
+    background-color: #e6efff;
+    color: var(--primary-color);
+    font-weight: 600;
+}
 
-// --- ✨ AI 분석 보고서 가져오기 함수 (구조 분석 로직으로 대폭 수정) ---
-async function fetchAnalysisReport() {
-    const reportContainer = document.getElementById('analysis-report-container');
-    const reportUrl = 'https://raw.githubusercontent.com/jglsnu12/k_titan/main/final_analysis_report.txt';
+/* 4. 우측 콘텐츠 영역 */
+.content-area {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 40px;
+}
 
-    try {
-        const response = await fetch(reportUrl);
-        if (!response.ok) {
-            throw new Error(`HTTP Error: ${response.status}`);
-        }
-        const reportText = await response.text();
+.tab-content { display: none; }
+.tab-content.active { display: block; }
 
-        // --- ✨ 새로운 지능형 파싱 로직 ---
-        const lines = reportText.split('\n');
-        let htmlContent = '';
-        let isInList = false;
+/* Existing content-header styles */
+.content-header {
+    margin-bottom: 32px;
+}
 
-        lines.forEach(line => {
-            // 1. **Bold** 텍스트 먼저 처리
-            line = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+.content-header h1 {
+    font-size: 2.2rem;
+    font-weight: 600;
+}
 
-            // 2. 제목(##) 처리
-            if (line.startsWith('## ')) {
-                if (isInList) { htmlContent += '</ul>'; isInList = false; }
-                htmlContent += `<h2>${line.substring(3)}</h2>`;
-            } 
-            // 3. 목록(*) 처리
-            else if (line.startsWith('* ')) {
-                if (!isInList) { htmlContent += '<ul>'; isInList = true; }
-                htmlContent += `<li>${line.substring(2)}</li>`;
-            } 
-            // 4. 빈 줄은 문단 구분으로 처리
-            else if (line.trim() === '') {
-                if (isInList) { htmlContent += '</ul>'; isInList = false; }
-            } 
-            // 5. 그 외에는 모두 일반 문단으로 처리
-            else {
-                if (isInList) { htmlContent += '</ul>'; isInList = false; }
-                htmlContent += `<p>${line}</p>`;
-            }
-        });
+.content-section {
+    margin-bottom: 32px; /* Keep for other sections, dashboard-content will override */
+}
 
-        if (isInList) { htmlContent += '</ul>'; } // 마지막 줄이 목록일 경우 닫아주기
-        // --- 파싱 로직 끝 ---
+.content-section h2 {
+    font-size: 1.5rem;
+    color: var(--text-color);
+    font-weight: 600;
+    margin-bottom: 20px;
+}
 
-        reportContainer.innerHTML = htmlContent;
+/* 5. 콘텐츠 카드 스타일 */
+.card {
+    background-color: var(--card-bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 24px 32px;
+    box-shadow: 0 1px 3px var(--shadow-color);
+    transition: box-shadow 0.3s ease;
+}
 
-    } catch (error) {
-        reportContainer.innerHTML = `<p>종합 분석 보고서를 불러오는 데 실패했습니다. (에러: ${error.message})</p>`;
-    }
+.card:hover {
+    box-shadow: 0 4px 12px var(--shadow-color);
+}
+
+.card ul { padding-left: 20px; }
+.card li { margin-bottom: 12px; line-height: 1.6; }
+
+/* 6. 뉴스 대시보드 스타일 (Adjusted for Grid) */
+.news-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+}
+
+@media (max-width: 1200px) {
+    .news-grid { grid-template-columns: 1fr; }
+}
+
+.news-article {
+    background-color: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+
+.news-article:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px var(--shadow-color);
+}
+
+.news-article h2 { font-size: 1.2rem; margin-bottom: 8px; }
+.news-article a { text-decoration: none; color: inherit; }
+.news-article p { font-size: 0.95rem; color: var(--text-light-color); line-height: 1.6; margin-bottom: 16px; }
+.article-meta { font-size: 0.85rem; color: #8993a4; }
+
+/* 7. 보고서 박스 스타일 (보고서 콘텐츠 스타일 포함) */
+.report-box {
+    background-color: #fafbfc;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px 25px;
+    line-height: 1.7;
+    color: var(--text-color);
+    font-size: 0.95rem;
+    height: 100%; /* Ensure it fills its grid cell */
+    overflow-y: auto; /* Enable scrolling for report content */
+}
+
+/* 보고서 내부의 제목, 문단, 목록 스타일 */
+.report-box h2 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-top: 28px;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.report-box p {
+    margin-bottom: 16px;
+}
+
+.report-box ul {
+    margin-top: -12px;
+    margin-bottom: 16px;
+    padding-left: 20px;
+}
+
+.report-box li {
+    margin-bottom: 8px;
+}
+
+/* 8. 제안사항 폼 스타일 */
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    font-size: 1rem;
+    font-family: 'Inter', sans-serif;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 82, 204, 0.2);
+}
+
+.submit-button {
+    padding: 12px 25px;
+    background-color: var(--primary-color);
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.submit-button:hover {
+    background-color: var(--primary-hover-color);
+}
+
+/* --- 9. 게시판 및 모달 스타일 --- */
+#show-write-modal {
+    margin-left: auto;
+}
+.content-header {
+    display: flex;
+    align-items: center;
+}
+.post-card {
+    background-color: var(--card-bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 20px;
+}
+.post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    color: #6b778c;
+    font-size: 0.9rem;
+}
+.post-status {
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+.post-status.unresolved {
+    color: #d9480f;
+    background-color: #fff4e6;
+}
+.post-status.resolved {
+    color: #2f9e44;
+    background-color: #e6fcf5;
+}
+.post-content {
+    line-height: 1.6;
+    margin-bottom: 16px;
+    white-space: pre-line;
+    display: block;
+    padding: 0;
+    margin: 0;
+}
+.post-content * {
+    margin: 0;
+    padding: 0;
+}
+
+.comment-section {
+    border-top: 1px solid #dfe1e6;
+    padding-top: 20px;
+}
+.comment-card {
+    background: #f7f8fa;
+    border-radius: 6px;
+    padding: 16px;
+}
+.comment-card p { margin: 0; }
+.comment-author {
+    font-weight: 600;
+    color: #0052cc;
+    margin-bottom: 8px !important;
+}
+.comment-form {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+.comment-input {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #dfe1e6;
+    border-radius: 5px;
+}
+.comment-submit {
+    padding: 10px 15px;
+    background-color: #6b778c;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.modal-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+}
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+.cancel-button {
+    background-color: #e9ecef;
+    color: #495057;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* --- 10. 게시글 관리 버튼 스타일 --- */
+.post-actions {
+    margin-top: -10px;
+    text-align: right;
+}
+
+.post-manage-btn {
+    background: none;
+    border: 1px solid var(--border-color);
+    color: var(--text-light-color);
+    padding: 5px 10px;
+    font-size: 0.85rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.post-manage-btn:hover {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+/* --- NEW: Dashboard Content Grid Layout --- */
+#dashboard-content.tab-content.active {
+    display: grid; /* Enable CSS Grid for this specific tab content */
+    grid-template-columns: 1fr 380px; /* Left column (analysis) takes remaining space, right column (calendar+news) is 380px wide */
+    grid-template-rows: auto 1fr; /* Top row (calendar) auto height, bottom row (news) takes remaining space */
+    gap: 25px; /* Gap between grid items */
+    padding: 0; /* Reset padding here, content-area already has it */
+    height: 100%; /* Ensure it fills the height of content-area */
+}
+
+/* Assign grid areas to each section */
+.dashboard-analysis-report {
+    grid-column: 1 / 2; /* Spans full height of the first column */
+    grid-row: 1 / 3;
+    margin-bottom: 0; /* Remove default margin-bottom from .content-section */
+}
+
+.dashboard-calendar {
+    grid-column: 2 / 3; /* Top right */
+    grid-row: 1 / 2;
+    margin-bottom: 0; /* Remove default margin-bottom from .content-section */
+    max-height: 450px; /* Adjust max height for calendar, prevents it from getting too tall */
+    display: flex; /* Use flexbox internally for calendar content */
+    flex-direction: column;
+}
+
+.dashboard-news {
+    grid-column: 2 / 3; /* Bottom right */
+    grid-row: 2 / 3;
+    margin-bottom: 0; /* Remove default margin-bottom from .content-section */
+    display: flex; /* Use flexbox internally for news content */
+    flex-direction: column;
+}
+
+/* Adjust news-grid within its new container */
+.dashboard-news .news-grid {
+    flex-grow: 1; /* Allow news-grid to fill available vertical space */
+    overflow-y: auto; /* Make news-grid scrollable if content overflows */
+    padding-top: 10px; /* Small padding at top of news grid */
+}
+
+/* Calendar Specific Styles */
+.dashboard-calendar h3 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.dashboard-calendar .calendar-content {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    flex-grow: 1;
+}
+
+.dashboard-calendar .upcoming-events,
+.dashboard-calendar .past-events {
+    background-color: var(--calendar-bg-light);
+    border-radius: 8px;
+    padding: 15px;
+    border: 1px solid var(--calendar-border-color);
+    flex-grow: 1;
+    overflow-y: auto; /* Enable scrolling for individual event lists */
+}
+
+.dashboard-calendar .upcoming-events h4,
+.dashboard-calendar .past-events h4 {
+    font-size: 1rem;
+    color: var(--text-color);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.dashboard-calendar .upcoming-events h4 {
+    color: var(--calendar-header-color);
+    border-bottom-color: lighten(var(--calendar-header-color), 40%); /* Lighten green */
+}
+.dashboard-calendar .past-events h4 {
+    color: var(--calendar-past-color);
+    border-bottom-color: lighten(var(--calendar-past-color), 20%); /* Lighten grey */
 }
 
 
-// --- 기존 뉴스 API 호출 함수들 (변경 없음) ---
-// (이하 코드는 이전과 동일)
-async function fetchKoreanNews() {
-    const newsContainer = document.getElementById('korean-news-container');
-    const rssFeeds = [
-        'https://www.chosun.com/arc/outboundfeeds/rss/category/politics/?outputType=xml',
-        'https://www.yonhapnewstv.co.kr/browse/feed/',
-        'https://www.hani.co.kr/rss/',
-        'https://www.khan.co.kr/rss/rssdata/total_news.xml',
-    ];
-
-    try {
-        const responses = await Promise.all(rssFeeds.map(feedUrl => fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feedUrl)}`)));
-        for (const response of responses) if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
-        const jsonResults = await Promise.all(responses.map(res => res.json()));
-        const allItems = jsonResults.flatMap(result => result.items || []).sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate)).slice(0, 40);
-        
-        newsContainer.innerHTML = ''; 
-        allItems.forEach(item => {
-            const articleElement = document.createElement('div');
-            articleElement.className = 'news-article';
-            const description = item.content.replace(/<[^>]*>?/gm, '').substring(0, 150) + '...';
-            articleElement.innerHTML = `
-                <a href="${item.link}" target="_blank" rel="noopener noreferrer"><h2>${item.title}</h2></a>
-                <p>${description || '내용 요약 없음'}</p>
-                <div class="article-meta"><span>출처: ${item.author || '언론사'}</span> | <span>${new Date(item.pubDate).toLocaleString()}</span></div>`;
-            newsContainer.appendChild(articleElement);
-        });
-    } catch (error) {
-        newsContainer.innerHTML = `<p>국내 뉴스를 불러오는 데 실패했습니다. (에러: ${error.message})</p>`;
-    }
+.dashboard-calendar .event-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
-async function fetchEnglishNews() {
-    const newsContainer = document.getElementById('english-news-container');
-    const apiKey = '6c141a3bf180fef4f3b57f0d560c1e4e'; // 본인의 GNews 키를 입력하세요.
-    const categories = ['world', 'nation', 'business', 'technology'];
-
-    try {
-        const responses = await Promise.all(categories.map(category => fetch(`https://gnews.io/api/v4/top-headlines?lang=en&category=${category}&max=10&apikey=${apiKey}`)));
-        for (const response of responses) if (!response.ok) throw new Error(`API Error`);
-        const jsonResults = await Promise.all(responses.map(res => res.json()));
-        const allArticles = jsonResults.flatMap(result => result.articles || []).sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
-
-        newsContainer.innerHTML = '';
-        allArticles.forEach(article => {
-            const articleElement = document.createElement('div');
-            articleElement.className = 'news-article';
-            articleElement.innerHTML = `
-                <a href="${article.url}" target="_blank" rel="noopener noreferrer"><h2>${article.title}</h2></a>
-                <p>${article.description || 'No summary available.'}</p>
-                <div class="article-meta"><span>Source: ${article.source.name}</span> | <span>${new Date(article.publishedAt).toLocaleString()}</span></div>`;
-            newsContainer.appendChild(articleElement);
-        });
-    } catch (error) {
-        newsContainer.innerHTML = `<p>해외 뉴스를 불러오는 데 실패했습니다. (에러: ${error.message})</p>`;
-    }
+.dashboard-calendar .event-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    color: var(--text-color);
+    line-height: 1.4;
+    background-color: var(--card-bg-color); /* Use card background for items */
+    border-radius: 6px;
+    padding: 8px 10px;
+    border: 1px solid #f0f0f0;
 }
 
-// =================================================================
-// ✨ 4. 게시판 기능 (파일 하단에 추가)
-// =================================================================
-
-const postsContainer = document.getElementById('posts-container');
-const modal = document.getElementById('write-modal');
-const showModalBtn = document.getElementById('show-write-modal');
-const closeModalBtn = document.getElementById('close-modal');
-const postForm = document.getElementById('post-form');
-
-function formatPostContent(content) {
-    return content
-        .trim()                          // 앞뒤 공백 제거
-        .replace(/\n\s*\n/g, '\n')        // 빈 줄 제거
-        .replace(/(\r\n|\r|\n){2,}/g, '\n')  // 2줄 이상 연속 줄바꿈을 한 줄로
-        .replace(/\n/g, '<br>');          // \n을 <br>로 바꿈
+.dashboard-calendar .event-item .date {
+    font-weight: 600;
+    flex-shrink: 0;
+    width: 90px; /* Adjusted width for date */
+    color: var(--primary-color);
+}
+.dashboard-calendar .past-events .event-item .date {
+    color: var(--text-light-color); /* Softer color for past dates */
 }
 
-// 기존 loadPosts 함수를 찾아서 아래 내용으로 전체 교체해주세요.
-async function loadPosts() {
-    if (!postsContainer) return;
-    postsContainer.innerHTML = '<p class="loading">게시글을 불러오는 중...</p>';
-    
-    const postsQuery = query(collection(db, 'suggestions'), orderBy('timestamp', 'desc'));
-    const querySnapshot = await getDocs(postsQuery);
-
-    if (querySnapshot.empty) {
-        postsContainer.innerHTML = '<p>아직 등록된 제안이 없습니다.</p>';
-        return;
-    }
-
-    let postsHtml = '';
-    querySnapshot.forEach(docSnap => {
-        const post = docSnap.data();
-        const postId = docSnap.id;
-        const date = post.timestamp ? new Date(post.timestamp.seconds * 1000).toLocaleString() : '날짜 정보 없음';
-        const statusClass = post.status === 'resolved' ? 'resolved' : 'unresolved';
-        const statusText = post.status === 'resolved' ? '답변 완료' : '검토 중';
-        
-        let commentHtml = '';
-        if (post.comment) {
-            commentHtml = `<div class="comment-section"><div class="comment-card"><p class="comment-author"><strong>관리자 답변</strong></p><p>${post.comment}</p></div></div>`;
-        } else {
-             commentHtml = `<div class="comment-section"><form class="comment-form" data-id="${postId}"><input type="text" class="comment-input" placeholder="관리자 답변을 입력하세요..." required><button type="submit" class="comment-submit">답변 등록</button></form></div>`;
-        }
-        
-        // ✨ '관리' 버튼이 포함된 HTML로 변경
-        postsHtml += `
-            <div class="post-card" id="post-${postId}">
-                <div class="post-header">
-                    <span><strong>${post.author}</strong> | ${date}</span>
-                    <span class="post-status ${statusClass}">${statusText}</span>
-                </div>
-                <div class="post-content">
-                    <p>${formatPostContent(post.content)}</p>
-                </div>
-                <div class="post-actions">
-                    <button class="post-manage-btn" data-id="${postId}" data-author="${post.author}">수정/삭제</button>
-                </div>
-                ${commentHtml}
-            </div>`;
-    });
-    postsContainer.innerHTML = postsHtml;
+.dashboard-calendar .event-item .description {
+    flex-grow: 1;
+    margin-right: 5px;
 }
 
-
-if(showModalBtn) {
-    showModalBtn.addEventListener('click', () => modal.style.display = 'flex');
-    closeModalBtn.addEventListener('click', () => modal.style.display = 'none');
-    window.addEventListener('click', (e) => {
-        if (e.target === modal) modal.style.display = 'none';
-    });
+.dashboard-calendar .event-item .flags {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 2px;
 }
 
-if(postForm) {
-    postForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const author = document.getElementById('post-author').value;
-        const password = document.getElementById('post-password').value;
-        const content = document.getElementById('post-content').value;
-        try {
-            await addDoc(collection(db, 'suggestions'), { author, password, content, status: 'unresolved', timestamp: serverTimestamp() });
-            postForm.reset();
-            modal.style.display = 'none';
-            loadPosts();
-        } catch (error) { console.error("Error adding document: ", error); alert("게시글 등록에 실패했습니다."); }
-    });
+.dashboard-calendar .event-item .flags img {
+    width: 20px; /* Slightly smaller flags */
+    height: 13px;
+    border: 0.5px solid #ddd;
+    border-radius: 2px;
+    object-fit: cover;
 }
-
-if(postsContainer) {
-    postsContainer.addEventListener('submit', async (e) => {
-        if (e.target.classList.contains('comment-form')) {
-            e.preventDefault();
-            const postId = e.target.dataset.id;
-            const commentText = e.target.querySelector('.comment-input').value;
-            try {
-                const postRef = doc(db, 'suggestions', postId);
-                await updateDoc(postRef, { comment: commentText, status: 'resolved' });
-                loadPosts();
-            } catch (error) { console.error("Error updating document: ", error); alert("답변 등록에 실패했습니다."); }
-        }
-    });
-}
-
-// =================================================================
-// ✨ 5. 게시글 수정/삭제 기능 (파일 하단에 추가)
-// =================================================================
-
-const editModal = document.getElementById('edit-modal');
-const editForm = document.getElementById('edit-form');
-const closeEditModalBtn = document.getElementById('close-edit-modal');
-
-// '수정/삭제' 버튼 클릭 이벤트 처리
-if (postsContainer) {
-    postsContainer.addEventListener('click', async (e) => {
-        if (e.target.classList.contains('post-manage-btn')) {
-            const postId = e.target.dataset.id;
-            const author = e.target.dataset.author;
-
-            const password = prompt(`'${author}'님의 게시글 비밀번호를 입력하세요.`);
-            if (!password) return; // 사용자가 취소한 경우
-
-            try {
-                // Firestore에서 해당 게시물의 비밀번호 확인
-                const postRef = doc(db, 'suggestions', postId);
-                const docSnap = await getDoc(postRef);
-
-                if (docSnap.exists() && docSnap.data().password === password) {
-                    // 비밀번호 일치
-                    const action = prompt("'수정' 또는 '삭제'라고 입력하세요.");
-                    if (action === '수정') {
-                        openEditModal(postId, docSnap.data());
-                    } else if (action === '삭제') {
-                        deletePost(postId);
-                    } else if (action) {
-                        alert("잘못된 입력입니다.");
-                    }
-                } else {
-                    // 비밀번호 불일치 또는 게시물 없음
-                    alert("비밀번호가 일치하지 않습니다.");
-                }
-            } catch (error) {
-                console.error("Error managing post: ", error);
-                alert("처리 중 오류가 발생했습니다.");
-            }
-        }
-    });
-}
-
-// 수정 모달 열기
-function openEditModal(postId, postData) {
-    document.getElementById('edit-post-id').value = postId;
-    document.getElementById('edit-post-content').textContent = postData.content;
-    editModal.style.display = 'flex';
-}
-
-// 게시글 삭제 처리
-async function deletePost(postId) {
-    if (confirm("정말로 이 게시글을 삭제하시겠습니까?")) {
-        try {
-            await deleteDoc(doc(db, 'suggestions', postId));
-            alert("게시글이 삭제되었습니다.");
-            loadPosts();
-        } catch (error) {
-            console.error("Error deleting document: ", error);
-            alert("삭제 중 오류가 발생했습니다.");
-        }
-    }
-}
-
-// 수정 모달창 닫기 버튼
-if(closeEditModalBtn) {
-    closeEditModalBtn.addEventListener('click', () => {
-        editModal.style.display = 'none';
-    });
-}
-
-// 수정 폼 제출 이벤트
-if (editForm) {
-    editForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const postId = document.getElementById('edit-post-id').value;
-        const newContent = document.getElementById('edit-post-content').value;
-
-        try {
-            const postRef = doc(db, 'suggestions', postId);
-            await updateDoc(postRef, {
-                content: newContent
-            });
-            alert("게시글이 수정되었습니다.");
-            editModal.style.display = 'none';
-            loadPosts();
-        } catch (error) {
-            console.error("Error updating document: ", error);
-            alert("수정 중 오류가 발생했습니다.");
-        }
-    });
-}
-
