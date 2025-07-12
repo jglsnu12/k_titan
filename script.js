@@ -109,7 +109,7 @@ async function fetchKoreanNews() {
     newsContainer.innerHTML = '<p class="loading">연합뉴스 [정치] 기사를 테스트 중...</p>';
 
     // ✨ 1. 정치 카테고리 RSS 주소 하나만 지정합니다.
-    const politicsRssUrl = 'https://www.yna.co.kr/rss/politics.xml';
+    const politicsRssUrl = 'https://www.yna.co.kr/rss/northkorea.xml';
 
     try {
         // ✨ 2. fetch 요청을 한 번만 보냅니다.
