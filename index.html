@@ -4,13 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>국제정세 분석 대시보드</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <div class="main-container">
         <nav class="side-nav">
-            <h1>메뉴</h1>
+            <h1>K-TITAN</h1>
             <button class="tab-button active" data-tab="home">홈</button>
             <button class="tab-button" data-tab="dashboard">뉴스 대시보드</button>
             <button class="tab-button" data-tab="suggestions">제안사항</button>
@@ -22,12 +27,12 @@
                     <h1>국제정세 분석 대시보드</h1>
                 </header>
                 
-                <section class="content-section">
+                <section class="content-section card">
                     <h2>연구개발 배경</h2>
                     <p>본 대시보드는 국방부 정책실 산하 국방정책과, 해외정책과 등의 국제정세 분석 담당 부처의 업무 효율성 및 정확성 제고를 위해 개발되었습니다. 2022 국방백서에 명시된 '경험과 직관이 아닌 통계분석 등 데이터 기반의 과학적 의사결정으로의 전환 준비' 및 'AI 학습 및 빅데이터 분석용 데이터 구축 시범사업'의 일환으로 추진 중인 프로젝트입니다.</p>
                 </section>
                 
-                <section class="content-section">
+                <section class="content-section card">
                     <h2>대시보드의 필요성</h2>
                     <ul>
                         <li><strong>실시간 분석:</strong> 기존의 인력 중심 분석에서 벗어나, AI를 통해 방대하며 시시각각 변하는 정세 데이터를 실시간으로 처리하고 변화의 '징후'를 감지합니다.</li>
@@ -43,12 +48,13 @@
                     <h1>실시간 뉴스 대시보드</h1>
                 </header>
                 
-                <section class="content-section" id="analysis-report-section">
+                <section class="content-section card" id="analysis-report-section">
                     <h2>종합 분석 보고서 (AI-Generated)</h2>
                     <div id="analysis-report-container" class="report-box">
                         <p class="loading">종합 분석 보고서를 불러오는 중...</p>
                     </div>
                 </section>
+
                 <div class="news-grid">
                     <section class="news-section">
                         <h2>국내 주요 뉴스</h2>
@@ -65,7 +71,7 @@
                 <header class="content-header">
                     <h1>제안사항</h1>
                 </header>
-                <section class="content-section">
+                <section class="content-section card">
                     <p>본 프로젝트의 개선을 위한 아이디어나 제안사항을 자유롭게 남겨주세요.</p>
                     <form id="suggestion-form" action="https://formspree.io/f/mrbknajk" method="POST">
                         <div class="form-group">
