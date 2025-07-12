@@ -15,13 +15,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 데이터 로딩 함수들 호출
-    fetchAnalysisReport(); // AI 분석 보고서 불러오기
+    fetchAnalysisReport();
     fetchKoreanNews();
     fetchEnglishNews();
 });
 
 
-// --- ✨ AI 분석 보고서 가져오기 함수 (수정된 부분) ---
+// --- ✨ AI 분석 보고서 가져오기 함수 (구조 분석 로직으로 대폭 수정) ---
 async function fetchAnalysisReport() {
     const reportContainer = document.getElementById('analysis-report-container');
     const reportUrl = 'https://raw.githubusercontent.com/jglsnu12/k_titan/main/final_analysis_report.txt';
@@ -31,20 +31,42 @@ async function fetchAnalysisReport() {
         if (!response.ok) {
             throw new Error(`HTTP Error: ${response.status}`);
         }
-        let reportText = await response.text();
+        const reportText = await response.text();
 
-        // --- ✨ 보고서 텍스트 파싱 로직 (가장 중요한 부분) ---
-        // 1. '##'로 시작하는 줄은 <h3> 제목 태그로 변환합니다.
-        reportText = reportText.replace(/^## (.*$)/gim, '<h3>$1</h3>');
+        // --- ✨ 새로운 지능형 파싱 로직 ---
+        const lines = reportText.split('\n');
+        let htmlContent = '';
+        let isInList = false;
 
-        // 2. '**'로 감싸인 텍스트는 <strong> 굵은 글씨 태그로 변환합니다.
-        reportText = reportText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-        
-        // 3. 줄바꿈 문자를 <br> 태그로 변환하여 줄바꿈을 유지합니다.
-        reportText = reportText.replace(/\n/g, '<br>');
+        lines.forEach(line => {
+            // 1. **Bold** 텍스트 먼저 처리
+            line = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+            // 2. 제목(##) 처리
+            if (line.startsWith('## ')) {
+                if (isInList) { htmlContent += '</ul>'; isInList = false; }
+                htmlContent += `<h2>${line.substring(3)}</h2>`;
+            } 
+            // 3. 목록(*) 처리
+            else if (line.startsWith('* ')) {
+                if (!isInList) { htmlContent += '<ul>'; isInList = true; }
+                htmlContent += `<li>${line.substring(2)}</li>`;
+            } 
+            // 4. 빈 줄은 문단 구분으로 처리
+            else if (line.trim() === '') {
+                if (isInList) { htmlContent += '</ul>'; isInList = false; }
+            } 
+            // 5. 그 외에는 모두 일반 문단으로 처리
+            else {
+                if (isInList) { htmlContent += '</ul>'; isInList = false; }
+                htmlContent += `<p>${line}</p>`;
+            }
+        });
+
+        if (isInList) { htmlContent += '</ul>'; } // 마지막 줄이 목록일 경우 닫아주기
         // --- 파싱 로직 끝 ---
 
-        reportContainer.innerHTML = reportText;
+        reportContainer.innerHTML = htmlContent;
 
     } catch (error) {
         reportContainer.innerHTML = `<p>종합 분석 보고서를 불러오는 데 실패했습니다. (에러: ${error.message})</p>`;
@@ -53,8 +75,7 @@ async function fetchAnalysisReport() {
 
 
 // --- 기존 뉴스 API 호출 함수들 (변경 없음) ---
-
-// 1. 국내 뉴스 가져오기
+// (이하 코드는 이전과 동일)
 async function fetchKoreanNews() {
     const newsContainer = document.getElementById('korean-news-container');
     const rssFeeds = [
@@ -86,7 +107,6 @@ async function fetchKoreanNews() {
     }
 }
 
-// 2. 해외 뉴스 가져오기
 async function fetchEnglishNews() {
     const newsContainer = document.getElementById('english-news-container');
     const apiKey = '6c141a3bf180fef4f3b57f0d560c1e4e'; // 본인의 GNews 키를 입력하세요.
