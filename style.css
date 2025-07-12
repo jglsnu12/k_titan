@@ -314,6 +314,7 @@ ul {
     flex-grow: 1;
     overflow-y: auto;
     min-height: 150px;
+    color: var(--text-color); /* 모든 소제목을 기본 텍스트 색상으로 */
 }
 .upcoming-events h4, .past-events h4 {
     font-size: 1rem;
@@ -321,10 +322,12 @@ ul {
     padding-bottom: 8px;
     margin-bottom: 10px;
     border-bottom: 2px solid;
+    color: var(--text-color); /* 모든 소제목을 기본 텍스트 색상으로 */
 }
 .upcoming-events h4 {
     color: var(--primary-color);
     border-bottom-color: var(--primary-color);
+    color: var(--text-color); /* 모든 소제목을 기본 텍스트 색상으로 */
 }
 .past-events h4 {
     color: var(--text-light-color);
