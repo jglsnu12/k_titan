@@ -595,3 +595,15 @@ ul {
     font-size: 1.5rem; /* 캘린더 아이콘과 동일한 크기 */
 }
 
+/* 뉴스 카테고리 태그 스타일 */
+.news-category {
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-right: 8px;
+    font-size: 0.9rem;
+}
+.news-article h2 {
+    display: inline; /* 카테고리와 제목이 같은 줄에 표시되도록 함 */
+    font-size: 1.1rem;
+}
+
