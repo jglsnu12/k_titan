@@ -52,6 +52,16 @@ document.addEventListener('DOMContentLoaded', () => {
             // Call data loading functions when respective tabs are active
             if (targetContentId === 'suggestions-content') {
                 loadPosts();
+                // ✨ 제안사항 탭에서는 챗봇 버튼을 숨김
+                if (chatToggleButton) {
+                    chatToggleButton.classList.remove('active-tab-button');
+                    chatToggleButton.style.display = 'none';
+                }
+                // 혹시 챗봇 팝업이 열려있다면 닫습니다.
+                if (aiChatPopup && aiChatPopup.classList.contains('active')) {
+                    aiChatPopup.classList.remove('active');
+                }
+
             } else if (targetContentId === 'dashboard-content') {
                 fetchAnalysisReport();
                 fetchKoreanNews();
