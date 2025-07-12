@@ -49,7 +49,7 @@ ul {
 
 /* AI 챗봇 토글 버튼 - 디자인 개선 및 중요 스타일 강조 */
 .chat-toggle-button {
-    display: none !important; /* <--- 이 줄을 추가하여 기본적으로 버튼을 숨깁니다. */
+    display: none; /* <--- 이 줄을 추가하여 기본적으로 버튼을 숨깁니다. */
     position: fixed; /* 화면에 고정 */
     bottom: 30px;    /* 하단에서 30px */
     right: 30px;     /* 우측에서 30px */
@@ -86,14 +86,14 @@ ul {
     border: 1px solid var(--border-color, rgba(224, 224, 224, 0.8)); /* 테두리도 살짝 투명하게 */
     border-radius: var(--border-radius, 12px); /* 더 둥근 모서리 */
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25); /* 더 부드럽고 큰 그림자 */
-    z-index: 9998 !important; /* 버튼보다는 낮지만 다른 요소보다 높게 */
+    z-index: 9998; /* 버튼보다는 낮지만 다른 요소보다 높게 */
     display: flex;
     flex-direction: column;
     overflow: hidden; /* 내용이 넘치면 숨김 */
 
     /* 초기에는 숨김 */
-    opacity: 0 !important;       /* <--- !important 추가 */
-    visibility: hidden !important; /* <--- !important 추가 */
+    opacity: 0;       /* <--- !important 추가 */
+    visibility: hidden; /* <--- !important 추가 */
     transform: translateY(20px) scale(0.95);
     transition: opacity 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), 
                 visibility 0.3s step-end, 
@@ -102,8 +102,8 @@ ul {
 
 /* 활성화 시 애니메이션은 그대로 */
 .ai-chat-popup.active {
-    opacity: 1 !important;       /* <--- !important 추가 */
-    visibility: visible !important; /* <--- !important 추가 */
+    opacity: 1;       /* <--- !important 추가 */
+    visibility: visible; /* <--- !important 추가 */
     transform: translateY(0) scale(1);
     transition: opacity 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), 
                 visibility 0.3s step-start, 
