@@ -498,13 +498,13 @@ ul {
 }
 /* 국내 뉴스 목록 (첫 번째) 높이 조정 */
 .dashboard-news .news-column:first-of-type .news-list {
-    height: 300px; /* 기존 300px에서 약 1.6배 증가 */
+    height: 500px; /* 기존 300px에서 약 1.6배 증가 */
     overflow-y: auto;
     padding-right: 10px;
 }
 /* 해외 뉴스 목록 (두 번째) 높이 조정 */
 .dashboard-news .news-column:last-of-type .news-list {
-    height: 300px; /* 국내 뉴스 영역이 늘어난 만큼 높이를 줄여 균형을 맞춤 */
+    height: 500px; /* 국내 뉴스 영역이 늘어난 만큼 높이를 줄여 균형을 맞춤 */
     overflow-y: auto;
     padding-right: 10px;
 }
