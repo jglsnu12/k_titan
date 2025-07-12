@@ -427,3 +427,93 @@ ul {
         padding: 20px;
     }
 }
+
+/* --- 11. 대시보드 3단 그리드 레이아웃 (새로 추가) --- */
+
+/* 그리드 컨테이너 설정 */
+#dashboard-content.tab-content.active {
+    display: grid;
+    /* 좌측은 남는 공간 모두, 우측은 400px 고정 */
+    grid-template-columns: 1fr 400px; 
+    /* 상단 행은 자동 높이, 하단 행은 남는 공간 모두 */
+    grid-template-rows: auto 1fr; 
+    gap: 30px; /* 각 섹션 사이의 간격 */
+    /* content-area의 padding이 있으므로 여기서는 제거 */
+    padding: 0; 
+    /* content-area 높이를 꽉 채우도록 설정 */
+    height: calc(100% - 75px); 
+}
+
+/* 각 섹션을 그리드의 지정된 위치에 배치 */
+.dashboard-analysis-report {
+    grid-column: 1 / 2; /* 첫 번째 열 */
+    grid-row: 1 / 3;    /* 첫 번째 행에서 시작해서 두 번째 행까지 차지 */
+    display: flex;
+    flex-direction: column;
+}
+
+.dashboard-calendar {
+    grid-column: 2 / 3; /* 두 번째 열 */
+    grid-row: 1 / 2;    /* 첫 번째 행 */
+    display: flex;
+    flex-direction: column;
+}
+
+.dashboard-news {
+    grid-column: 2 / 3; /* 두 번째 열 */
+    grid-row: 2 / 3;    /* 두 번째 행 */
+    display: flex;
+    flex-direction: column;
+}
+
+/* 그리드 아이템의 기본 여백 제거 */
+.dashboard-analysis-report,
+.dashboard-calendar,
+.dashboard-news {
+    margin-bottom: 0;
+}
+
+/* 보고서, 캘린더, 뉴스 박스가 할당된 공간을 꽉 채우도록 설정 */
+.report-box,
+.calendar-body,
+.dashboard-news .news-grid {
+    flex-grow: 1; /* 부모 요소(flex)의 남은 공간을 모두 차지 */
+    overflow-y: auto; /* 내용이 넘치면 세로 스크롤바 생성 */
+}
+
+/* 뉴스 섹션 내부 스타일 조정 */
+.dashboard-news .news-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+.dashboard-news h2, .dashboard-calendar h2 {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.dashboard-news .news-column h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+.dashboard-news .news-list {
+    height: 300px; /* 뉴스 목록의 기본 높이, 넘치면 스크롤 */
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+/* 캘린더 내부 아이템 스타일 (예시) */
+.calendar-body {
+    font-size: 0.9rem;
+}
+/* 아이콘 폰트 (예시, 실제 아이콘 라이브러리 필요) */
+.icon-calendar::before {
+    content: '📅'; /* 간단한 이모지 아이콘 */
+    font-size: 1.5rem;
+}
+
+/* 폰트 크기 미세 조정 */
+.news-article h2 { font-size: 1.1rem; }
+.news-article p { font-size: 0.88rem; }
