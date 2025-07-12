@@ -206,11 +206,7 @@ function renderCalendar() {
 
 // --- 게시판 기능 관련 유틸리티 함수들 (Firebase db를 사용하므로 DOMContentLoaded 밖에서 정의) ---
 function formatPostContent(content) {
-    return content
-        .trim()
-        .replace(/\n\s*\n/g, '\n')
-        .replace(/(\r\n|\r|\n){2,}/g, '\n')
-        .replace(/\n/g, '<br>');
+    return content.trim().replace(/\n\s*\n/g, '\n').replace(/(\r\n|\r|\n){2,}/g, '\n').replace(/\n/g, '<br>');
 }
 function openEditModal(postId, postData) {
     document.getElementById('edit-post-id').value = postId;
@@ -219,16 +215,11 @@ function openEditModal(postId, postData) {
 }
 async function deletePost(postId) {
     if (confirm("정말로 이 게시글을 삭제하시겠습니까?")) {
-        try {
-            await deleteDoc(doc(db, 'suggestions', postId));
-            alert("게시글이 삭제되었습니다.");
-            loadPosts(); // loadPosts 함수는 아래에서 정의됩니다.
-        } catch (error) {
-            console.error("Error deleting document: ", error);
-            alert("삭제 중 오류가 발생했습니다.");
-        }
+        try { await deleteDoc(doc(db, 'suggestions', postId)); alert("게시글이 삭제되었습니다."); loadPosts(); }
+        catch (error) { console.error("Error deleting document: ", error); alert("삭제 중 오류가 발생했습니다."); }
     }
 }
+
 
 // --- loadPosts 함수 (게시판 DOM 요소 접근 및 Firebase 사용) ---
 async function loadPosts() {
@@ -306,56 +297,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 챗봇 버튼 및 팝업의 초기 상태 설정 ---
     // 페이지 로드 시, 챗봇 버튼은 숨기고, 팝업은 닫힌 상태로 시작합니다.
-    if (chatToggleButton) {
-        chatToggleButton.classList.remove('active-tab-button'); // CSS의 display: none이 적용됨
+    function hideChatbotElements() {
+        if (chatToggleButton) {
+            chatToggleButton.classList.remove('active-tab-button');
+            chatToggleButton.style.display = 'none'; // 명시적으로 display: none 적용
+        }
+        if (aiChatPopup) {
+            aiChatPopup.classList.remove('active');
+            aiChatPopup.style.display = 'none'; // 메시지 박스도 명시적으로 display: none 적용
+        }
     }
-    if (aiChatPopup) {
-        aiChatPopup.classList.remove('active'); // CSS의 opacity: 0, visibility: hidden이 적용됨
-    }
-
+    hideChatbotElements(); // 초기 로드 시 챗봇 요소 숨기기
 
     // --- 탭 클릭 이벤트 리스너 ---
     tabs.forEach(tab => {
         tab.addEventListener('click', () => {
-            // 모든 탭 버튼과 콘텐츠 비활성화
             tabs.forEach(t => t.classList.remove('active'));
             contents.forEach(c => c.classList.remove('active'));
 
-            // 클릭된 탭 활성화
             tab.classList.add('active');
             const targetContentId = tab.dataset.tab + '-content'; // 예: 'dashboard-content'
             document.getElementById(targetContentId).classList.add('active');
             
             // 데이터 로딩 함수 호출 및 챗봇 버튼 표시/숨김
-            if (targetContentId === 'suggestions-content') {
-                loadPosts(); // 게시판 로드
-                // 제안사항 탭에서는 챗봇 버튼을 숨김
-                if (chatToggleButton) {
-                    chatToggleButton.classList.remove('active-tab-button');
-                }
-                // 챗봇 팝업이 열려있다면 닫음
-                if (aiChatPopup && aiChatPopup.classList.contains('active')) {
-                    aiChatPopup.classList.remove('active');
-                }
-
-            } else if (targetContentId === 'dashboard-content') {
+            if (targetContentId === 'dashboard-content') { // 국제정세 대시보드 탭
                 fetchAnalysisReport();
                 fetchKoreanNews();
                 fetchEnglishNews();
                 renderCalendar();
-                // '국제정세 대시보드' 탭 활성화 시 챗봇 버튼 표시
+                // 챗봇 버튼 및 팝업 표시
                 if (chatToggleButton) {
                     chatToggleButton.classList.add('active-tab-button');
+                    chatToggleButton.style.display = 'flex'; // 명시적으로 display: flex 적용
                 }
-            } else { // '홈' 탭 등 다른 탭
-                // 다른 탭에서는 챗봇 버튼을 숨김
-                if (chatToggleButton) {
-                    chatToggleButton.classList.remove('active-tab-button');
+            } else { // 'home' 탭, 'suggestions' 탭 등 그 외 모든 탭
+                if (targetContentId === 'suggestions-content') {
+                    loadPosts(); // 게시판 로드
                 }
-                // 챗봇 팝업이 열려있다면 닫음
-                if (aiChatPopup && aiChatPopup.classList.contains('active')) {
-                    aiChatPopup.classList.remove('active');
-                }
+                // 챗봇 버튼 및 팝업 숨김 (강제)
+                hideChatbotElements(); // 재사용 가능한 함수 호출
             }
         });
     });
@@ -365,10 +345,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const initialActiveTabButton = document.querySelector('.tab-button.active');
     if (initialActiveTabButton) {
         const initialTargetContentId = initialActiveTabButton.dataset.tab + '-content';
-        if (initialTargetContentId !== 'dashboard-content' && chatToggleButton) {
-            chatToggleButton.classList.remove('active-tab-button');
-        } else if (initialTargetContentId === 'dashboard-content' && chatToggleButton) {
-            chatToggleButton.classList.add('active-tab-button');
+        if (initialTargetContentId === 'dashboard-content') {
+             if (chatToggleButton) {
+                chatToggleButton.classList.add('active-tab-button');
+                chatToggleButton.style.display = 'flex'; // 명시적으로 display: flex 적용
+            }
+        } else {
+            hideChatbotElements(); // 초기 탭이 대시보드가 아니면 숨김
         }
     }
 
@@ -378,19 +361,31 @@ document.addEventListener('DOMContentLoaded', () => {
     // =================================================================
 
     // 챗봇 열고 닫기 토글
-    if (chatToggleButton) { // 요소가 존재할 때만 이벤트 리스너 등록
+    if (chatToggleButton) {
         chatToggleButton.addEventListener('click', () => {
+            // 팝업이 숨김 상태일 때만 display 속성 변경 (보이게 할 때)
+            if (!aiChatPopup.classList.contains('active')) {
+                aiChatPopup.style.display = 'flex';
+            }
             aiChatPopup.classList.toggle('active');
             if (aiChatPopup.classList.contains('active')) {
-                chatMessages.scrollTop = chatMessages.scrollHeight; // 열릴 때 스크롤 하단으로
-                userAiInput.focus(); // 입력 필드에 포커스
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                userAiInput.focus();
+            } else {
+                // 팝업이 닫힐 때 display 속성 변경 (완전히 숨길 때)
+                setTimeout(() => {
+                    aiChatPopup.style.display = 'none';
+                }, 300); // CSS transition 시간(0.3s)과 맞춤
             }
         });
     }
 
-    if (chatCloseButton) { // 요소가 존재할 때만 이벤트 리스너 등록
+    if (chatCloseButton) {
         chatCloseButton.addEventListener('click', () => {
             aiChatPopup.classList.remove('active');
+            setTimeout(() => {
+                aiChatPopup.style.display = 'none';
+            }, 300); // CSS transition 시간(0.3s)과 맞춤
         });
     }
 
