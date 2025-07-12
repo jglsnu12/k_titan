@@ -1,5 +1,5 @@
 /* =================================================================
-   K-TITAN Dashboard - Refactored Stylesheet
+   K-TITAN Dashboard - Final Refactored Stylesheet
    ================================================================= */
 
 /* 1. 변수 및 전역 스타일
@@ -30,13 +30,13 @@ body {
     font-family: 'Inter', sans-serif;
     background-color: var(--bg-color);
     color: var(--text-color);
-    margin: 0;
     height: 100vh;
     display: flex;
-    flex-direction: column; /* 정렬 방향을 세로로 변경 */
+    flex-direction: column;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
+
 a {
     text-decoration: none;
     color: inherit;
@@ -46,15 +46,14 @@ ul {
     list-style: none;
 }
 
-/* 2. 기본 레이아웃
+/* 2. 기본 레이아웃 및 푸터
 ----------------------------------------------------------------- */
 .main-container {
     display: flex;
     width: 100%;
-    flex-grow: 1; /* 푸터를 제외한 모든 남는 공간을 차지하도록 설정 */
+    flex-grow: 1;
     min-height: 0; /* flex 자식 요소의 높이 오류 방지 */
 }
-
 
 .side-nav {
     width: 240px;
@@ -65,15 +64,6 @@ ul {
     display: flex;
     flex-direction: column;
 }
-.side-nav h1 {
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: var(--primary-color);
-    text-align: center;
-    margin-top: 8px;
-    margin-bottom: 40px;
-}
-
 
 .content-area {
     flex-grow: 1;
@@ -81,21 +71,37 @@ ul {
     padding: 40px;
 }
 
-.tab-content {
-    display: none;
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+.site-footer {
+    background-color: #343a40;
+    color: #adb5bd;
+    padding: 20px 40px;
+    text-align: center;
+    font-size: 0.85rem;
+    flex-shrink: 0;
 }
-.tab-content.active {
-    display: block;
+.footer-content p {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0 8px;
+    margin: 0;
+}
+.footer-content .separator {
+    color: #6c757d;
+    margin: 0 15px;
 }
 
-/* 3. 공통 컴포넌트: 헤더, 섹션, 카드
+/* 3. 공통 컴포넌트 (카드, 버튼, 폼)
 ----------------------------------------------------------------- */
 .content-header {
     display: flex;
     align-items: center;
     margin-bottom: 32px;
 }
-
 .content-header h1 {
     font-size: 2.2rem;
     font-weight: 600;
@@ -104,10 +110,8 @@ ul {
 .content-section {
     margin-bottom: 32px;
 }
-
 .content-section h2 {
     font-size: 1.5rem;
-    color: var(--text-color);
     font-weight: 600;
     margin-bottom: 20px;
 }
@@ -123,16 +127,7 @@ ul {
 .card:hover {
     box-shadow: 0 4px 12px var(--shadow-color);
 }
-.card ul {
-    padding-left: 20px;
-}
-.card li {
-    margin-bottom: 12px;
-    line-height: 1.6;
-}
 
-/* 4. 공통 컴포넌트: 버튼 및 폼
------------------------------------------------------------------ */
 .tab-button, .submit-button, .cancel-button, .comment-submit, .post-manage-btn {
     border: none;
     border-radius: 6px;
@@ -140,7 +135,6 @@ ul {
     transition: all 0.2s ease;
     font-family: 'Inter', sans-serif;
 }
-
 .tab-button {
     display: block;
     width: 100%;
@@ -161,7 +155,6 @@ ul {
     color: var(--primary-color);
     font-weight: 600;
 }
-
 .submit-button {
     padding: 12px 25px;
     background-color: var(--primary-color);
@@ -172,7 +165,6 @@ ul {
 .submit-button:hover {
     background-color: var(--primary-hover-color);
 }
-
 .form-group {
     margin-bottom: 20px;
 }
@@ -188,8 +180,6 @@ ul {
     border: 1px solid var(--border-color);
     border-radius: 5px;
     font-size: 1rem;
-    font-family: 'Inter', sans-serif;
-    transition: border-color 0.2s, box-shadow 0.2s;
 }
 .form-group input:focus,
 .form-group textarea:focus {
@@ -198,94 +188,180 @@ ul {
     box-shadow: 0 0 0 3px rgba(0, 82, 204, 0.2);
 }
 
-/* 5. 대시보드 페이지 스타일
+/* 4. 홈 탭 (#home-content) 스타일
 ----------------------------------------------------------------- */
-.news-grid {
+.home-hero {
+    position: relative;
+    padding: 80px 40px;
+    margin-bottom: 40px;
+    border-radius: 12px;
+    color: #fff;
+    text-align: center;
+    overflow: hidden;
+    /* ✨ 로컬 이미지 파일을 배경으로 사용합니다. */
+    background-image: linear-gradient(rgba(9, 30, 66, 0.7), rgba(9, 30, 66, 0.7)), url('hero-background.jpg');
+    background-size: cover;
+    background-position: center;
+}
+.hero-text h1 {
+    font-size: 2.8rem;
+    font-weight: 700;
+    margin: 0 0 10px 0;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+.hero-text p {
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.85);
+    margin: 0;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+.home-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 32px;
+    gap: 30px;
 }
-.news-column {
-    max-height: 400px;
+#home-content .card ul {
+    padding-left: 20px;
+}
+#home-content .card li {
+    line-height: 1.6;
+    margin-bottom: 12px;
+}
+#home-content .home-grid .card p {
+    padding-left: 20px;
+}
+
+/* 5. 대시보드 탭 (#dashboard-content) 스타일
+----------------------------------------------------------------- */
+#dashboard-content.tab-content.active {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    grid-template-rows: auto 1fr;
+    gap: 30px;
+    padding: 0;
+    height: calc(100% - 75px);
+}
+.dashboard-analysis-report { grid-column: 1 / 2; grid-row: 1 / 3; }
+.dashboard-calendar { grid-column: 2 / 3; grid-row: 1 / 2; }
+.dashboard-news { grid-column: 2 / 3; grid-row: 2 / 3; }
+
+.dashboard-analysis-report,
+.dashboard-calendar,
+.dashboard-news {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0;
+}
+.report-box, .calendar-body {
+    flex-grow: 1;
     overflow-y: auto;
+}
+.dashboard-news .news-grid {
+    flex-grow: 1;
+    overflow-y: auto; /* ✨ 이 규칙 하나로 뉴스 전체 스크롤을 관리 */
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
     padding-right: 10px;
+}
+.dashboard-news .news-column h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 10px;
 }
 .news-article {
     background-color: var(--card-bg-color);
     border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 20px;
-    margin-bottom: 20px;
 }
 .news-article:hover {
     transform: translateY(-3px);
     box-shadow: 0 4px 12px var(--shadow-color);
 }
 .news-article h2 {
-    font-size: 1.15rem;
-    margin-bottom: 8px;
+    font-size: 1.1rem;
+    display: inline;
 }
 .news-article p {
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     color: var(--text-light-color);
     line-height: 1.6;
+    margin-top: 8px;
     margin-bottom: 16px;
 }
 .article-meta {
     font-size: 0.85rem;
     color: #8993a4;
 }
-
-/* 보고서 */
-.report-box {
-    background-color: #fafbfc;
-    border-radius: 8px;
-    padding: 20px 25px;
-    line-height: 1.6;
-    font-size: 0.95rem;
-}
-.report-box h2 {
-    font-size: 1.4rem;
-    margin-top: 28px;
-    margin-bottom: 16px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid var(--border-color);
-}
-.report-box p {
-    margin-bottom: 16px;
-}
-.report-box ul {
-    margin-bottom: 16px;
-    padding-left: 20px;
-}
-.report-box li {
-    margin-bottom: 8px;
-}
-.report-box p:last-child, .report-box ul:last-child {
-    margin-bottom: 0;
-}
-
-/* 캘린더 */
-.calendar-card {
-    margin-bottom: 32px;
+.news-category {
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-right: 8px;
+    font-size: 0.9rem;
 }
 .calendar-body {
-    max-height: 440px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    font-size: 0.9rem;
+}
+.upcoming-events, .past-events {
+    background-color: #fdfdff;
+    border-radius: 8px;
+    padding: 15px;
+    border: 1px solid #eef2f7;
+    flex-grow: 1;
     overflow-y: auto;
-    padding-right: 10px;
+    min-height: 150px;
+}
+.upcoming-events h4, .past-events h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+    border-bottom: 2px solid;
+}
+.upcoming-events h4 {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+}
+.past-events h4 {
+    color: var(--text-light-color);
+    border-bottom-color: var(--text-light-color);
 }
 .calendar-item {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     padding: 12px 4px;
     border-bottom: 1px solid var(--border-color);
-    font-size: 0.9rem;
 }
-.calendar-item:last-child {
-    border-bottom: none;
+.calendar-item:last-child { border-bottom: none; }
+.upcoming-events .event-item .date { color: var(--primary-color); }
+.past-events .event-item { color: var(--text-light-color); opacity: 0.8; }
+.past-events .event-item .date { color: var(--text-light-color); }
+.calendar-item .flags {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.flag-icon {
+    font-size: 14px;
+    border-radius: 2px;
+    box-shadow: 0 0 1px rgba(0,0,0,0.2);
+}
+.icon-calendar::before {
+    content: '📅';
+    font-size: 1.5rem;
+}
+.icon-news::before {
+    content: '📰';
+    font-size: 1.5rem;
 }
 
-/* 6. 제안사항 페이지 스타일 (게시판)
+/* 6. 제안사항 탭 (#suggestions-content) 스타일
 ----------------------------------------------------------------- */
 #show-write-modal {
     margin-left: auto;
@@ -311,12 +387,12 @@ ul {
     border-radius: 4px;
 }
 .post-status.resolved {
-    color: var(--status-resolved-text);
     background-color: var(--status-resolved-bg);
+    color: var(--status-resolved-text);
 }
 .post-status.unresolved {
-    color: var(--status-unresolved-text);
     background-color: var(--status-unresolved-bg);
+    color: var(--status-unresolved-text);
 }
 .post-content {
     line-height: 1.6;
@@ -413,10 +489,23 @@ ul {
 /* 8. 반응형 미디어 쿼리
 ----------------------------------------------------------------- */
 @media (max-width: 1200px) {
-    .news-grid {
+    #dashboard-content.tab-content.active {
+        grid-template-columns: 1fr;
+    }
+    .dashboard-analysis-report,
+    .dashboard-calendar,
+    .dashboard-news {
+        grid-column: 1 / -1;
+        grid-row: auto;
+    }
+}
+
+@media (max-width: 992px) {
+    .home-grid {
         grid-template-columns: 1fr;
     }
 }
+
 @media (max-width: 768px) {
     .main-container {
         flex-direction: column;
@@ -429,12 +518,7 @@ ul {
         padding: 10px 20px;
     }
     .side-nav h1 {
-       font-size: 1.6rem;
-       font-weight: 700;
-       color: var(--primary-color);
-       text-align: center;
-       margin-top: 8px;
-       margin-bottom: 300px; /* 아래쪽 여백을 40px에서 60px로 늘립니다. */
+        margin: 0 auto 0 0;
     }
     .tab-button {
         width: auto;
@@ -442,322 +526,5 @@ ul {
     }
     .content-area {
         padding: 20px;
-    }
-}
-
-/* --- 11. 대시보드 3단 그리드 레이아웃 (새로 추가) --- */
-
-/* 그리드 컨테이너 설정 */
-#dashboard-content.tab-content.active {
-    display: grid;
-    /* 좌측은 남는 공간 모두, 우측은 600px 고정 */
-    grid-template-columns: 1fr 600px; 
-    /* 상단 행은 자동 높이, 하단 행은 남는 공간 모두 */
-    grid-template-rows: auto 1fr; 
-    gap: 30px; /* 각 섹션 사이의 간격 */
-    padding: 0; 
-    height: calc(100% - 75px); 
-}
-
-/* 각 섹션을 그리드의 지정된 위치에 배치 */
-.dashboard-analysis-report {
-    grid-column: 1 / 2; /* 첫 번째 열 */
-    grid-row: 1 / 3;    /* 첫 번째 행에서 시작해서 두 번째 행까지 차지 */
-    display: flex;
-    flex-direction: column;
-}
-
-.dashboard-calendar {
-    grid-column: 2 / 3; /* 두 번째 열 */
-    grid-row: 1 / 2;    /* 첫 번째 행 */
-    display: flex;
-    flex-direction: column;
-}
-
-.dashboard-news {
-    grid-column: 2 / 3; /* 두 번째 열 */
-    grid-row: 2 / 3;    /* 두 번째 행 */
-    display: flex;
-    flex-direction: column;
-}
-
-/* 그리드 아이템의 기본 여백 제거 */
-.dashboard-analysis-report,
-.dashboard-calendar,
-.dashboard-news {
-    margin-bottom: 0;
-}
-
-/* 보고서, 캘린더, 뉴스 박스가 할당된 공간을 꽉 채우도록 설정 */
-.report-box,
-.calendar-body{
-    flex-grow: 1; /* 부모 요소(flex)의 남은 공간을 모두 차지 */
-    overflow-y: auto; /* 내용이 넘치면 세로 스크롤바 생성 */
-}
-
-.dashboard-news .news-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 30px;          /* 국내/해외 뉴스 제목 사이 간격 */
-    flex-grow: 1;       /* 부모 컨테이너의 높이를 꽉 채움 */
-    overflow-y: auto;   /* 이 컨테이너에만 스크롤바를 적용 */
-    padding-right: 10px;/* 스크롤바 공간을 위한 여백 */
-}
-
-.dashboard-news .news-column h3 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-bottom: 10px;
-}
-
-/* 각 뉴스 목록은 이제 높이를 강제하지 않고 내용만큼 길어집니다. */
-.dashboard-news .news-list {
-   /* height와 overflow 속성을 제거하여 내부 스크롤을 없앰 */
-}
-
-.dashboard-news h2, .dashboard-calendar h2 {
-    margin-bottom: 15px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-/* 캘린더 내부 아이템 스타일 (예시) */
-.calendar-body {
-    font-size: 0.9rem;
-}
-/* 아이콘 폰트 (예시, 실제 아이콘 라이브러리 필요) */
-.icon-calendar::before {
-    content: '📅'; /* 간단한 이모지 아이콘 */
-    font-size: 1.5rem;
-}
-
-/* 폰트 크기 미세 조정 */
-.news-article h2 { font-size: 1.1rem; }
-.news-article p { font-size: 0.88rem; }
-
-/* --- 12. 캘린더 디자인 개선 (일정 구분 및 국기 아이콘) --- */
-
-/* 캘린더 내용 영역을 flexbox로 설정하여 두 목록을 배치 */
-.calendar-body {
-    display: flex;
-    flex-direction: column;
-    gap: 20px; /* '다가오는 일정'과 '지난 일정' 사이의 간격 */
-}
-
-/* 각 일정 목록 박스 스타일 */
-.upcoming-events, .past-events {
-    background-color: #fdfdff;
-    border-radius: 8px;
-    padding: 15px;
-    border: 1px solid #eef2f7;
-    flex-grow: 1; /* 공간을 균등하게 차지 */
-    overflow-y: auto; /* 각 목록이 길어지면 개별 스크롤 */
-    min-height: 150px; /* 최소 높이 지정 */
-}
-
-/* 각 목록의 소제목(h4) 스타일 */
-.upcoming-events h4, .past-events h4 {
-    font-size: 1rem;
-    font-weight: 600;
-    padding-bottom: 8px;
-    margin-bottom: 10px;
-    border-bottom: 2px solid;
-}
-
-/* '다가오는 일정'은 파란색 계열로 강조 */
-.upcoming-events h4 {
-    color: var(--primary-color);
-    border-bottom-color: var(--primary-color);
-}
-.upcoming-events .event-item .date {
-    color: var(--primary-color);
-}
-
-/* '지난 일정'은 회색 계열로 처리 */
-.past-events h4 {
-    color: var(--text-light-color);
-    border-bottom-color: var(--text-light-color);
-}
-.past-events .event-item {
-    color: var(--text-light-color);
-    opacity: 0.8; /* 약간 흐리게 처리 */
-}
-.past-events .event-item .date {
-    color: var(--text-light-color);
-}
-
-/* 국기(flags) 영역 스타일 */
-.calendar-item .flags {
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    gap: 4px; /* 국기 사이 간격 */
-}
-
-/* 국기 아이콘 기본 크기 및 스타일 */
-.flag-icon {
-    font-size: 14px; /* 국기 크기 조절 */
-    border-radius: 2px;
-    box-shadow: 0 0 1px rgba(0,0,0,0.2);
-}
-
-/* 뉴스 제목 아이콘 스타일 (추가) */
-.icon-news::before {
-    content: '📰';
-    font-size: 1.5rem; /* 캘린더 아이콘과 동일한 크기 */
-}
-
-/* 뉴스 카테고리 태그 스타일 */
-.news-category {
-    font-weight: 600;
-    color: var(--primary-color);
-    margin-right: 8px;
-    font-size: 0.9rem;
-}
-.news-article h2 {
-    display: inline; /* 카테고리와 제목이 같은 줄에 표시되도록 함 */
-    font-size: 1.1rem;
-}
-
-/* 뉴스 카테고리 태그 스타일 */
-.news-category {
-    font-weight: 600;
-    color: var(--primary-color);
-    margin-right: 8px;
-    font-size: 0.9rem;
-}
-.news-article h2 {
-    display: inline; /* 카테고리와 제목이 같은 줄에 표시되도록 함 */
-    font-size: 1.1rem;
-
-
-/* --- 13. 푸터 스타일 (가로 정렬 최종 수정) --- */
-.site-footer {
-    background-color: #343a40;
-    color: #adb5bd;
-    padding: 20px 40px;
-    text-align: center;
-    font-size: 0.85rem;
-    flex-shrink: 0;
-}
-
-.footer-content p {
-    display: flex; /* p 태그 내부의 span들을 가로로 정렬 */
-    justify-content: center; /* 가운데 정렬 */
-    align-items: center; /* 세로 중앙 정렬 */
-    flex-wrap: wrap; /* 창이 좁아지면 줄바꿈 허용 */
-    gap: 0 15px; /* 각 항목 사이의 좌우 간격 */
-    margin: 0;
-}
-
-/* 구분선 스타일 */
-.footer-content .separator {
-    color: #6c757d;
-    margin: 0 50px; /* 좌우 여백을 15px로 설정 */
-}
-
-/* 저작권 문구는 폰트를 약간 더 작게 */
-.footer-copyright {
-    font-size: 0.8rem;
-    color: #6c757d;
-}
-/* Hero 섹션 스타일 */
-.home-hero {
-    position: relative;
-    padding: 80px 40px;
-    margin-bottom: 40px;
-    border-radius: 12px;
-    background-image: linear-gradient(rgba(9, 30, 66, 0.7), rgba(9, 30, 66, 0.7)), url('http://googleusercontent.com/image_generation_content/0');
-    background-size: cover;
-    background-position: center;
-    color: #fff;
-    text-align: center;
-    overflow: hidden;
-}
-
-.hero-text h1 {
-    font-size: 2.8rem;
-    font-weight: 700;
-    margin: 0 0 10px 0;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-}
-
-.hero-text p {
-    font-size: 1.2rem;
-    color: rgba(255, 255, 255, 0.85);
-    margin: 0;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
-}
-
-/* 홈 탭 2단 그리드 레이아웃 */
-.home-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* 2개의 열을 동일한 너비로 생성 */
-    gap: 30px; /* 열 사이의 간격 */
-}
-
-/* 홈 탭의 카드 안쪽 p 태그 들여쓰기 (기존 코드와 통합) */
-#home-content .card p {
-    padding-left: 0; /* 다른 페이지 p태그와 충돌 방지를 위해 초기화 */
-}
-#home-content .home-grid .card p {
-    padding-left: 20px;
-}
-
-/* 좁은 화면에서는 1열로 변경 */
-@media (max-width: 992px) {
-    .home-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-
-   /* --- 14. 홈 탭 디자인 개편 (Hero & Grid) --- */
-
-/* Hero 섹션 스타일 */
-.home-hero {
-    position: relative;
-    padding: 80px 40px;
-    margin-bottom: 40px;
-    border-radius: 12px;
-    background-image: linear-gradient(rgba(9, 30, 66, 0.7), rgba(9, 30, 66, 0.7)), url('hero-background.jpg');
-    background-size: cover;
-    background-position: center;
-    color: #fff;
-    text-align: center;
-    overflow: hidden;
-}
-
-.hero-text h1 {
-    font-size: 2.8rem;
-    font-weight: 700;
-    margin: 0 0 10px 0;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-}
-
-.hero-text p {
-    font-size: 1.2rem;
-    color: rgba(255, 255, 255, 0.85);
-    margin: 0;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
-}
-
-/* 홈 탭 2단 그리드 레이아웃 */
-.home-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* 2개의 열을 동일한 너비로 생성 */
-    gap: 30px; /* 열 사이의 간격 */
-}
-
-/* 홈 탭의 카드 안쪽 p 태그 들여쓰기 */
-#home-content .home-grid .card p {
-    padding-left: 20px;
-}
-
-/* 홈 탭 반응형: 좁은 화면에서는 1열로 변경 */
-@media (max-width: 992px) {
-    .home-grid {
-        grid-template-columns: 1fr;
     }
 }
