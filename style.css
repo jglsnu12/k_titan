@@ -274,7 +274,7 @@ body {
 .post-content {
     line-height: 1.6;
     margin-bottom: 16px;
-    white-space: pre-wrap;
+    white-space: pre-line;
     display: block;
     padding: 0;
     margin: 0;
