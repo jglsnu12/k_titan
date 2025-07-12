@@ -2,7 +2,7 @@
 // ✨ 1. Firebase 연동 및 설정 (파일 최상단에 추가)
 // =================================================================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+import { getFirestore, collection, getDocs, getDoc, addDoc, doc, updateDoc, deleteDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
 // ⚠️ 본인의 Firebase 설정 키를 아래에 붙여넣으세요.
 const firebaseConfig = {
