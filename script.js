@@ -168,15 +168,19 @@ const showModalBtn = document.getElementById('show-write-modal');
 const closeModalBtn = document.getElementById('close-modal');
 const postForm = document.getElementById('post-form');
 
+// 기존 loadPosts 함수를 찾아서 아래 내용으로 전체 교체해주세요.
 async function loadPosts() {
     if (!postsContainer) return;
     postsContainer.innerHTML = '<p class="loading">게시글을 불러오는 중...</p>';
+    
     const postsQuery = query(collection(db, 'suggestions'), orderBy('timestamp', 'desc'));
     const querySnapshot = await getDocs(postsQuery);
+
     if (querySnapshot.empty) {
         postsContainer.innerHTML = '<p>아직 등록된 제안이 없습니다.</p>';
         return;
     }
+
     let postsHtml = '';
     querySnapshot.forEach(docSnap => {
         const post = docSnap.data();
@@ -184,16 +188,33 @@ async function loadPosts() {
         const date = post.timestamp ? new Date(post.timestamp.seconds * 1000).toLocaleString() : '날짜 정보 없음';
         const statusClass = post.status === 'resolved' ? 'resolved' : 'unresolved';
         const statusText = post.status === 'resolved' ? '답변 완료' : '검토 중';
+        
         let commentHtml = '';
         if (post.comment) {
             commentHtml = `<div class="comment-section"><div class="comment-card"><p class="comment-author"><strong>관리자 답변</strong></p><p>${post.comment}</p></div></div>`;
         } else {
              commentHtml = `<div class="comment-section"><form class="comment-form" data-id="${postId}"><input type="text" class="comment-input" placeholder="관리자 답변을 입력하세요..." required><button type="submit" class="comment-submit">답변 등록</button></form></div>`;
         }
-        postsHtml += `<div class="post-card" id="post-${postId}"><div class="post-header"><span><strong>${post.author}</strong> | ${date}</span><span class="post-status ${statusClass}">${statusText}</span></div><div class="post-content"><p>${post.content}</p></div>${commentHtml}</div>`;
+        
+        // ✨ '관리' 버튼이 포함된 HTML로 변경
+        postsHtml += `
+            <div class="post-card" id="post-${postId}">
+                <div class="post-header">
+                    <span><strong>${post.author}</strong> | ${date}</span>
+                    <span class="post-status ${statusClass}">${statusText}</span>
+                </div>
+                <div class="post-content">
+                    <p>${post.content}</p>
+                </div>
+                <div class="post-actions">
+                    <button class="post-manage-btn" data-id="${postId}" data-author="${post.author}">수정/삭제</button>
+                </div>
+                ${commentHtml}
+            </div>`;
     });
     postsContainer.innerHTML = postsHtml;
 }
+
 
 if(showModalBtn) {
     showModalBtn.addEventListener('click', () => modal.style.display = 'flex');
@@ -229,6 +250,101 @@ if(postsContainer) {
                 await updateDoc(postRef, { comment: commentText, status: 'resolved' });
                 loadPosts();
             } catch (error) { console.error("Error updating document: ", error); alert("답변 등록에 실패했습니다."); }
+        }
+    });
+}
+
+// =================================================================
+// ✨ 5. 게시글 수정/삭제 기능 (파일 하단에 추가)
+// =================================================================
+
+const editModal = document.getElementById('edit-modal');
+const editForm = document.getElementById('edit-form');
+const closeEditModalBtn = document.getElementById('close-edit-modal');
+
+// '수정/삭제' 버튼 클릭 이벤트 처리
+if (postsContainer) {
+    postsContainer.addEventListener('click', async (e) => {
+        if (e.target.classList.contains('post-manage-btn')) {
+            const postId = e.target.dataset.id;
+            const author = e.target.dataset.author;
+
+            const password = prompt(`'${author}'님의 게시글 비밀번호를 입력하세요.`);
+            if (!password) return; // 사용자가 취소한 경우
+
+            try {
+                // Firestore에서 해당 게시물의 비밀번호 확인
+                const postRef = doc(db, 'suggestions', postId);
+                const docSnap = await getDoc(postRef);
+
+                if (docSnap.exists() && docSnap.data().password === password) {
+                    // 비밀번호 일치
+                    const action = prompt("'수정' 또는 '삭제'라고 입력하세요.");
+                    if (action === '수정') {
+                        openEditModal(postId, docSnap.data());
+                    } else if (action === '삭제') {
+                        deletePost(postId);
+                    } else if (action) {
+                        alert("잘못된 입력입니다.");
+                    }
+                } else {
+                    // 비밀번호 불일치 또는 게시물 없음
+                    alert("비밀번호가 일치하지 않습니다.");
+                }
+            } catch (error) {
+                console.error("Error managing post: ", error);
+                alert("처리 중 오류가 발생했습니다.");
+            }
+        }
+    });
+}
+
+// 수정 모달 열기
+function openEditModal(postId, postData) {
+    document.getElementById('edit-post-id').value = postId;
+    document.getElementById('edit-post-content').textContent = postData.content;
+    editModal.style.display = 'flex';
+}
+
+// 게시글 삭제 처리
+async function deletePost(postId) {
+    if (confirm("정말로 이 게시글을 삭제하시겠습니까?")) {
+        try {
+            await deleteDoc(doc(db, 'suggestions', postId));
+            alert("게시글이 삭제되었습니다.");
+            loadPosts();
+        } catch (error) {
+            console.error("Error deleting document: ", error);
+            alert("삭제 중 오류가 발생했습니다.");
+        }
+    }
+}
+
+// 수정 모달창 닫기 버튼
+if(closeEditModalBtn) {
+    closeEditModalBtn.addEventListener('click', () => {
+        editModal.style.display = 'none';
+    });
+}
+
+// 수정 폼 제출 이벤트
+if (editForm) {
+    editForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const postId = document.getElementById('edit-post-id').value;
+        const newContent = document.getElementById('edit-post-content').value;
+
+        try {
+            const postRef = doc(db, 'suggestions', postId);
+            await updateDoc(postRef, {
+                content: newContent
+            });
+            alert("게시글이 수정되었습니다.");
+            editModal.style.display = 'none';
+            loadPosts();
+        } catch (error) {
+            console.error("Error updating document: ", error);
+            alert("수정 중 오류가 발생했습니다.");
         }
     });
 }
