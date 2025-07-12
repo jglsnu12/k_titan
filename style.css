@@ -325,8 +325,8 @@ ul {
     color: var(--text-color); /* 모든 소제목을 기본 텍스트 색상으로 */
 }
 .upcoming-events h4 {
-    color: var(--primary-color);
-    border-bottom-color: var(--primary-color);
+    color: var(--text-color);
+    border-bottom-color: var(--text-color);
     color: var(--text-color); /* 모든 소제목을 기본 텍스트 색상으로 */
 }
 .past-events h4 {
@@ -341,7 +341,7 @@ ul {
     border-bottom: 1px solid var(--border-color);
 }
 .calendar-item:last-child { border-bottom: none; }
-.upcoming-events .event-item .date { color: var(--primary-color); }
+.upcoming-events .event-item .date { color: var(--text-color); }
 .past-events .event-item { color: var(--text-light-color); opacity: 0.8; }
 .past-events .event-item .date { color: var(--text-light-color); }
 .calendar-item .flags {
