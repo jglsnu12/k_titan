@@ -103,40 +103,25 @@ async function fetchAnalysisReport() {
 }
 
 
-// --- 기존 뉴스 API 호출 함수들 (변경 없음) ---
-// 국내 뉴스 가져오기 함수 (연합뉴스 RSS 소스로 변경)
 async function fetchKoreanNews() {
     const newsContainer = document.getElementById('korean-news-container');
     if (!newsContainer) return;
-    newsContainer.innerHTML = '<p class="loading">연합뉴스 기사를 불러오는 중...</p>';
+    newsContainer.innerHTML = '<p class="loading">연합뉴스 [정치] 기사를 테스트 중...</p>';
 
-    // 연합뉴스의 카테고리별 RSS 피드 주소
-    const yonhapRssFeeds = {
-        '정치': 'https://www.yna.co.kr/rss/politics.xml',
-        '국제': 'https://www.yna.co.kr/rss/international.xml',
-        '북한': 'https://www.yna.co.kr/rss/north-korea.xml',
-        '경제': 'https://www.yna.co.kr/rss/economy.xml'
-    };
+    // ✨ 1. 정치 카테고리 RSS 주소 하나만 지정합니다.
+    const politicsRssUrl = 'https://www.yna.co.kr/rss/politics.xml';
 
     try {
-        // 모든 카테고리의 RSS를 동시에 요청
-        const responses = await Promise.all(
-            Object.values(yonhapRssFeeds).map(feedUrl => 
-                fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feedUrl)}`)
-            )
-        );
-
-        for (const response of responses) {
-            if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+        // ✨ 2. fetch 요청을 한 번만 보냅니다.
+        const response = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(politicsRssUrl)}`);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP Error: ${response.status}`);
         }
 
-        const jsonResults = await Promise.all(responses.map(res => res.json()));
-
-        // 각 카테고리별로 상위 3개의 기사만 추출하여 하나의 배열로 합침
-        const allItems = jsonResults.flatMap(result => (result.items || []).slice(0, 3));
-
-        // 합쳐진 모든 기사를 최신순으로 정렬
-        allItems.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+        // ✨ 3. Promise.all 없이 JSON 결과를 바로 받습니다.
+        const result = await response.json();
+        const allItems = result.items || []; // result.items가 바로 기사 배열입니다.
 
         newsContainer.innerHTML = ''; 
         if (allItems.length === 0) {
@@ -147,13 +132,11 @@ async function fetchKoreanNews() {
         allItems.forEach(item => {
             const articleElement = document.createElement('div');
             articleElement.className = 'news-article';
-
-            // 연합뉴스 RSS는 content 대신 description에 요약 내용이 들어있습니다.
+            
             const description = item.description.replace(/<[^>]*>?/gm, '').substring(0, 150) + '...';
-
-            // 카테고리 정보를 가져오기 위해 원래 URL을 찾습니다.
-            const originalFeedUrl = item.feed.url;
-            const category = Object.keys(yonhapRssFeeds).find(key => yonhapRssFeeds[key] === originalFeedUrl) || '뉴스';
+            
+            // ✨ 4. 카테고리를 '정치'로 고정합니다.
+            const category = '정치';
 
             articleElement.innerHTML = `
                 <a href="${item.link}" target="_blank" rel="noopener noreferrer">
@@ -170,6 +153,7 @@ async function fetchKoreanNews() {
         newsContainer.innerHTML = `<p class="error-message">국내 뉴스를 불러오는 데 실패했습니다. (에러: ${error.message})</p>`;
     }
 }
+
 async function fetchEnglishNews() {
     const newsContainer = document.getElementById('english-news-container');
     if (!newsContainer) return; // Add check if element exists
