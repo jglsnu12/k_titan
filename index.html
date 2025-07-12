@@ -236,6 +236,23 @@
         </div>
     </footer>
 
+    <button id="chat-toggle-button" class="chat-toggle-button">
+        💬 AI에게 질문하기
+    </button>
+
+    <div id="ai-chat-popup" class="ai-chat-popup">
+        <div class="chat-header">
+            <h3>국제정세 AI 질의응답</h3>
+            <button id="chat-close-button" class="chat-close-button">✖</button>
+        </div>
+        <div id="chat-messages" class="messages-list">
+            <div class="ai-message">AI: 무엇을 도와드릴까요? 국제정세에 대해 궁금한 점을 질문해주세요.</div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="user-ai-input" placeholder="여기에 질문을 입력하세요..." onkeypress="if(event.keyCode==13) sendMessageAI()">
+            <button onclick="sendMessageAI()">전송</button>
+        </div>
+    </div>
 
     <script src="script.js" type="module"></script>
 </body>
