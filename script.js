@@ -25,6 +25,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const tabs = document.querySelectorAll('.tab-button');
     const contents = document.querySelectorAll('.tab-content');
 
+
+    const chatToggleButton = document.getElementById('chat-toggle-button');
+    const aiChatPopup = document.getElementById('ai-chat-popup');
+    const chatCloseButton = document.getElementById('chat-close-button');
+    const userAiInput = document.getElementById('user-ai-input');
+    const chatMessages = document.getElementById('chat-messages');
+
     tabs.forEach(tab => {
         tab.addEventListener('click', () => {
             tabs.forEach(t => t.classList.remove('active'));
@@ -42,9 +49,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 fetchKoreanNews();
                 fetchEnglishNews();
                 renderCalendar(); // ✨ NEW: Call renderCalendar for dashboard tab
+
+                // ✨ '국제정세 대시보드' 탭 활성화 시 챗봇 버튼 표시
+                // HTML의 data-tab="dashboard"에 해당하는 콘텐츠 ID가 'dashboard-content'입니다.
+                chatToggleButton.classList.add('active-tab-button');
+            } else {
+                // ✨ 다른 탭 활성화 시 챗봇 버튼 숨김
+                chatToggleButton.classList.remove('active-tab-button');
+                // 만약 챗봇 팝업이 열려있었다면 닫습니다.
+                if (aiChatPopup.classList.contains('active')) {
+                    aiChatPopup.classList.remove('active');
+                }
             }
         });
     });
+
 
     // Initial load for the active tab (assuming 'home' is active by default)
     // If 'dashboard' is active by default, you'd call its functions here too.
@@ -464,11 +483,6 @@ if (editForm) {
     });
 }
 
-const chatToggleButton = document.getElementById('chat-toggle-button');
-const aiChatPopup = document.getElementById('ai-chat-popup');
-const chatCloseButton = document.getElementById('chat-close-button');
-const userAiInput = document.getElementById('user-ai-input');
-const chatMessages = document.getElementById('chat-messages');
 
 // 챗봇 열고 닫기 토글
 chatToggleButton.addEventListener('click', () => {
