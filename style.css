@@ -713,3 +713,52 @@ ul {
 }
 
 
+   /* --- 14. 홈 탭 디자인 개편 (Hero & Grid) --- */
+
+/* Hero 섹션 스타일 */
+.home-hero {
+    position: relative;
+    padding: 80px 40px;
+    margin-bottom: 40px;
+    border-radius: 12px;
+    background-image: linear-gradient(rgba(9, 30, 66, 0.7), rgba(9, 30, 66, 0.7)), url('https://storage.googleapis.com/gemini-generative-ai-public-supported-files/image_generation_content/0');
+    background-size: cover;
+    background-position: center;
+    color: #fff;
+    text-align: center;
+    overflow: hidden;
+}
+
+.hero-text h1 {
+    font-size: 2.8rem;
+    font-weight: 700;
+    margin: 0 0 10px 0;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.hero-text p {
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.85);
+    margin: 0;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+
+/* 홈 탭 2단 그리드 레이아웃 */
+.home-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 2개의 열을 동일한 너비로 생성 */
+    gap: 30px; /* 열 사이의 간격 */
+}
+
+/* 홈 탭의 카드 안쪽 p 태그 들여쓰기 */
+#home-content .home-grid .card p {
+    padding-left: 20px;
+}
+
+/* 홈 탭 반응형: 좁은 화면에서는 1열로 변경 */
+@media (max-width: 992px) {
+    .home-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
