@@ -5,40 +5,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
     tabs.forEach(tab => {
         tab.addEventListener('click', () => {
-            // 모든 탭과 콘텐츠에서 'active' 클래스 제거
             tabs.forEach(t => t.classList.remove('active'));
             contents.forEach(c => c.classList.remove('active'));
 
-            // 클릭된 탭과 그에 맞는 콘텐츠에 'active' 클래스 추가
             tab.classList.add('active');
-            const targetContentId = tab.dataset.tab + '-content'; // e.g., 'home-content'
+            const targetContentId = tab.dataset.tab + '-content';
             document.getElementById(targetContentId).classList.add('active');
         });
     });
 
-    // ✨ 데이터 로딩 함수들 호출
+    // 데이터 로딩 함수들 호출
     fetchAnalysisReport(); // AI 분석 보고서 불러오기
     fetchKoreanNews();
     fetchEnglishNews();
 });
 
 
-// --- ✨ AI 분석 보고서 가져오기 함수 (새로 추가) ---
+// --- ✨ AI 분석 보고서 가져오기 함수 (수정된 부분) ---
 async function fetchAnalysisReport() {
     const reportContainer = document.getElementById('analysis-report-container');
-    // GitHub 리포지토리의 원본(raw) 파일 주소
     const reportUrl = 'https://raw.githubusercontent.com/jglsnu12/k_titan/main/final_analysis_report.txt';
 
     try {
         const response = await fetch(reportUrl);
         if (!response.ok) {
-            // 파일을 못찾거나 다른 에러가 발생했을 경우
             throw new Error(`HTTP Error: ${response.status}`);
         }
-        const reportText = await response.text();
+        let reportText = await response.text();
 
-        // 텍스트의 줄바꿈을 HTML <br> 태그로 변경하여 형식 유지
-        reportContainer.innerHTML = reportText.replace(/\n/g, '<br>');
+        // --- ✨ 보고서 텍스트 파싱 로직 (가장 중요한 부분) ---
+        // 1. '##'로 시작하는 줄은 <h3> 제목 태그로 변환합니다.
+        reportText = reportText.replace(/^## (.*$)/gim, '<h3>$1</h3>');
+
+        // 2. '**'로 감싸인 텍스트는 <strong> 굵은 글씨 태그로 변환합니다.
+        reportText = reportText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        
+        // 3. 줄바꿈 문자를 <br> 태그로 변환하여 줄바꿈을 유지합니다.
+        reportText = reportText.replace(/\n/g, '<br>');
+        // --- 파싱 로직 끝 ---
+
+        reportContainer.innerHTML = reportText;
 
     } catch (error) {
         reportContainer.innerHTML = `<p>종합 분석 보고서를 불러오는 데 실패했습니다. (에러: ${error.message})</p>`;
