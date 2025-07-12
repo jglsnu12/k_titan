@@ -30,12 +30,13 @@ body {
     font-family: 'Inter', sans-serif;
     background-color: var(--bg-color);
     color: var(--text-color);
+    margin: 0;
     height: 100vh;
     display: flex;
+    flex-direction: column; /* 정렬 방향을 세로로 변경 */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
-
 a {
     text-decoration: none;
     color: inherit;
@@ -50,8 +51,10 @@ ul {
 .main-container {
     display: flex;
     width: 100%;
-    height: 100%;
+    flex-grow: 1; /* 푸터를 제외한 모든 남는 공간을 차지하도록 설정 */
+    min-height: 0; /* flex 자식 요소의 높이 오류 방지 */
 }
+
 
 .side-nav {
     width: 240px;
