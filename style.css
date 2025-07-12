@@ -65,6 +65,11 @@ ul {
     flex-direction: column;
 }
 
+.side-nav h1 {
+    margin-bottom: auto;
+}
+
+
 .content-area {
     flex-grow: 1;
     overflow-y: auto;
