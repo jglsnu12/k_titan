@@ -358,10 +358,12 @@ ul {
 .icon-calendar::before {
     content: '📅';
     font-size: 1.5rem;
+    font-style: normal; /* 기울임 제거 */
 }
 .icon-news::before {
     content: '📰';
     font-size: 1.5rem;
+    font-style: normal; /* 기울임 제거 */
 }
 
 /* 6. 제안사항 탭 (#suggestions-content) 스타일
@@ -536,4 +538,5 @@ ul {
 .icon-dashboard::before {
     content: '🌐'; /* 지구본 모양 이모지 아이콘 */
     font-size: 1.5rem; 
+    font-style: normal; /* 기울임 제거 *
 }
