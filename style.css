@@ -346,3 +346,25 @@ body {
     cursor: pointer;
 }
 
+/* --- 10. 게시글 관리 버튼 스타일 (새로 추가) --- */
+.post-actions {
+    margin-top: -10px; /* 위치 조정을 위한 약간의 음수 마진 */
+    text-align: right;
+}
+
+.post-manage-btn {
+    background: none;
+    border: 1px solid var(--border-color);
+    color: var(--text-light-color);
+    padding: 5px 10px;
+    font-size: 0.85rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.post-manage-btn:hover {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
