@@ -654,7 +654,7 @@ ul {
 /* 구분선 스타일 */
 .footer-content .separator {
     color: #6c757d;
-    margin: 0 20px; /* 좌우 여백을 15px로 설정 */
+    margin: 0 50px; /* 좌우 여백을 15px로 설정 */
 }
 
 /* 저작권 문구는 폰트를 약간 더 작게 */
