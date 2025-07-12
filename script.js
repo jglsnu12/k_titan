@@ -169,6 +169,11 @@ const showModalBtn = document.getElementById('show-write-modal');
 const closeModalBtn = document.getElementById('close-modal');
 const postForm = document.getElementById('post-form');
 
+function formatPostContent(content) {
+    // 줄바꿈 문자(\n)를 <br> 태그로 변환하고, 양옆 공백 제거
+    return content.trim().replace(/\n/g, '<br>');
+}
+
 // 기존 loadPosts 함수를 찾아서 아래 내용으로 전체 교체해주세요.
 async function loadPosts() {
     if (!postsContainer) return;
@@ -205,7 +210,7 @@ async function loadPosts() {
                     <span class="post-status ${statusClass}">${statusText}</span>
                 </div>
                 <div class="post-content">
-                    <p>${post.content}</p>
+                    <p>${formatPostContent(post.content)}</p>
                 </div>
                 <div class="post-actions">
                     <button class="post-manage-btn" data-id="${postId}" data-author="${post.author}">수정/삭제</button>
