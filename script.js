@@ -112,10 +112,10 @@ async function fetchKoreanNews() {
 
     // 연합뉴스의 카테고리별 RSS 피드 주소
     const yonhapRssFeeds = {
-        '정치': 'https://www.yna.co.kr/RSS/politics.xml',
-        '국제': 'https://www.yna.co.kr/RSS/international.xml',
-        '북한': 'https://www.yna.co.kr/RSS/north-korea.xml',
-        '경제': 'https://www.yna.co.kr/RSS/economy.xml'
+        '정치': 'https://www.yna.co.kr/rss/politics.xml',
+        '국제': 'https://www.yna.co.kr/rss/international.xml',
+        '북한': 'https://www.yna.co.kr/rss/north-korea.xml',
+        '경제': 'https://www.yna.co.kr/rss/economy.xml'
     };
 
     try {
