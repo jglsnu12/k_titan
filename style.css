@@ -72,7 +72,7 @@ ul {
 
 .content-area {
     flex-grow: 1;
-    overflow-y: auto;
+    overflow: hidden;
     padding: 40px;
 }
 
@@ -241,11 +241,13 @@ ul {
 #dashboard-content.tab-content.active {
     display: grid;
     grid-template-columns: 1fr 400px;
-    grid-template-rows: auto 1fr;
+    /* ▼▼▼ 이 부분을 수정하세요 ▼▼▼ */
+    grid-template-rows: 50% 1fr; /* 위쪽 행이 45%, 아래쪽 행이 나머지 공간을 차지 */
     gap: 30px;
     padding: 0;
-    height: calc(100% - 75px);
+    height: 100%; /* 부모(.content-area)의 높이를 100% 채움 */
 }
+
 .dashboard-analysis-report { grid-column: 1 / 2; grid-row: 2 / 3; } /* 값을 2 / 3 으로 변경 */
 .dashboard-world-map     { grid-column: 1 / 2; grid-row: 1 / 2; } /* 값을 1 / 2 으로 변경 */
 .dashboard-calendar      { grid-column: 2 / 3; grid-row: 1 / 2; } /* 변경 없음 */
