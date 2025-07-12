@@ -589,3 +589,9 @@ ul {
     box-shadow: 0 0 1px rgba(0,0,0,0.2);
 }
 
+/* 뉴스 제목 아이콘 스타일 (추가) */
+.icon-news::before {
+    content: '📰';
+    font-size: 1.5rem; /* 캘린더 아이콘과 동일한 크기 */
+}
+
