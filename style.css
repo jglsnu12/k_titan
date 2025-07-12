@@ -117,7 +117,7 @@ ul {
     justify-content: space-between;
     align-items: center;
     padding: 15px;
-    background-color: var(--primary-color, #3a506b); /* Fallback 주색상 */
+    background-color: rgba(58, 80, 107, 0.9); /* primary-color #3a506b 에 90% 불투명도 적용 */
     color: white;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* 투명한 구분선 */
     border-top-left-radius: var(--border-radius, 12px);
@@ -167,14 +167,14 @@ ul {
 }
 
 .user-message {
-    background-color: var(--primary-color, #3a506b);
+    background-color: rgba(58, 80, 107, 0.9); /* primary-color #3a506b 에 90% 불투명도 적용 */
     color: white;
     margin-left: auto;
     border-bottom-right-radius: 8px; /* 끝부분 덜 둥글게 */
 }
 
 .ai-message {
-    background-color: var(--secondary-bg-color, #f0f2f5);
+    background-color: rgba(240, 242, 245, 0.9); /* secondary-bg-color #f0f2f5 에 90% 불투명도 적용 */
     color: var(--text-color, #333);
     margin-right: auto;
     border-bottom-left-radius: 8px; /* 끝부분 덜 둥글게 */
@@ -184,17 +184,17 @@ ul {
     display: flex;
     padding: 15px;
     border-top: 1px solid var(--border-color, #e0e0e0);
-    background-color: var(--card-bg-color, #ffffff);
+    background-color: rgba(255, 255, 255, 0.9); /* 흰색 배경에 90% 불투명도 적용 */
     gap: 10px; /* 입력창과 버튼 사이 간격 */
 }
 
 .chat-input-area input[type="text"] {
     flex-grow: 1;
     padding: 12px;
-    border: 1px solid var(--border-color, #ccc);
+    border: 1px solid var(--border-color, rgba(204, 204, 204, 0.8));
     border-radius: 25px; /* 더 둥근 입력창 */
     font-size: 1rem;
-    background-color: var(--input-bg-color, #f9f9f9);
+    background-color: rgba(249, 249, 249, 0.8); /* input-bg-color #f9f9f9 에 80% 불투명도 적용 */
     color: var(--text-color, #333);
     outline: none; /* 포커스 시 외곽선 제거 */
     transition: border-color 0.2s;
@@ -206,7 +206,7 @@ ul {
 
 .chat-input-area button {
     padding: 10px 20px;
-    background-color: #4CAF50; /* 버튼과 동일한 녹색 */
+    background-color: rgba(76, 175, 80, 0.9); /* 버튼과 동일한 녹색, 투명도 유지 */
     color: white;
     border: none;
     border-radius: 25px; /* 더 둥근 버튼 */
@@ -217,7 +217,7 @@ ul {
 }
 
 .chat-input-area button:hover {
-    background-color: #45a049;
+    background-color: rgba(69, 160, 73, 0.95); /* 호버 시 투명도 살짝 감소 */
     transform: translateY(-1px);
 }
 
