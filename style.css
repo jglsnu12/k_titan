@@ -422,7 +422,7 @@ ul {
        color: var(--primary-color);
        text-align: center;
        margin-top: 8px;
-       margin-bottom: 100px; /* 아래쪽 여백을 40px에서 60px로 늘립니다. */
+       margin-bottom: 300px; /* 아래쪽 여백을 40px에서 60px로 늘립니다. */
     }
     .tab-button {
         width: auto;
