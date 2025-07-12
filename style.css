@@ -52,7 +52,7 @@ ul {
     position: fixed; /* 화면에 고정 */
     bottom: 30px;    /* 하단에서 30px */
     right: 30px;     /* 우측에서 30px */
-    background-color: #4CAF50; /* 산뜻한 녹색 */
+    background-color: rgba(76, 175, 80, 0.9); /* #4CAF50 색상에 90% 불투명도 적용 */
     color: white;
     border: none;
     border-radius: 50px; /* 완벽하게 둥근 버튼 */
@@ -69,7 +69,7 @@ ul {
 }
 
 .chat-toggle-button:hover {
-    background-color: #45a049; /* 호버 시 약간 어두운 녹색 */
+    background-color: rgba(69, 160, 73, 0.95); /* 호버 시 약간 어두운 녹색, 불투명도 살짝 증가 */
     transform: translateY(-3px); /* 호버 시 약간 위로 이동 */
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4); /* 그림자 진해짐 */
 }
