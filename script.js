@@ -173,6 +173,7 @@ function formatPostContent(content) {
     return content
         .trim()                          // 앞뒤 공백 제거
         .replace(/\n\s*\n/g, '\n')        // 빈 줄 제거
+        .replace(/(\r\n|\r|\n){2,}/g, '\n')  // 2줄 이상 연속 줄바꿈을 한 줄로
         .replace(/\n/g, '<br>');          // \n을 <br>로 바꿈
 }
 
