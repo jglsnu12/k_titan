@@ -46,6 +46,178 @@ ul {
     list-style: none;
 }
 
+
+/* AI 챗봇 토글 버튼 - 디자인 개선 및 중요 스타일 강조 */
+.chat-toggle-button {
+    position: fixed; /* 화면에 고정 */
+    bottom: 30px;    /* 하단에서 30px */
+    right: 30px;     /* 우측에서 30px */
+    background-color: #4CAF50; /* 산뜻한 녹색 */
+    color: white;
+    border: none;
+    border-radius: 50px; /* 완벽하게 둥근 버튼 */
+    padding: 15px 25px;
+    font-size: 1rem;
+    font-weight: 700; /* 더 진한 글씨체 */
+    cursor: pointer;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); /* 더 부드러운 그림자 */
+    z-index: 9999; /* 가장 위로 오도록 매우 높은 Z-index 설정 */
+    display: flex; /* 아이콘과 텍스트를 중앙 정렬 */
+    align-items: center;
+    gap: 8px; /* 아이콘과 텍스트 사이 간격 */
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.chat-toggle-button:hover {
+    background-color: #45a049; /* 호버 시 약간 어두운 녹색 */
+    transform: translateY(-3px); /* 호버 시 약간 위로 이동 */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4); /* 그림자 진해짐 */
+}
+
+/* AI 챗봇 팝업 창 - 중요 스타일 강조 */
+.ai-chat-popup {
+    position: fixed; /* 화면에 고정 */
+    bottom: 100px;   /* 버튼 위로 띄우기 (버튼 높이 고려) */
+    right: 30px;     /* 우측에서 30px */
+    width: 350px;
+    height: 500px;
+    background-color: var(--card-bg-color, #ffffff); /* Fallback 배경색 */
+    border: 1px solid var(--border-color, #e0e0e0);
+    border-radius: var(--border-radius, 12px); /* 더 둥근 모서리 */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25); /* 더 부드럽고 큰 그림자 */
+    z-index: 9998; /* 버튼보다는 낮지만 다른 요소보다 높게 */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* 내용이 넘치면 숨김 */
+
+    /* 초기에는 숨김 */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px) scale(0.95);
+    transition: opacity 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), 
+                visibility 0.3s step-end, 
+                transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* 좀 더 부드러운 애니메이션 */
+}
+
+.ai-chat-popup.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+    transition: opacity 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), 
+                visibility 0.3s step-start, 
+                transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* 나타날 때 애니메이션 */
+}
+
+.chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background-color: var(--primary-color, #3a506b); /* Fallback 주색상 */
+    color: white;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* 투명한 구분선 */
+    border-top-left-radius: var(--border-radius, 12px);
+    border-top-right-radius: var(--border-radius, 12px);
+}
+
+.chat-header h3 {
+    margin: 0;
+    font-size: 1.15rem; /* 제목 크기 키움 */
+    font-weight: 600;
+}
+
+.chat-close-button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.3rem; /* 닫기 버튼 크기 키움 */
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.chat-close-button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: rotate(90deg); /* 닫기 버튼 회전 효과 */
+}
+
+.messages-list {
+    flex-grow: 1;
+    overflow-y: auto; /* 메시지 스크롤 */
+    padding: 15px;
+    background-color: var(--card-bg-color, #ffffff);
+    display: flex; /* 메시지 간격과 정렬을 위해 flex 사용 */
+    flex-direction: column;
+}
+
+.messages-list div {
+    padding: 12px 18px; /* 패딩 증가 */
+    border-radius: 20px; /* 더 둥근 말풍선 */
+    margin-bottom: 10px;
+    max-width: 85%;
+    word-wrap: break-word;
+    line-height: 1.5;
+    font-size: 0.95rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* 말풍선 그림자 */
+}
+
+.user-message {
+    background-color: var(--primary-color, #3a506b);
+    color: white;
+    margin-left: auto;
+    border-bottom-right-radius: 8px; /* 끝부분 덜 둥글게 */
+}
+
+.ai-message {
+    background-color: var(--secondary-bg-color, #f0f2f5);
+    color: var(--text-color, #333);
+    margin-right: auto;
+    border-bottom-left-radius: 8px; /* 끝부분 덜 둥글게 */
+}
+
+.chat-input-area {
+    display: flex;
+    padding: 15px;
+    border-top: 1px solid var(--border-color, #e0e0e0);
+    background-color: var(--card-bg-color, #ffffff);
+    gap: 10px; /* 입력창과 버튼 사이 간격 */
+}
+
+.chat-input-area input[type="text"] {
+    flex-grow: 1;
+    padding: 12px;
+    border: 1px solid var(--border-color, #ccc);
+    border-radius: 25px; /* 더 둥근 입력창 */
+    font-size: 1rem;
+    background-color: var(--input-bg-color, #f9f9f9);
+    color: var(--text-color, #333);
+    outline: none; /* 포커스 시 외곽선 제거 */
+    transition: border-color 0.2s;
+}
+
+.chat-input-area input[type="text"]:focus {
+    border-color: var(--primary-color, #3a506b);
+}
+
+.chat-input-area button {
+    padding: 10px 20px;
+    background-color: #4CAF50; /* 버튼과 동일한 녹색 */
+    color: white;
+    border: none;
+    border-radius: 25px; /* 더 둥근 버튼 */
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    flex-shrink: 0;
+}
+
+.chat-input-area button:hover {
+    background-color: #45a049;
+    transform: translateY(-1px);
+}
+
+
 /* 2. 기본 레이아웃 및 푸터
 ----------------------------------------------------------------- */
 .main-container {
@@ -572,155 +744,5 @@ ul {
     content: '🌐'; /* 지구본 모양 이모지 아이콘 */
     font-size: 1.5rem; 
     font-style: normal; /* 기울임 제거 *
-}
-
-
-/* AI 챗봇 토글 버튼 */
-.chat-toggle-button {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    background-color: var(--accent-color); /* 예: 강조 색상 */
-    color: white;
-    border: none;
-    border-radius: 50px; /* 둥근 버튼 */
-    padding: 15px 25px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    z-index: 1000; /* 다른 요소 위로 오도록 */
-    transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.chat-toggle-button:hover {
-    background-color: var(--accent-hover-color);
-    transform: translateY(-2px);
-}
-
-/* AI 챗봇 팝업 창 */
-.ai-chat-popup {
-    position: fixed;
-    bottom: 100px; /* 버튼 위로 띄우기 */
-    right: 30px;
-    width: 350px;
-    height: 500px;
-    background-color: var(--card-bg-color); /* 카드 배경색과 통일 */
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-    z-index: 999;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden; /* 내용이 넘치면 숨김 */
-
-    /* 초기에는 숨김 */
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(20px) scale(0.95);
-    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
-}
-
-.ai-chat-popup.active {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0) scale(1);
-}
-
-.chat-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px;
-    background-color: var(--primary-color); /* 대시보드 주색상과 통일 */
-    color: white;
-    border-bottom: 1px solid var(--border-color);
-    border-top-left-radius: var(--border-radius);
-    border-top-right-radius: var(--border-radius);
-}
-
-.chat-header h3 {
-    margin: 0;
-    font-size: 1.1rem;
-}
-
-.chat-close-button {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 1.2rem;
-    cursor: pointer;
-    padding: 5px;
-    border-radius: 50%;
-    transition: background-color 0.2s;
-}
-
-.chat-close-button:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-}
-
-.messages-list {
-    flex-grow: 1;
-    overflow-y: auto; /* 메시지 스크롤 */
-    padding: 15px;
-    background-color: var(--card-bg-color);
-}
-
-.messages-list div {
-    padding: 10px 15px;
-    border-radius: 18px; /* 둥근 말풍선 */
-    margin-bottom: 10px;
-    max-width: 85%;
-    word-wrap: break-word; /* 긴 텍스트 줄바꿈 */
-    line-height: 1.4;
-    font-size: 0.95rem;
-}
-
-.user-message {
-    background-color: var(--primary-color); /* 사용자 메시지는 주색상 */
-    color: white;
-    margin-left: auto; /* 오른쪽 정렬 */
-    border-bottom-right-radius: 5px; /* 끝부분 덜 둥글게 */
-}
-
-.ai-message {
-    background-color: var(--secondary-bg-color); /* AI 메시지는 보조 배경색 */
-    color: var(--text-color);
-    margin-right: auto; /* 왼쪽 정렬 */
-    border-bottom-left-radius: 5px; /* 끝부분 덜 둥글게 */
-}
-
-.chat-input-area {
-    display: flex;
-    padding: 15px;
-    border-top: 1px solid var(--border-color);
-    background-color: var(--card-bg-color);
-}
-
-.chat-input-area input[type="text"] {
-    flex-grow: 1;
-    padding: 10px;
-    border: 1px solid var(--border-color);
-    border-radius: 20px; /* 둥근 입력창 */
-    font-size: 1rem;
-    background-color: var(--input-bg-color);
-    color: var(--text-color);
-    margin-right: 10px;
-}
-
-.chat-input-area button {
-    padding: 10px 20px;
-    background-color: var(--accent-color);
-    color: white;
-    border: none;
-    border-radius: 20px; /* 둥근 버튼 */
-    cursor: pointer;
-    font-weight: 600;
-    transition: background-color 0.2s;
-    flex-shrink: 0; /* 버튼이 줄어들지 않도록 */
-}
-
-.chat-input-area button:hover {
-    background-color: var(--accent-hover-color);
 }
 
