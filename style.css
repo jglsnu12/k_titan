@@ -272,9 +272,12 @@ body {
     background-color: #e6fcf5;
 }
 .post-content {
-    line-height: 1.7;
-    margin-bottom: 24px;
+    line-height: 1.6;
+    margin-bottom: 16px;
     white-space: pre-wrap;
+}
+.post-content p {
+    margin: 0; /* p 태그가 기본으로 가진 위아래 여백을 완전히 제거합니다. */
 }
 .comment-section {
     border-top: 1px solid #dfe1e6;
