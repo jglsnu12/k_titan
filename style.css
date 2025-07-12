@@ -241,10 +241,10 @@ ul {
     padding: 0;
     height: calc(100% - 75px);
 }
-.dashboard-analysis-report { grid-column: 1 / 2; grid-row: 1 / 2; } 
-.dashboard-world-map     { grid-column: 1 / 2; grid-row: 2 / 3; } /* 추가된 줄 */
-.dashboard-calendar      { grid-column: 2 / 3; grid-row: 1 / 2; }
-.dashboard-news          { grid-column: 2 / 3; grid-row: 2 / 3; }
+.dashboard-analysis-report { grid-column: 1 / 2; grid-row: 2 / 3; } /* 값을 2 / 3 으로 변경 */
+.dashboard-world-map     { grid-column: 1 / 2; grid-row: 1 / 2; } /* 값을 1 / 2 으로 변경 */
+.dashboard-calendar      { grid-column: 2 / 3; grid-row: 1 / 2; } /* 변경 없음 */
+.dashboard-news          { grid-column: 2 / 3; grid-row: 2 / 3; } /* 변경 없음 */
 
 .dashboard-analysis-report,
 .dashboard-world-map,
