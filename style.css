@@ -275,10 +275,15 @@ body {
     line-height: 1.6;
     margin-bottom: 16px;
     white-space: pre-wrap;
+    display: block;
+    padding: 0;
+    margin: 0;
 }
-.post-content p {
-    margin: 0; /* p 태그가 기본으로 가진 위아래 여백을 완전히 제거합니다. */
+.post-content * {
+    margin: 0;
+    padding: 0;
 }
+
 .comment-section {
     border-top: 1px solid #dfe1e6;
     padding-top: 20px;
