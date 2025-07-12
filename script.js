@@ -463,3 +463,91 @@ if (editForm) {
         }
     });
 }
+
+const chatToggleButton = document.getElementById('chat-toggle-button');
+const aiChatPopup = document.getElementById('ai-chat-popup');
+const chatCloseButton = document.getElementById('chat-close-button');
+const userAiInput = document.getElementById('user-ai-input');
+const chatMessages = document.getElementById('chat-messages');
+
+// 챗봇 열고 닫기 토글
+chatToggleButton.addEventListener('click', () => {
+    aiChatPopup.classList.toggle('active');
+    if (aiChatPopup.classList.contains('active')) {
+        chatMessages.scrollTop = chatMessages.scrollHeight; // 열릴 때 스크롤 하단으로
+        userAiInput.focus(); // 입력 필드에 포커스
+    }
+});
+
+chatCloseButton.addEventListener('click', () => {
+    aiChatPopup.classList.remove('active');
+});
+
+// 사용자 ID는 간단한 예시를 위해 하드코딩. 실제 서비스에서는 로그인 사용자 ID 등을 사용해야 함.
+const USER_ID = "current_dashboard_user_popup"; // 기존과 충돌하지 않도록 다른 ID 사용
+
+// AI 메시지 전송 함수
+async function sendMessageAI() {
+    const message = userAiInput.value.trim();
+
+    if (message === '') return;
+
+    // 사용자 메시지 표시
+    const userDiv = document.createElement('div');
+    userDiv.className = 'user-message';
+    userDiv.innerText = `나: ${message}`;
+    chatMessages.appendChild(userDiv);
+
+    userAiInput.value = ''; // 입력 필드 초기화
+    chatMessages.scrollTop = chatMessages.scrollHeight; // 스크롤 하단으로
+
+    // AI 응답 로딩 메시지
+    const loadingDiv = document.createElement('div');
+    loadingDiv.className = 'ai-message';
+    loadingDiv.innerText = `AI: 답변 생성 중...`;
+    chatMessages.appendChild(loadingDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    try {
+        // 백엔드 서버의 /chat_ai 엔드포인트로 요청
+        // 서버 주소는 Flask 앱이 실행되는 주소와 포트로 설정 (예: http://localhost:5000)
+        const response = await fetch('http://localhost:5000/chat_ai', { 
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ message: message, user_id: USER_ID })
+        });
+
+        const data = await response.json();
+
+        // 로딩 메시지 제거 후 AI 응답 표시
+        chatMessages.removeChild(loadingDiv);
+        const aiDiv = document.createElement('div');
+        aiDiv.className = 'ai-message';
+        if (data.error) {
+            aiDiv.style.color = 'red';
+            aiDiv.innerText = `AI: 오류 발생: ${data.error}`;
+        } else {
+            aiDiv.innerText = `AI: ${data.response}`;
+        }
+        chatMessages.appendChild(aiDiv);
+
+    } catch (error) {
+        console.error('Error sending message to AI:', error);
+        chatMessages.removeChild(loadingDiv); // 로딩 메시지 제거
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'ai-message';
+        errorDiv.style.color = 'red';
+        errorDiv.innerText = `AI: 네트워크 오류 또는 서버 문제로 답변을 받을 수 없습니다. (${error.message})`;
+        chatMessages.appendChild(errorDiv);
+    }
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// 전역 스코프에서 sendMessageAI 함수를 사용할 수 있도록 window 객체에 할당
+// (HTML의 onclick="sendMessageAI()"에서 호출하기 위함)
+window.sendMessageAI = sendMessageAI;
+
+// --- AI 챗봇 팝업 기능 끝 ---
+
