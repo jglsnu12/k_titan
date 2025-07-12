@@ -62,6 +62,15 @@ ul {
     display: flex;
     flex-direction: column;
 }
+.side-nav h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    text-align: center;
+    margin-top: 8px;
+    margin-bottom: 40px;
+}
+
 
 .content-area {
     flex-grow: 1;
