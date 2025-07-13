@@ -205,9 +205,9 @@ async function loadPosts() {
 const countryMarkerPositions = {
     usa: { top: 650/1385*100, left: 350/2048*100 },    // 미국
     china: { top: 650/1385*100, left: 1500/2048*100 },  // 중국
-    japan: { top: 650/1385*100, left: 1750/2048*100 },  // 일본
+    japan: { top: 700/1385*100, left: 1770/2048*100 },  // 일본
     korea: { top: 650/1385*100, left: 1660/2048*100 },  // 대한민국
-    northkorea: { top: 600/1385*100, left: 1660/2048*100 }, // 북한
+    northkorea: { top: 570/1385*100, left: 1640/2048*100 }, // 북한
     russia: { top: 450/1385*100, left: 1380/2048*100 }  // 러시아
 };
 
@@ -251,7 +251,7 @@ function updateMapMarkerPositions() {
             // 1. 지도 이미지의 실제 표시 영역을 기준으로 마커의 픽셀 위치 계산
             //    countryMarkerPositions는 지도 이미지 자체 내에서의 상대적 퍼센티지이므로
             //    actualMapWidth/Height를 곱하여 실제 픽셀 위치로 변환합니다.
-            const markerPixelLeftRelativeToMap = (actualMapHeight * position.left / 100)*1.3+actualMapWidth/2-actualMapHeight/2;
+            const markerPixelLeftRelativeToMap = (actualMapHeight * position.left / 100)*1.3+actualMapWidth/2-actualMapHeight/2-200;
             const markerPixelTopRelativeToMap = (actualMapHeight * position.top / 100);
 
             // 2. 이 픽셀 위치를 다시 맵 래퍼(mapVisualizationWrapper)를 기준으로 하는 픽셀 위치로 변환
