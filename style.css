@@ -527,7 +527,7 @@ ul {
 .country-info-panel {
     position: absolute; /* 맵 래퍼를 기준으로 절대 위치 */
     width: 350px; /* 패널 너비 고정 */
-    max-height: calc(100% - 30%); /* 부모 래퍼 높이 - 패딩 (상하 20px씩) */
+    max-height: calc(100% - 10%); /* 부모 래퍼 높이 - 패딩 (상하 20px씩) */
     overflow-y: auto; /* 내용이 넘치면 스크롤 */
     background-color: rgba(255, 255, 255, 0.7); /* 반투명 배경 */
     border: 1px solid var(--border-color);
@@ -601,14 +601,14 @@ ul {
 }
 
 .marker-score-display .avg-score {
-    font-size: 0.85em; /* 국기 폰트 사이즈 대비 상대적 크기 */
+    font-size: 0.65em; /* 국기 폰트 사이즈 대비 상대적 크기 */
     font-weight: 700;
     color: var(--text-color);
     margin-bottom: 2px;
 }
 
 .marker-score-display .stability-tag {
-    font-size: 0.7em; /* 국기 폰트 사이즈 대비 상대적 크기 */
+    font-size: 0.5em; /* 국기 폰트 사이즈 대비 상대적 크기 */
     font-weight: 600;
     padding: 2px 5px;
     border-radius: 3px;
