@@ -21,8 +21,6 @@ const db = getFirestore(app);
 
 // =================================================================
 // ✨ 2. 전역 유틸리티 및 데이터 로딩 함수 (DOMContentLoaded 외부)
-// 이 함수들은 DOMContentLoaded 이벤트와는 독립적으로 정의되며,
-// 이벤트 리스너 내부에서 호출될 수 있습니다.
 // =================================================================
 
 async function fetchAnalysisReport() {
@@ -151,11 +149,7 @@ function renderCalendar() {
 function formatPostContent(content) {
     return content.trim().replace(/\n\s*\n/g, '\n').replace(/(\r\n|\r|\n){2,}/g, '\n').replace(/\n/g, '<br>');
 }
-function openEditModal(postId, postData) {
-    document.getElementById('edit-post-id').value = postId;
-    document.getElementById('edit-post-content').textContent = postData.content;
-    document.getElementById('edit-modal').style.display = 'flex';
-}
+// deletePost 함수는 loadPosts를 호출하므로 loadPosts가 DOMContentLoaded 밖에서 정의되어야 합니다.
 async function deletePost(postId) {
     if (confirm("정말로 이 게시글을 삭제하시겠습니까?")) {
         try { await deleteDoc(doc(db, 'suggestions', postId)); alert("게시글이 삭제되었습니다."); loadPosts(); }
@@ -165,7 +159,7 @@ async function deletePost(postId) {
 
 // --- loadPosts 함수 ---
 async function loadPosts() {
-    const postsContainer = document.getElementById('posts-container');
+    const postsContainer = document.getElementById('posts-container'); // 이 안에서 다시 가져옵니다.
     if (!postsContainer) return;
     postsContainer.innerHTML = '<p class="loading">게시글을 불러오는 중...</p>';
     const postsQuery = query(collection(db, 'suggestions'), orderBy('timestamp', 'desc'));
@@ -201,29 +195,26 @@ async function loadPosts() {
 
 // =================================================================
 // ✨ NEW: 국가 데이터 로딩 함수 (DOMContentLoaded 외부)
-// 이 함수가 최신 버전이며, 아래에 중복된 함수는 삭제되어야 합니다.
 // =================================================================
 async function loadCountryData() {
     const leftPanel = document.querySelector('.country-info-panel.left-panel');
     const rightPanel = document.querySelector('.country-info-panel.right-panel');
     const mapVisualizationWrapper = document.querySelector('.map-visualization-wrapper');
 
-    // 지도 이미지 관련 로그 추가
-    console.log("loadCountryData called.");
-    console.log("mapVisualizationWrapper:", mapVisualizationWrapper); // 이 요소가 null인지 확인
+    console.log("loadCountryData called."); // 디버깅용
+    console.log("mapVisualizationWrapper:", mapVisualizationWrapper); // 디버깅용
 
     if (!leftPanel || !rightPanel || !mapVisualizationWrapper) {
-        console.error("Required map elements not found."); // 요소가 없으면 여기서 리턴
+        console.error("Required map elements not found in loadCountryData.");
         return;
     }
 
-    const mapImageUrl = 'world_map.jpg'; // ⚠️ 여기에 실제 지도 이미지 경로를 입력하세요.
+    const mapImageUrl = 'assets/world_map.png'; // ⚠️ assets/ 폴더가 있다고 가정.
     const mapImage = document.createElement('img');
     mapImage.src = mapImageUrl;
     mapImage.alt = 'World Map';
     mapImage.className = 'world-map-image';
     
-    // 기존 이미지가 있다면 제거하고 새로 추가 (탭 전환 시 중복 추가 방지)
     const existingMapImage = mapVisualizationWrapper.querySelector('.world-map-image');
     if (existingMapImage) {
         mapVisualizationWrapper.removeChild(existingMapImage);
@@ -232,6 +223,7 @@ async function loadCountryData() {
     
     mapVisualizationWrapper.prepend(mapImage);
     console.log("New map image appended to mapVisualizationWrapper. src:", mapImageUrl);
+
 
     const countriesMeta = [
         { id: 'usa', name: '미국', flag: '🇺🇸', markerClass: 'us' },
@@ -265,7 +257,7 @@ async function loadCountryData() {
                 const data = await response.json();
                 let countryName = '';
                 let countryFlag = '';
-                switch(meta.id) { // meta.id 사용
+                switch(meta.id) {
                     case 'usa': countryName = '미국'; countryFlag = '🇺🇸'; break;
                     case 'china': countryName = '중국'; countryFlag = '🇨🇳'; break;
                     case 'japan': countryName = '일본'; countryFlag = '🇯🇵'; break;
@@ -276,7 +268,7 @@ async function loadCountryData() {
                 }
 
                 allCountriesData.push({
-                    id: meta.id, // meta.id 사용
+                    id: meta.id,
                     name: countryName,
                     flag: countryFlag,
                     overall_stability: data.overall_stability || '알 수 없음',
@@ -284,13 +276,13 @@ async function loadCountryData() {
                     report_title: data.report_title || `${countryName} 국제 정세 분석 보고서`,
                     report_intro: data.report_intro || '보고서 서론 없음.',
                     categories: data.categories || [],
-                    markerClass: meta.id // meta.id 사용
+                    markerClass: meta.id
                 });
             }
         } catch (error) {
             console.error(`Error fetching data for ${meta.id}:`, error);
             allCountriesData.push({
-                ...meta, // 기존 메타 정보 복사
+                ...meta,
                 report_title: `${meta.name} 국제 정세 분석 보고서`,
                 report_intro: '네트워크 오류 또는 서버 접속 불가.',
                 overall_stability: '알 수 없음',
@@ -394,282 +386,250 @@ async function loadCountryData() {
 
 // =================================================================
 // ✨ 3. DOMContentLoaded 이벤트 리스너 (모든 DOM 상호작용 및 이벤트 처리)
-// 이 블록 안에서 모든 DOM 요소들을 가져오고, 이벤트 리스너들을 등록합니다.
 // =================================================================
 document.addEventListener('DOMContentLoaded', () => {
-    // --- 탭 관련 DOM 요소 ---
-    const tabs = document.querySelectorAll('.tab-button');
-    const contents = document.querySelectorAll('.tab-content');
+    // --- 탭 관련 DOM 요소 ---
+    const tabs = document.querySelectorAll('.tab-button');
+    const contents = document.querySelectorAll('.tab-content');
 
-    // --- 챗봇 관련 DOM 요소 ---
-    const chatToggleButton = document.getElementById('chat-toggle-button');
-    const aiChatPopup = document.getElementById('ai-chat-popup');
-    const chatCloseButton = document.getElementById('chat-close-button');
-    const userAiInput = document.getElementById('user-ai-input');
-    const chatMessages = document.getElementById('chat-messages');
+    // --- 챗봇 관련 DOM 요소 ---
+    const chatToggleButton = document.getElementById('chat-toggle-button');
+    const aiChatPopup = document.getElementById('ai-chat-popup');
+    const chatCloseButton = document.getElementById('chat-close-button');
+    const userAiInput = document.getElementById('user-ai-input');
+    const chatMessages = document.getElementById('chat-messages');
 
-    // --- 게시판 모달 및 폼 관련 DOM 요소 ---
-    const modal = document.getElementById('write-modal');
-    const showModalBtn = document.getElementById('show-write-modal');
-    const closeModalBtn = document.getElementById('close-modal');
-    const postForm = document.getElementById('post-form');
-    const editModal = document.getElementById('edit-modal');
-    const editForm = document.getElementById('edit-form');
-    const closeEditModalBtn = document.getElementById('close-edit-modal');
-
-
-    // --- 챗봇 버튼 및 팝업의 초기 상태 설정 함수 ---
-    function hideChatbotElements() {
-        if (chatToggleButton) {
-            chatToggleButton.classList.remove('active-tab-button');
-            chatToggleButton.style.display = 'none'; // 강제 숨김
-        }
-        if (aiChatPopup) {
-            aiChatPopup.classList.remove('active');
-            aiChatPopup.style.display = 'none'; // 메시지 박스도 명시적으로 display: none 적용
-        }
-    }
-
-    // --- 탭 클릭 이벤트 리스너 ---
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            tabs.forEach(t => t.classList.remove('active'));
-            contents.forEach(c => c.classList.remove('active'));
-
-            tab.classList.add('active');
-            const targetContentId = tab.dataset.tab + '-content'; // 예: 'dashboard-content'
-            document.getElementById(targetContentId).classList.add('active');
-            
-            // 데이터 로딩 함수 호출 및 챗봇 버튼 표시/숨김
-            if (targetContentId === 'dashboard-content') { // 국제정세 대시보드 탭
-                fetchAnalysisReport();
-                fetchKoreanNews();
-                fetchEnglishNews();
-                renderCalendar();
-                loadCountryData(); // 국가 데이터 로딩
-                // 챗봇 버튼 및 팝업 표시
-                if (chatToggleButton) {
-                    chatToggleButton.classList.add('active-tab-button');
-                    chatToggleButton.style.display = 'flex'; // 명시적으로 display: flex 적용
-                }
-            } else { // 'home' 탭, 'suggestions' 탭 등 그 외 모든 탭
-                if (targetContentId === 'suggestions-content') {
-                    loadPosts(); // 게시판 로드
-                }
-                // 챗봇 버튼 및 팝업 숨김 (강제)
-                hideChatbotElements(); // 재사용 가능한 함수 호출
-            }
-        });
-    });
-
-    // --- 초기 페이지 로드 시 활성화될 탭에 따른 챗봇 버튼 상태 설정 ---
-    // (예: '홈' 탭이 기본 active인 경우 챗봇 버튼 숨김)
-    const initialActiveTabButton = document.querySelector('.tab-button.active');
-    if (initialActiveTabButton) {
-        const initialTargetContentId = initialActiveTabButton.dataset.tab + '-content';
-        if (initialTargetContentId === 'dashboard-content') {
-             if (chatToggleButton) {
-                chatToggleButton.classList.add('active-tab-button');
-                chatToggleButton.style.display = 'flex'; // 명시적으로 display: flex 적용
-            }
-            loadCountryData(); // 초기 로드 시 대시보드 탭이면 국가 데이터 로딩
-        } else {
-            hideChatbotElements(); // 초기 탭이 대시보드가 아니면 숨김
-        }
-    }
+    // --- 게시판 모달 및 폼 관련 DOM 요소 ---
+    const modal = document.getElementById('write-modal');
+    const showModalBtn = document.getElementById('show-write-modal');
+    const closeModalBtn = document.getElementById('close-modal');
+    const postForm = document.getElementById('post-form');
+    const editModal = document.getElementById('edit-modal');
+    const editForm = document.getElementById('edit-form');
+    const closeEditModalBtn = document.getElementById('close-edit-modal');
 
 
-    // =================================================================
-    // ✨ 챗봇 기능 이벤트 리스너 및 함수 정의
-    // =================================================================
+    // --- 챗봇 버튼 및 팝업의 초기 상태 설정 함수 ---
+    function hideChatbotElements() {
+        if (chatToggleButton) {
+            chatToggleButton.classList.remove('active-tab-button');
+            chatToggleButton.style.display = 'none'; // 강제 숨김
+        }
+        if (aiChatPopup) {
+            aiChatPopup.classList.remove('active');
+            aiChatPopup.style.display = 'none'; // 메시지 박스도 명시적으로 display: none 적용
+        }
+    }
 
-    // 챗봇 열고 닫기 토글
-    if (chatToggleButton) {
-        chatToggleButton.addEventListener('click', () => {
-            // 팝업이 숨김 상태일 때만 display 속성 변경 (보이게 할 때)
-            if (!aiChatPopup.classList.contains('active')) {
-                aiChatPopup.style.display = 'flex';
-            }
-            aiChatPopup.classList.toggle('active');
-            if (aiChatPopup.classList.contains('active')) {
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-                userAiInput.focus();
-            } else {
-                // 팝업이 닫힐 때 display 속성 변경 (완전히 숨길 때)
-                setTimeout(() => {
-                    aiChatPopup.style.display = 'none';
-                }, 300); // CSS transition 시간(0.3s)과 맞춤
-            }
-        });
-    }
+    // --- 탭 클릭 이벤트 리스너 ---
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            contents.forEach(c => c.classList.remove('active'));
 
-    if (chatCloseButton) {
-        chatCloseButton.addEventListener('click', () => {
-            aiChatPopup.classList.remove('active');
-            setTimeout(() => {
-                aiChatPopup.style.display = 'none';
-            }, 300); // CSS transition 시간(0.3s)과 맞춤
-        });
-    }
+            tab.classList.add('active');
+            const targetContentId = tab.dataset.tab + '-content';
+            document.getElementById(targetContentId).classList.add('active');
+            
+            // 데이터 로딩 함수 호출 및 챗봇 버튼 표시/숨김
+            if (targetContentId === 'dashboard-content') { // 국제정세 대시보드 탭
+                fetchAnalysisReport();
+                fetchKoreanNews();
+                fetchEnglishNews();
+                renderCalendar();
+                loadCountryData(); // 국가 데이터 로딩
+                // 챗봇 버튼 및 팝업 표시
+                if (chatToggleButton) {
+                    chatToggleButton.classList.add('active-tab-button');
+                    chatToggleButton.style.display = 'flex'; // 명시적으로 display: flex 적용
+                }
+            } else { // 'home' 탭, 'suggestions' 탭 등 그 외 모든 탭
+                if (targetContentId === 'suggestions-content') {
+                    loadPosts(); // 게시판 로드
+                }
+                // 챗봇 버튼 및 팝업 숨김 (강제)
+                hideChatbotElements(); // 재사용 가능한 함수 호출
+            }
+        });
+    });
 
-    // 사용자 ID (임시)
-    const USER_ID = "current_dashboard_user_popup";
-
-    // AI 메시지 전송 함수 (전역 함수로 노출)
-    window.sendMessageAI = async function() {
-        const message = userAiInput.value.trim();
-
-        if (message === '') return;
-
-        const userDiv = document.createElement('div');
-        userDiv.className = 'user-message';
-        userDiv.innerText = `나: ${message}`;
-        chatMessages.appendChild(userDiv);
-
-        userAiInput.value = '';
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-
-        const loadingDiv = document.createElement('div');
-        loadingDiv.className = 'ai-message';
-        loadingDiv.innerText = `AI: 답변 생성 중...`;
-        chatMessages.appendChild(loadingDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-
-        try {
-            const response = await fetch('http://localhost:5000/chat_ai', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: message, user_id: USER_ID })
-            });
-
-            const data = await response.json();
-
-            chatMessages.removeChild(loadingDiv);
-            const aiDiv = document.createElement('div');
-            aiDiv.className = 'ai-message';
-            if (data.error) {
-                aiDiv.style.color = 'red';
-            } else {
-                aiDiv.innerText = `AI: ${data.response}`;
-            }
-            chatMessages.appendChild(aiDiv);
-
-        } catch (error) {
-            console.error('Error sending message to AI:', error);
-            chatMessages.removeChild(loadingDiv);
-            const errorDiv = document.createElement('div');
-            errorDiv.className = 'ai-message';
-            errorDiv.style.color = 'red';
-            errorDiv.innerText = `AI: 네트워크 오류 또는 서버 문제로 답변을 받을 수 없습니다. (${error.message})`;
-            chatMessages.appendChild(errorDiv);
-        }
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-    };
+    // --- 초기 페이지 로드 시 활성화될 탭에 따른 챗봇 버튼 상태 설정 ---
+    const initialActiveTabButton = document.querySelector('.tab-button.active');
+    if (initialActiveTabButton) {
+        const initialTargetContentId = initialActiveTabButton.dataset.tab + '-content';
+        if (initialTargetContentId === 'dashboard-content') {
+             if (chatToggleButton) {
+                chatToggleButton.classList.add('active-tab-button');
+                chatToggleButton.style.display = 'flex'; // 강제 표시
+            }
+            loadCountryData(); // 초기 로드 시 대시보드 탭이면 국가 데이터 로딩
+        } else {
+            hideChatbotElements(); // 초기 탭이 대시보드가 아니면 숨김
+        }
+    }
 
 
-    // =================================================================
-    // ✨ 게시판 기능 이벤트 리스너 정의
-    // =================================================================
+    // =================================================================
+    // ✨ 챗봇 기능 이벤트 리스너 및 함수 정의
+    // =================================================================
 
-    // '새 글 작성하기' 모달 토글
-    if (showModalBtn) {
-        showModalBtn.addEventListener('click', () => modal.style.display = 'flex');
-        closeModalBtn.addEventListener('click', () => modal.style.display = 'none');
-        window.addEventListener('click', (e) => {
-            if (e.target === modal) modal.style.display = 'none';
-        });
-    }
+    // 챗봇 열고 닫기 토글
+    if (chatToggleButton) {
+        chatToggleButton.addEventListener('click', () => {
+            // 팝업이 숨김 상태일 때만 display 속성 변경 (보이게 할 때)
+            if (aiChatPopup.style.display === 'none') { // 'active' 클래스 대신 직접 display 속성 확인
+                aiChatPopup.style.display = 'flex';
+            }
+            // aiChatPopup.classList.toggle('active'); // 이제 이 클래스 토글은 필요 없을 수 있습니다.
+            
+            // visibility와 opacity 전환
+            if (aiChatPopup.style.opacity === '0') {
+                aiChatPopup.style.opacity = '1';
+                aiChatPopup.style.visibility = 'visible';
+            } else {
+                aiChatPopup.style.opacity = '0';
+                aiChatPopup.style.visibility = 'hidden';
+                setTimeout(() => { // 완전히 숨긴 후 display: none
+                    aiChatPopup.style.display = 'none';
+                }, 300); // CSS transition 시간(0.3s)과 맞춤
+            }
 
-    // 게시글 등록 폼 제출
-    if (postForm) {
-        postForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const author = document.getElementById('post-author').value;
-            const password = document.getElementById('post-password').value;
-            const content = document.getElementById('post-content').value;
-            try {
-                await addDoc(collection(db, 'suggestions'), { author, password, content, status: 'unresolved', timestamp: serverTimestamp() });
-                postForm.reset();
-                modal.style.display = 'none';
-                loadPosts();
-            } catch (error) { console.error("Error adding document: ", error); alert("게시글 등록에 실패했습니다."); }
-        });
-    }
+            if (aiChatPopup.style.opacity === '1') { // 팝업이 보이게 될 때 스크롤 및 포커스
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                userAiInput.focus();
+            }
+        });
+    }
 
-    // 관리자 답변 제출
-    if (postsContainer) { // postsContainer는 여기서 다시 getElementById로 가져올 필요 없이 바로 사용 가능
-        postsContainer.addEventListener('submit', async (e) => {
-            if (e.target.classList.contains('comment-form')) {
-                e.preventDefault();
-                const postId = e.target.dataset.id;
-                const commentText = e.target.querySelector('.comment-input').value;
-                try {
-                    const postRef = doc(db, 'suggestions', postId);
-                    await updateDoc(postRef, { comment: commentText, status: 'resolved' });
-                    loadPosts();
-                } catch (error) { console.error("Error updating document: ", error); alert("답변 등록에 실패했습니다."); }
-            }
-        });
-    }
+    if (chatCloseButton) {
+        chatCloseButton.addEventListener('click', () => {
+            // aiChatPopup.classList.remove('active'); // 이제 이 클래스 제거는 필요 없을 수 있습니다.
+            aiChatPopup.style.opacity = '0';
+            aiChatPopup.style.visibility = 'hidden';
+            setTimeout(() => {
+                aiChatPopup.style.display = 'none';
+            }, 300); // CSS transition 시간(0.3s)과 맞춤
+        });
+    }
 
-    // '수정/삭제' 버튼 클릭 이벤트 처리
-    if (postsContainer) { // postsContainer는 여기서 다시 getElementById로 가져올 필요 없이 바로 사용 가능
-        postsContainer.addEventListener('click', async (e) => {
-            if (e.target.classList.contains('post-manage-btn')) {
-                const postId = e.target.dataset.id;
-                const author = e.target.dataset.author;
+    const USER_ID = "current_dashboard_user_popup";
 
-                const password = prompt(`'${author}'님의 게시글 비밀번호를 입력하세요.`);
-                if (!password) return;
+    window.sendMessageAI = async function() {
+        const message = userAiInput.value.trim();
+        if (message === '') return;
+        const userDiv = document.createElement('div');
+        userDiv.className = 'user-message';
+        userDiv.innerText = `나: ${message}`;
+        chatMessages.appendChild(userDiv);
+        userAiInput.value = '';
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        const loadingDiv = document.createElement('div');
+        loadingDiv.className = 'ai-message';
+        loadingDiv.innerText = `AI: 답변 생성 중...`;
+        chatMessages.appendChild(loadingDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
 
-                try {
-                    const postRef = doc(db, 'suggestions', postId);
-                    const docSnap = await getDoc(postRef);
+        try {
+            const response = await fetch('http://localhost:5000/chat_ai', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: message, user_id: USER_ID })
+            });
+            const data = await response.json();
+            chatMessages.removeChild(loadingDiv);
+            const aiDiv = document.createElement('div');
+            aiDiv.className = 'ai-message';
+            if (data.error) { aiDiv.style.color = 'red'; aiDiv.innerText = `AI: 오류 발생: ${data.error}`; }
+            else { aiDiv.innerText = `AI: ${data.response}`; }
+            chatMessages.appendChild(aiDiv);
+        } catch (error) {
+            console.error('Error sending message to AI:', error);
+            chatMessages.removeChild(loadingDiv);
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'ai-message';
+            errorDiv.style.color = 'red';
+            errorDiv.innerText = `AI: 네트워크 오류 또는 서버 문제로 답변을 받을 수 없습니다. (${error.message})`;
+            chatMessages.appendChild(errorDiv);
+        }
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    };
 
-                    if (docSnap.exists() && docSnap.data().password === password) {
-                        const action = prompt("'수정' 또는 '삭제'라고 입력하세요.");
-                        if (action === '수정') {
-                            openEditModal(postId, docSnap.data());
-                        } else if (action === '삭제') {
-                            deletePost(postId);
-                        } else if (action) {
-                            alert("잘못된 입력입니다.");
-                        }
-                    } else {
-                        alert("비밀번호가 일치하지 않습니다.");
-                    }
-                } catch (error) {
-                    console.error("Error managing post: ", error);
-                    alert("처리 중 오류가 발생했습니다.");
-                }
-            }
-        });
-    }
 
-    // 수정 모달창 닫기 버튼
-    if (closeEditModalBtn) {
-        closeEditModalBtn.addEventListener('click', () => {
-            editModal.style.display = 'none';
-        });
-    }
+    // =================================================================
+    // ✨ 게시판 기능 이벤트 리스너 정의
+    // =================================================================
 
-    // 수정 폼 제출 이벤트
-    if (editForm) {
-        editForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const postId = document.getElementById('edit-post-id').value;
-            const newContent = document.getElementById('edit-post-content').value;
+    if (showModalBtn) {
+        showModalBtn.addEventListener('click', () => modal.style.display = 'flex');
+        closeModalBtn.addEventListener('click', () => modal.style.display = 'none');
+        window.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+    }
 
-            try {
-                const postRef = doc(db, 'suggestions', postId);
-                await updateDoc(postRef, { content: newContent });
-                alert("게시글이 수정되었습니다.");
-                editModal.style.display = 'none';
-                loadPosts();
-            } catch (error) {
-                console.error("Error updating document: ", error);
-                alert("수정 중 오류가 발생했습니다.");
-            }
-        });
-    }
-}); // DOMContentLoaded 닫는 중괄호 (여기서 끝납니다)
+    if (postForm) {
+        postForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const author = document.getElementById('post-author').value;
+            const password = document.getElementById('post-password').value;
+            const content = document.getElementById('post-content').value;
+            try { await addDoc(collection(db, 'suggestions'), { author, password, content, status: 'unresolved', timestamp: serverTimestamp() }); postForm.reset(); modal.style.display = 'none'; loadPosts(); }
+            catch (error) { console.error("Error adding document: ", error); alert("게시글 등록에 실패했습니다."); }
+        });
+    }
+
+    // postsContainerElement 변수를 DOMContentLoaded 안에서 선언하여 스코프 문제 해결
+    const postsContainerElement = document.getElementById('posts-container');
+    if (postsContainerElement) {
+        postsContainerElement.addEventListener('submit', async (e) => {
+            if (e.target.classList.contains('comment-form')) {
+                e.preventDefault();
+                const postId = e.target.dataset.id;
+                const commentText = e.target.querySelector('.comment-input').value;
+                try {
+                    const postRef = doc(db, 'suggestions', postId);
+                    await updateDoc(postRef, { comment: commentText, status: 'resolved' });
+                    loadPosts();
+                } catch (error) { console.error("Error updating document: ", error); alert("답변 등록에 실패했습니다."); }
+            }
+        });
+    }
+
+    if (postsContainerElement) {
+        postsContainerElement.addEventListener('click', async (e) => {
+            if (e.target.classList.contains('post-manage-btn')) {
+                const postId = e.target.dataset.id;
+                const author = e.target.dataset.author;
+                const password = prompt(`'${author}'님의 게시글 비밀번호를 입력하세요.`);
+                if (!password) return;
+                try {
+                    const postRef = doc(db, 'suggestions', postId);
+                    const docSnap = await getDoc(postRef);
+                    if (docSnap.exists() && docSnap.data().password === password) {
+                        const action = prompt("'수정' 또는 '삭제'라고 입력하세요.");
+                        if (action === '수정') { openEditModal(postId, docSnap.data()); }
+                        else if (action === '삭제') { deletePost(postId); }
+                        else if (action) { alert("잘못된 입력입니다."); }
+                    } else { alert("비밀번호가 일치하지 않습니다."); }
+                } catch (error) { console.error("Error managing post: ", error); alert("처리 중 오류이 발생했습니다."); }
+            }
+        });
+    }
+
+    if (closeEditModalBtn) {
+        closeEditModalBtn.addEventListener('click', () => { editModal.style.display = 'none'; });
+    }
+
+    if (editForm) {
+        editForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const postId = document.getElementById('edit-post-id').value;
+            const newContent = document.getElementById('edit-post-content').value;
+            try {
+                const postRef = doc(db, 'suggestions', postId);
+                await updateDoc(postRef, { content: newContent });
+                alert("게시글이 수정되었습니다.");
+                editModal.style.display = 'none';
+                loadPosts();
+            } catch (error) { console.error("Error updating document: ", error); alert("수정 중 오류가 발생했습니다."); }
+        });
+    }
+}); // DOMContentLoaded 닫는 중괄호
