@@ -547,6 +547,13 @@ ul {
     z-index: 10; /* 가장 위로 */
     line-height: 1; /* 이모지 높이 고정 */
     transform: translate(-50%, -50%); /* ✨ 아이콘 중앙을 기준으로 위치 잡기 ✨ */
+      /* ✨ 마커 아래에 점수를 배치하기 위한 flexbox 설정 */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* 가로 중앙 정렬 */
+    justify-content: center; /* 세로 중앙 정렬 (내부 요소가 하나라면) */
+    text-align: center; /* 텍스트 중앙 정렬 */
+
 }
 .map-marker .flag-icon {
     font-size: 1em; /* 이전에 .map-marker에만 적용했다면 이게 더 우선 */
@@ -557,6 +564,48 @@ ul {
     filter: drop-shadow(0 0 12px rgba(0,0,0,0.7)); /* ✨ 호버 시 그림자 더 강조 ✨ */
 } */
 
+/* ✨ NEW: 마커 아래 점수 표시 스타일 */
+.marker-score-display {
+    position: absolute; /* 국기 마크 기준 절대 위치 */
+    top: 100%; /* 국기 마크 바로 아래에 위치 */
+    left: 50%; /* 국기 마크의 가로 중앙에 위치 */
+    transform: translateX(-50%); /* 정확히 중앙 정렬 */
+    margin-top: 5px; /* 국기 마크와 점수 사이 간격 */
+    
+    display: flex;
+    flex-direction: column; /* 점수와 태그를 세로로 정렬 */
+    align-items: center; /* 가로 중앙 정렬 */
+    white-space: nowrap; /* 텍스트가 줄바꿈되지 않도록 */
+    
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    padding: 3px 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    z-index: 11; /* 국기보다 위에, 다른 마커보다 위에 */
+}
+
+.marker-score-display .avg-score {
+    font-size: 0.85em; /* 국기 폰트 사이즈 대비 상대적 크기 */
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 2px;
+}
+
+.marker-score-display .stability-tag {
+    font-size: 0.7em; /* 국기 폰트 사이즈 대비 상대적 크기 */
+    font-weight: 600;
+    padding: 2px 5px;
+    border-radius: 3px;
+}
+
+/* ✨ 기존 안정성 등급별 색상 변수를 활용 */
+.marker-score-display .stability-tag.stable { background-color: var(--level-stable-bg); color: var(--level-stable-text); }
+.marker-score-display .stability-tag.moderate { background-color: var(--level-moderate-bg); color: var(--level-moderate-text); }
+.marker-score-display .stability-tag.unstable { background-color: var(--level-unstable-bg); color: var(--level-unstable-text); }
+.marker-score-display .stability-tag.severe { background-color: var(--level-severe-bg); color: var(--level-severe-text); }
+.marker-score-display .stability-tag.crisis { background-color: var(--level-crisis-bg); color: var(--level-crisis-text); }
+.marker-score-display .stability-tag.unknown { background-color: var(--level-unknown-bg); color: var(--level-unknown-text); }
 
 
 
