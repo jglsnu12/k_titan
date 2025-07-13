@@ -194,6 +194,71 @@ async function loadPosts() {
 }
 
 // =================================================================
+// ✨ NEW: 지도 마커 위치 조정 함수 및 데이터 (DOMContentLoaded 외부)
+// =================================================================
+
+// 국가별 마커의 '지도 이미지 내' 상대적 위치 (0~100% 기준)
+// 이 값들은 지도 이미지의 실제 그림 영역에서 직접 측정하여 조정해야 합니다.
+// 예시 값: 실제 지도 이미지와 해상도에 맞춰 매우 정밀하게 조정하세요.
+// 이 값은 지도 이미지의 왼쪽 상단(0,0)을 기준으로 퍼센티지를 나타냅니다.
+const countryMarkerPositions = {
+    usa: { top: 40, left: 15 },    // 미국
+    china: { top: 45, left: 75 },  // 중국
+    japan: { top: 50, left: 88 },  // 일본
+    korea: { top: 48, left: 83 },  // 대한민국
+    northkorea: { top: 45, left: 80 }, // 북한
+    russia: { top: 25, left: 60 }  // 러시아
+};
+
+/**
+ * 지도 이미지의 실제 렌더링 크기 및 위치를 기반으로 마커 위치를 업데이트합니다.
+ */
+function updateMapMarkerPositions() {
+    const mapVisualizationWrapper = document.querySelector('.map-visualization-wrapper');
+    const worldMapImage = document.querySelector('.world-map-image'); // 동적으로 추가된 img 태그
+
+    if (!worldMapImage || !mapVisualizationWrapper || worldMapImage.naturalWidth === 0) {
+        // 지도 이미지가 없거나 아직 로드되지 않았거나 (naturalWidth가 0인 경우) 함수 종료
+        console.warn("Map image not ready or not found for marker positioning.");
+        return;
+    }
+
+    // 지도 이미지의 실제 렌더링 크기와 위치를 가져옵니다.
+    // getBoundingClientRect()는 뷰포트를 기준으로 한 요소의 크기와 위치를 반환합니다.
+    const mapRect = worldMapImage.getBoundingClientRect();
+    const wrapperRect = mapVisualizationWrapper.getBoundingClientRect();
+
+    // 지도가 wrapper 내에서 얼마나 떨어져 있는지 (여백) 계산
+    const mapOffsetX = mapRect.left - wrapperRect.left;
+    const mapOffsetY = mapRect.top - wrapperRect.top;
+
+    // 지도의 실제 표시 너비와 높이
+    const actualMapWidth = mapRect.width;
+    const actualMapHeight = mapRect.height;
+
+    const mapMarkers = document.querySelectorAll('.map-marker');
+
+    mapMarkers.forEach(marker => {
+        const countryId = marker.dataset.countryId;
+        const position = countryMarkerPositions[countryId];
+
+        if (position) {
+            // 지도 이미지의 실제 표시 영역을 기준으로 마커의 픽셀 위치 계산
+            // position.left/top은 지도 이미지 자체에 대한 퍼센트이므로 실제 픽셀로 변환
+            const markerPixelLeft = mapOffsetX + (actualMapWidth * position.left / 100);
+            const markerPixelTop = mapOffsetY + (actualMapHeight * position.top / 100);
+
+            // wrapper를 기준으로 하는 최종 퍼센티지 위치 계산
+            // transform: translate(-50%, -50%)와 함께 작동하여 마커의 중앙을 맞춥니다.
+            marker.style.left = `${(markerPixelLeft / wrapperRect.width) * 100}%`;
+            marker.style.top = `${(markerPixelTop / wrapperRect.height) * 100}%`;
+            // console.log(`Marker ${countryId}: top: ${marker.style.top}, left: ${marker.style.left}`); // 디버깅용
+        }
+    });
+}
+
+
+// =================================================================
 // ✨ NEW: 국가 데이터 로딩 함수 (DOMContentLoaded 외부)
 // =================================================================
 async function loadCountryData() {
@@ -201,8 +266,8 @@ async function loadCountryData() {
     const rightPanel = document.querySelector('.country-info-panel.right-panel');
     const mapVisualizationWrapper = document.querySelector('.map-visualization-wrapper');
 
-    console.log("loadCountryData called."); // 디버깅용
-    console.log("mapVisualizationWrapper:", mapVisualizationWrapper); // 디버깅용
+    // console.log("loadCountryData called."); // 디버깅용
+    // console.log("mapVisualizationWrapper:", mapVisualizationWrapper); // 디버깅용
 
     if (!leftPanel || !rightPanel || !mapVisualizationWrapper) {
         console.error("Required map elements not found in loadCountryData.");
@@ -210,19 +275,37 @@ async function loadCountryData() {
     }
 
     const mapImageUrl = 'assets/world-map.jpg'; // ⚠️ assets/ 폴더가 있다고 가정.
-    const mapImage = document.createElement('img');
-    mapImage.src = mapImageUrl;
-    mapImage.alt = 'World Map';
-    mapImage.className = 'world-map-image';
-    
-    const existingMapImage = mapVisualizationWrapper.querySelector('.world-map-image');
-    if (existingMapImage) {
-        mapVisualizationWrapper.removeChild(existingMapImage);
-        console.log("Existing map image removed.");
+    let mapImage = mapVisualizationWrapper.querySelector('.world-map-image');
+
+    // 이미지가 없으면 새로 생성하여 추가
+    if (!mapImage) {
+        mapImage = document.createElement('img');
+        mapImage.src = mapImageUrl;
+        mapImage.alt = 'World Map';
+        mapImage.className = 'world-map-image';
+        mapVisualizationWrapper.prepend(mapImage);
+        // console.log("New map image appended to mapVisualizationWrapper. src:", mapImageUrl);
+    } else {
+        // 이미지가 있지만 src가 다르면 업데이트 (이미지 새로고침 등)
+        if (mapImage.src.indexOf(mapImageUrl) === -1) {
+             mapImage.src = mapImageUrl;
+             // console.log("Existing map image src updated to:", mapImageUrl);
+        }
     }
-    
-    mapVisualizationWrapper.prepend(mapImage);
-    console.log("New map image appended to mapVisualizationWrapper. src:", mapImageUrl);
+
+    // ✨ 지도 이미지가 로드된 후 마커 위치를 업데이트하도록 이벤트 리스너 추가
+    // complete 속성으로 이미 로드되었는지 확인, 아니면 'load' 이벤트 대기
+    if (mapImage.complete && mapImage.naturalWidth > 0) {
+        updateMapMarkerPositions();
+    } else {
+        mapImage.addEventListener('load', () => {
+            console.log("Map image loaded, updating marker positions.");
+            updateMapMarkerPositions();
+        });
+        mapImage.addEventListener('error', () => {
+            console.error("Failed to load map image:", mapImageUrl);
+        });
+    }
 
 
     const countriesMeta = [
@@ -468,6 +551,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // ✨ 창 크기 변경 시 마커 위치 업데이트 이벤트 리스너 추가
+    window.addEventListener('resize', updateMapMarkerPositions);
+
 
     // =================================================================
     // ✨ 챗봇 기능 이벤트 리스너 및 함수 정의
@@ -480,10 +566,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (aiChatPopup.style.display === 'none') { // 'active' 클래스 대신 직접 display 속성 확인
                 aiChatPopup.style.display = 'flex';
             }
-            // aiChatPopup.classList.toggle('active'); // 이제 이 클래스 토글은 필요 없을 수 있습니다.
-            
+            // 
             // visibility와 opacity 전환
-            if (aiChatPopup.style.opacity === '0') {
+            if (aiChatPopup.style.opacity === '0' || aiChatPopup.style.opacity === '') { // 초기 상태 고려
                 aiChatPopup.style.opacity = '1';
                 aiChatPopup.style.visibility = 'visible';
             } else {
@@ -503,7 +588,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (chatCloseButton) {
         chatCloseButton.addEventListener('click', () => {
-            // aiChatPopup.classList.remove('active'); // 이제 이 클래스 제거는 필요 없을 수 있습니다.
             aiChatPopup.style.opacity = '0';
             aiChatPopup.style.visibility = 'hidden';
             setTimeout(() => {
@@ -632,4 +716,22 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (error) { console.error("Error updating document: ", error); alert("수정 중 오류가 발생했습니다."); }
         });
     }
+
+    // --- 초기 대시보드 로딩 시 데이터 호출 및 마커 위치 업데이트
+    // 이 부분은 DOMContentLoaded 내부의 탭 전환 로직이 이미 처리하므로 별도 호출 불필요
+    // loadCountryData(); // 이 부분은 이제 필요 없음.
+
 }); // DOMContentLoaded 닫는 중괄호
+
+// openEditModal 함수를 DOMContentLoaded 밖으로 이동하여 전역 접근 가능하게 함
+function openEditModal(postId, postData) {
+    const editModal = document.getElementById('edit-modal');
+    const editPostId = document.getElementById('edit-post-id');
+    const editPostContent = document.getElementById('edit-post-content');
+
+    if (editModal && editPostId && editPostContent) {
+        editPostId.value = postId;
+        editPostContent.value = postData.content;
+        editModal.style.display = 'flex';
+    }
+}
