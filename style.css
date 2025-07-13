@@ -549,7 +549,7 @@ ul {
     transform: translate(-50%, -50%); /* ✨ 아이콘 중앙을 기준으로 위치 잡기 ✨ */
 }
 .map-marker .flag-icon {
-    font-size: 3em; /* 이전에 .map-marker에만 적용했다면 이게 더 우선 */
+    font-size: 1em; /* 이전에 .map-marker에만 적용했다면 이게 더 우선 */
 }
 
 /* .map-marker:hover {
