@@ -481,6 +481,14 @@ ul {
 }
 .icon-map-overview::before {
     content: '🌍'; /* 지구본 이모지 */
+    font-size: 1.5rem; /* 기존에 있다면 유지, 없다면 추가 */
+    font-style: normal; /* 아이콘이 기울어지지 않도록 */
+
+}
+.icon-dashboard::before {
+    content: '📊'; /* 통계 그래프 이모지 또는 다른 분석 관련 이모지 */
+    font-size: 1.5rem; /* 기존에 있다면 유지, 없다면 추가 */
+    font-style: normal; /* 아이콘이 기울어지지 않도록 */
 }
 
 /* 지도와 패널을 감싸는 컨테이너 - 핵심 오버레이 설정 */
