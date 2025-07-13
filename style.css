@@ -539,7 +539,7 @@ ul {
 /* 지도 마커 스타일 */
 .map-marker {
     position: absolute; /* (기존) 지도 이미지 위에 정확한 위치에 오버레이 */
-    font-size: 20em; /* ✨ 기존 2.2rem에서 3배 정도 커진 4em으로 조정 ✨ */
+    font-size: 4em; /* ✨ 기존 2.2rem에서 3배 정도 커진 4em으로 조정 ✨ */
     cursor: pointer;
     transition: transform 0.2s ease, filter 0.2s ease;
     filter: drop-shadow(0 0 8px rgba(0,0,0,0.6)); /* ✨ 그림자 강하게 하여 가시성 개선 ✨ */
@@ -547,6 +547,9 @@ ul {
     z-index: 10; /* 가장 위로 */
     line-height: 1; /* 이모지 높이 고정 */
     transform: translate(-50%, -50%); /* ✨ 아이콘 중앙을 기준으로 위치 잡기 ✨ */
+}
+.map-marker .flag-icon {
+    font-size: 10em; /* 이전에 .map-marker에만 적용했다면 이게 더 우선 */
 }
 
 /* .map-marker:hover {
