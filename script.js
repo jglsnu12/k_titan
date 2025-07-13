@@ -324,12 +324,14 @@ function calculateOverallStability(countryData) {
 
 // =================================================================
 // ✨ 국가 데이터 로딩 함수 (DOMContentLoaded 외부)
-// 이 함수는 세계 지도 이미지를 동적으로 삽입하고, 로드 완료 후 마커 위치를 조정합니다.
 // =================================================================
 async function loadCountryData() {
     const leftPanel = document.querySelector('.country-info-panel.left-panel');
     const rightPanel = document.querySelector('.country-info-panel.right-panel');
     const mapVisualizationWrapper = document.querySelector('.map-visualization-wrapper');
+
+    // 디버깅: loadCountryData 함수 시작 로그
+    console.log("DEBUG: loadCountryData started.");
 
     if (!leftPanel || !rightPanel || !mapVisualizationWrapper) {
         console.error("Required map elements not found in loadCountryData.");
@@ -353,19 +355,17 @@ async function loadCountryData() {
         }
     }
 
-    // ✨ 지도 이미지가 로드된 후 마커 위치를 업데이트하도록 이벤트 리스너 추가
-    // complete 속성으로 이미 로드되었는지 확인, 아니면 'load' 이벤트 대기
-    // naturalWidth > 0 조건은 이미지가 실패 없이 로드되었는지 확인하는 데 유용합니다.
+    // 지도 이미지가 로드된 후 마커 위치를 업데이트하도록 이벤트 리스너 추가
     if (mapImage.complete && mapImage.naturalWidth > 0) {
-        console.log("Map image already loaded, updating marker positions.");
+        console.log("DEBUG: Map image already loaded, updating marker positions.");
         updateMapMarkerPositions();
     } else {
         mapImage.addEventListener('load', () => {
-            console.log("Map image loaded, updating marker positions.");
+            console.log("DEBUG: Map image loaded, updating marker positions.");
             updateMapMarkerPositions();
         });
         mapImage.addEventListener('error', () => {
-            console.error("Failed to load map image:", mapImageUrl);
+            console.error("DEBUG: Failed to load map image:", mapImageUrl);
         });
     }
 
@@ -389,7 +389,7 @@ async function loadCountryData() {
             const response = await fetch(`http://localhost:5000/get_country_data/${meta.id}`);
             if (!response.ok) {
                 const errorText = await response.text();
-                console.error(`Failed to load data for ${meta.id}: ${response.status} - ${errorText}`);
+                console.error(`DEBUG: Failed to load data for ${meta.id}: ${response.status} - ${errorText}`);
                 allCountriesData.push({
                     ...meta,
                     report_title: `${meta.name} 국제 정세 분석 보고서`,
@@ -425,7 +425,7 @@ async function loadCountryData() {
                 });
             }
         } catch (error) {
-            console.error(`Error fetching data for ${meta.id}:`, error);
+            console.error(`DEBUG: Error fetching data for ${meta.id}:`, error);
             allCountriesData.push({
                 ...meta,
                 report_title: `${meta.name} 국제 정세 분석 보고서`,
@@ -464,7 +464,6 @@ async function loadCountryData() {
                 </div>
             `;
         });
-
 
         countryCard.innerHTML = `
             <div class="country-header">
@@ -514,8 +513,12 @@ async function loadCountryData() {
             });
         });
 
+        // 🚨🚨🚨 이 부분의 로그를 확인하세요! 🚨🚨🚨
         const marker = document.querySelector(`.map-marker.${country.markerClass}`);
+        console.log(`DEBUG: Searching for marker .map-marker.${country.markerClass}:`, marker);
+        
         if (marker) {
+            console.log(`DEBUG: Marker ${country.markerClass} found. Attempting to add score display.`);
             marker.addEventListener('click', () => {
                 document.querySelectorAll('.country-card').forEach(card => card.classList.remove('active'));
                 countryCard.classList.add('active');
@@ -525,8 +528,10 @@ async function loadCountryData() {
                     toggleReportBtn.textContent = '보고서 간략히 보기';
                 }
             });
+
             // ✨ NEW: 국기 마커 바로 아래에 평균 점수와 태그 표시
-            const { averageScore, stabilityTag, stabilityClass } = calculateOverallStability(allCountriesData.find(d => d.id === country.id));
+            const { averageScore, stabilityTag, stabilityClass } = calculateOverallStability(country); 
+            console.log(`DEBUG: Country: ${country.name}, Avg Score: ${averageScore}, Tag: ${stabilityTag}`);
             
             const scoreDisplay = document.createElement('div');
             scoreDisplay.className = 'marker-score-display'; // 새로운 클래스
@@ -538,12 +543,16 @@ async function loadCountryData() {
             const existingScoreDisplay = marker.querySelector('.marker-score-display');
             if (existingScoreDisplay) {
                 marker.removeChild(existingScoreDisplay);
+                console.log(`DEBUG: Removed existing score display for ${country.markerClass}.`);
             }
             marker.appendChild(scoreDisplay);
+            console.log(`DEBUG: Appended score display for ${country.markerClass}.`);
+        } else {
+            console.warn(`DEBUG: Marker .map-marker.${country.markerClass} not found. Cannot add score display.`);
         }
     });
+    console.log("DEBUG: loadCountryData finished.");
 }
-
 
 // =================================================================
 // ✨ 3. DOMContentLoaded 이벤트 리스너 (모든 DOM 상호작용 및 이벤트 처리)
