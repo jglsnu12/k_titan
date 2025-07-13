@@ -268,6 +268,266 @@ async function loadPosts() {
     postsContainer.innerHTML = postsHtml;
 }
 
+async function loadCountryData() {
+    const leftPanel = document.querySelector('.country-info-panel.left-panel');
+    const rightPanel = document.querySelector('.country-info-panel.right-panel');
+    const mapImageWrapper = document.querySelector('.map-image-wrapper');
+
+    if (!leftPanel || !rightPanel || !mapImageWrapper) return;
+
+    // 지도 이미지 로드 (HTML에 직접 src를 넣는 대신 JS에서 동적으로 추가)
+    const mapImageUrl = 'assets/world_map.png'; // ⚠️ 여기에 실제 지도 이미지 경로를 입력하세요.
+    const mapImage = document.createElement('img');
+    mapImage.src = mapImageUrl;
+    mapImage.alt = 'World Map';
+    mapImage.className = 'world-map-image';
+    
+    const existingMapImage = mapImageWrapper.querySelector('.world-map-image');
+    if (existingMapImage) { mapImageWrapper.removeChild(existingMapImage); }
+    mapImageWrapper.prepend(mapImage);
+
+
+    // 국가 데이터 정의 (백엔드에서 가져올 국가 목록)
+    const countriesMeta = [ // 메타 정보는 JS에 하드코딩
+        { id: 'usa', name: '미국', flag: '🇺🇸', markerClass: 'us' },
+        { id: 'china', name: '중국', flag: '🇨🇳', markerClass: 'cn' },
+        { id: 'japan', name: '일본', flag: '🇯🇵', markerClass: 'jp' },
+        { id: 'korea', name: '대한민국', flag: '🇰🇷', markerClass: 'kr' },
+        { id: 'northkorea', name: '북한', flag: '🇰🇵', markerClass: 'kp' }, // 북한 추가
+        { id: 'russia', name: '러시아', flag: '🇷🇺', markerClass: 'ru' },
+    ];
+
+    leftPanel.innerHTML = '<p class="loading-panel">국가 정보를 불러오는 중...</p>';
+    rightPanel.innerHTML = '<p class="loading-panel">국가 정보를 불러오는 중...</p>';
+
+    const allCountriesData = [];
+
+    // 각 국가의 데이터를 백엔드에서 비동기적으로 가져옴
+    for (const meta of countriesMeta) {
+        try {
+            const response = await fetch(`http://localhost:5000/get_country_data/${meta.id}`);
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error(`Failed to load data for ${meta.id}: ${response.status} - ${errorText}`);
+                allCountriesData.push({
+                    ...meta, // 기존 메타 정보 복사
+                    overall_stability: '알 수 없음',
+                    overall_briefing: '데이터 로드 실패 또는 파일 없음.',
+                    categories: []
+                });
+            } else {
+                const data = await response.json();
+                allCountriesData.push({
+                    ...meta, // 기존 메타 정보 복사
+                    overall_stability: data.overall_stability || '알 수 없음',
+                    overall_briefing: data.overall_briefing || '데이터 요약 없음.',
+                    categories: data.categories || []
+                });
+            }
+        } catch (error) {
+            console.error(`Error fetching data for ${meta.id}:`, error);
+            allCountriesData.push({
+                ...meta, // 기존 메타 정보 복사
+                overall_stability: '알 수 없음',
+                overall_briefing: `네트워크 오류 또는 서버 접속 불가 (${error.message}).`,
+                categories: []
+            });
+        }
+    }
+
+    leftPanel.innerHTML = '';
+    rightPanel.innerHTML = '';
+
+    allCountriesData.forEach((country, index) => {
+        const countryCard = document.createElement('div');
+        countryCard.className = 'country-card';
+        // 전체 안정성 등급에 따른 클래스 추가
+        const stabilityClass = country.overall_stability ? country.overall_stability.toLowerCase().replace(' ', '') : 'unknown'; // 공백 제거 및 소문자 변환
+        
+        // 상세 브리핑 영역 (처음에는 숨김)
+        let categoriesHtml = '';
+        country.categories.forEach(cat => {
+            const levelClass = cat.level ? cat.level.toLowerCase().replace(' ', '') : 'unknown'; // 단계도 클래스화
+            categoriesHtml += `
+                <div class="category-detail">
+                    <h4>${cat.name}</h4>
+                    <span class="category-score">점수: ${cat.score !== null ? cat.score : 'N/A'}</span>
+                    <span class="category-level ${levelClass}">단계: ${cat.level}</span>
+                    <p>${cat.reason}</p>
+                </div>
+            `;
+        });
+
+        countryCard.innerHTML = `
+            <div class="country-header">
+                <h3><span class="flag-emoji">${country.flag}</span> ${country.name}</h3>
+                <span class="stability-rating ${stabilityClass}">${country.overall_stability}</span>
+            </div>
+            <p class="overall-briefing">${country.overall_briefing}</p>
+            <button class="toggle-details-btn">상세 보기</button>
+            <div class="country-details" style="display: none;">
+                ${categoriesHtml || '<p>상세 분석 데이터가 없습니다.</p>'}
+            </div>
+        `;
+        
+        if (index < 3) {
+            leftPanel.appendChild(countryCard);
+        } else {
+            rightPanel.appendChild(countryCard);
+        }
+
+        // 상세 보기/숨기기 토글 기능
+        const toggleBtn = countryCard.querySelector('.toggle-details-btn');
+        const detailsDiv = countryCard.querySelector('.country-details');
+        if (toggleBtn && detailsDiv) {
+            toggleBtn.addEventListener('click', () => {
+                if (detailsDiv.style.display === 'none') {
+                    detailsDiv.style.display = 'block';
+                    toggleBtn.textContent = '간략히 보기';
+                } else {
+                    detailsDiv.style.display = 'none';
+                    toggleBtn.textContent = '상세 보기';
+                }
+            });
+        }
+
+        // 지도 마커에 이벤트 리스너 추가 (클릭 시 해당 국가 정보 하이라이트)
+        const marker = document.querySelector(`.map-marker.${country.markerClass}`);
+        if (marker) {
+            marker.addEventListener('click', () => {
+                document.querySelectorAll('.country-card').forEach(card => card.classList.remove('active'));
+                countryCard.classList.add('active');
+                countryCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                // 상세보기가 숨겨져 있다면 펼침
+                if (detailsDiv && detailsDiv.style.display === 'none') {
+                    detailsDiv.style.display = 'block';
+                    toggleBtn.textContent = '간략히 보기';
+                }
+            });
+        }
+    });
+}
+
+
+// =================================================================
+// ✨ NEW: 국가 데이터 로딩 함수 (DOMContentLoaded 외부)
+// =================================================================
+async function loadCountryData() {
+    const leftPanel = document.querySelector('.country-info-panel.left-panel');
+    const rightPanel = document.querySelector('.country-info-panel.right-panel');
+    const mapImageWrapper = document.querySelector('.map-image-wrapper');
+
+    if (!leftPanel || !rightPanel || !mapImageWrapper) return;
+
+    // 지도 이미지 로드 (HTML에 직접 src를 넣는 대신 JS에서 동적으로 추가)
+    // 이 부분에서 실제 지도 이미지 경로를 지정해주세요.
+    const mapImageUrl = 'assets/world_map.png'; // ⚠️ 여기에 실제 지도 이미지 경로를 입력하세요.
+    const mapImage = document.createElement('img');
+    mapImage.src = mapImageUrl;
+    mapImage.alt = 'World Map';
+    mapImage.className = 'world-map-image';
+    
+    // 기존 이미지가 있다면 제거하고 새로 추가 (탭 전환 시 중복 추가 방지)
+    const existingMapImage = mapImageWrapper.querySelector('.world-map-image');
+    if (existingMapImage) {
+        mapImageWrapper.removeChild(existingMapImage);
+    }
+    mapImageWrapper.prepend(mapImage);
+
+
+    // 국가 데이터 정의 (백엔드에서 가져올 국가 목록)
+    // HTML에 마커가 정의된 국가들을 여기에 추가하세요.
+    const countryCodes = ['usa', 'china', 'korea', 'russia', 'japan', 'uk']; // 예시 국가 코드
+
+    leftPanel.innerHTML = '<p class="loading-panel">국가 정보를 불러오는 중...</p>';
+    rightPanel.innerHTML = '<p class="loading-panel">국가 정보를 불러오는 중...</p>';
+
+    const countriesData = [];
+
+    // 각 국가의 데이터를 백엔드에서 비동기적으로 가져옴
+    for (const code of countryCodes) {
+        try {
+            const response = await fetch(`http://localhost:5000/get_country_data/${code}`);
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error(`Failed to load data for ${code}: ${response.status} - ${errorText}`);
+                countriesData.push({
+                    id: code, name: code.toUpperCase(), flag: '❓', stability: 'neutral',
+                    briefing: '데이터 로드 실패 또는 파일 없음.', markerClass: code
+                });
+            } else {
+                const data = await response.json();
+                // 백엔드에서 제공하는 데이터에 따라 여기를 조정해야 합니다.
+                // 예시: data.country_code, data.stability, data.briefing
+                let countryName = '';
+                let countryFlag = '';
+                // 국가 코드에 따른 이름과 국기 매핑
+                switch(code) {
+                    case 'usa': countryName = '미국'; countryFlag = '🇺🇸'; break;
+                    case 'china': countryName = '중국'; countryFlag = '🇨🇳'; break;
+                    case 'korea': countryName = '대한민국'; countryFlag = '🇰🇷'; break;
+                    case 'russia': countryName = '러시아'; countryFlag = '🇷🇺'; break;
+                    case 'japan': countryName = '일본'; countryFlag = '🇯🇵'; break;
+                    case 'uk': countryName = '영국'; countryFlag = '🇬🇧'; break;
+                    default: countryName = code.toUpperCase(); countryFlag = '❓';
+                }
+
+                countriesData.push({
+                    id: code,
+                    name: countryName,
+                    flag: countryFlag,
+                    stability: data.stability,
+                    briefing: data.briefing,
+                    markerClass: code // CSS 마커 클래스와 일치
+                });
+            }
+        } catch (error) {
+            console.error(`Error fetching data for ${code}:`, error);
+            countriesData.push({
+                id: code, name: code.toUpperCase(), flag: '❌', stability: 'neutral',
+                briefing: `네트워크 오류 또는 서버 접속 불가 (${error.message}).`, markerClass: code
+            });
+        }
+    }
+
+    leftPanel.innerHTML = '';
+    rightPanel.innerHTML = '';
+
+    countriesData.forEach((country, index) => {
+        const countryCard = document.createElement('div');
+        countryCard.className = 'country-card';
+        countryCard.innerHTML = `
+            <h3><span class="flag-emoji">${country.flag}</span> ${country.name}</h3>
+            <span class="stability-rating ${country.stability}">${
+                country.stability === 'stable' ? '안정' :
+                country.stability === 'moderate' ? '보통' :
+                country.stability === 'unstable' ? '불안정' : '알 수 없음'
+            }</span>
+            <p>${country.briefing}</p>
+        `;
+        if (index < 3) {
+            leftPanel.appendChild(countryCard);
+        } else {
+            rightPanel.appendChild(countryCard);
+        }
+
+        // 지도 마커에 이벤트 리스너 추가 (클릭 시 해당 국가 정보 하이라이트)
+        const marker = document.querySelector(`.map-marker.${country.markerClass}`);
+        if (marker) {
+            marker.addEventListener('click', () => {
+                document.querySelectorAll('.country-card').forEach(card => card.classList.remove('active'));
+                countryCard.classList.add('active');
+                countryCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            });
+        }
+    });
+}
+
+
+
+
+
+
 
 // =================================================================
 // ✨ 3. DOMContentLoaded 이벤트 리스너 (모든 DOM 상호작용 및 이벤트 처리)
@@ -325,6 +585,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 fetchKoreanNews();
                 fetchEnglishNews();
                 renderCalendar();
+                loadCountryData(); // 국가 데이터 로딩
                 // 챗봇 버튼 및 팝업 표시
                 if (chatToggleButton) {
                     chatToggleButton.classList.add('active-tab-button');
@@ -350,6 +611,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 chatToggleButton.classList.add('active-tab-button');
                 chatToggleButton.style.display = 'flex'; // 명시적으로 display: flex 적용
             }
+            loadCountryData(); // 초기 로드 시 대시보드 탭이면 국가 데이터 로딩
         } else {
             hideChatbotElements(); // 초기 탭이 대시보드가 아니면 숨김
         }
