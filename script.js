@@ -515,7 +515,9 @@ async function loadCountryData() {
         });
 
         const marker = document.querySelector(`.map-marker.${country.markerClass}`);
+        console.log(Searching for marker ${country.markerClass}:, marker); 
         if (marker) {
+            console.log(Marker ${country.markerClass} found. Adding score display.);
             marker.addEventListener('click', () => {
                 document.querySelectorAll('.country-card').forEach(card => card.classList.remove('active'));
                 countryCard.classList.add('active');
@@ -527,7 +529,8 @@ async function loadCountryData() {
             });
             // ✨ NEW: 국기 마커 바로 아래에 평균 점수와 태그 표시
             const { averageScore, stabilityTag, stabilityClass } = calculateOverallStability(allCountriesData.find(d => d.id === country.id));
-
+            console.log(Country: ${country.name}, Avg Score: ${averageScore}, Tag: ${stabilityTag});
+            
             const scoreDisplay = document.createElement('div');
             scoreDisplay.className = 'marker-score-display'; // 새로운 클래스
             scoreDisplay.innerHTML = `
