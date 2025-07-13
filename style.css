@@ -521,7 +521,7 @@ ul {
 .country-info-panel {
     position: absolute; /* 맵 래퍼를 기준으로 절대 위치 */
     width: 350px; /* 패널 너비 고정 */
-    max-height: calc(100%-40%); /* 부모 래퍼 높이 - 패딩 (상하 20px씩) */
+    max-height: calc(100% - 30%); /* 부모 래퍼 높이 - 패딩 (상하 20px씩) */
     overflow-y: auto; /* 내용이 넘치면 스크롤 */
     background-color: rgba(255, 255, 255, 0.7); /* 반투명 배경 */
     border: 1px solid var(--border-color);
@@ -533,6 +533,7 @@ ul {
     display: flex;
     flex-direction: column;
     gap: 15px;
+
 }
 .country-info-panel.left-panel {
     top: 20px; /* 상단에서 20px */
