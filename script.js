@@ -358,11 +358,11 @@ async function loadCountryData() {
     // 지도 이미지가 로드된 후 마커 위치를 업데이트하도록 이벤트 리스너 추가
     if (mapImage.complete && mapImage.naturalWidth > 0) {
         console.log("DEBUG: Map image already loaded, updating marker positions.");
-        updateMapMarkerPositions();
+        setTimeout(updateMapMarkerPositions, 50); // 50ms 지연
     } else {
         mapImage.addEventListener('load', () => {
             console.log("DEBUG: Map image loaded, updating marker positions.");
-            updateMapMarkerPositions();
+            setTimeout(updateMapMarkerPositions, 50); // 50ms 지연
         });
         mapImage.addEventListener('error', () => {
             console.error("DEBUG: Failed to load map image:", mapImageUrl);
