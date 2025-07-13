@@ -10,6 +10,20 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icon-css@1.2.0/css/flag-icon.min.css">
+    <style>
+        /* 기존의 map-marker 스타일이 깃발 아이콘에 맞게 조정될 수 있도록 필요하면 수정해주세요 */
+        .map-marker {
+            /* 깃발 아이콘이 적절한 크기로 보이도록 font-size를 조정할 수 있습니다. */
+            font-size: 2em; /* 예를 들어, 기본 텍스트 크기보다 2배 크게 */
+            line-height: 1; /* 깃발 아이콘의 높이를 조정 */
+            display: inline-block; /* 깃발 아이콘이 자체 공간을 갖도록 */
+            /* 기존의 위치 지정(position: absolute 등) 스타일은 유지해야 합니다. */
+        }
+        .map-marker .flag-icon {
+            vertical-align: middle; /* 깃발 아이콘이 요소 중앙에 오도록 정렬 */
+        }
+    </style>
 
 </head>
 <body>
@@ -55,16 +69,14 @@
                     <div class="map-visualization-wrapper">
                         <div class="country-info-panel left-panel">
                             </div>
-            
                         <div class="country-info-panel right-panel">
                             </div>
-            
-                        <div class="map-marker us" data-country-id="usa">🇺🇸</div>
-                        <div class="map-marker cn" data-country-id="china">🇨🇳</div>
-                        <div class="map-marker jp" data-country-id="japan">🇯🇵</div>
-                        <div class="map-marker kr" data-country-id="korea">🇰🇷</div>
-                        <div class="map-marker kp" data-country-id="northkorea">🇰🇵</div>
-                        <div class="map-marker ru" data-country-id="russia">🇷🇺</div>
+                        <div class="map-marker us" data-country-id="usa"><span class="flag-icon flag-icon-us"></span></div>
+                        <div class="map-marker cn" data-country-id="china"><span class="flag-icon flag-icon-cn"></span></div>
+                        <div class="map-marker jp" data-country-id="japan"><span class="flag-icon flag-icon-jp"></span></div>
+                        <div class="map-marker kr" data-country-id="korea"><span class="flag-icon flag-icon-kr"></span></div>
+                        <div class="map-marker kp" data-country-id="northkorea"><span class="flag-icon flag-icon-kp"></span></div>
+                        <div class="map-marker ru" data-country-id="russia"><span class="flag-icon flag-icon-ru"></span></div>
                     </div>
                 </section>
             
