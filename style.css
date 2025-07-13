@@ -806,6 +806,15 @@ ul {
 .post-card {
     background-color: var(--card-bg-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 18px 24px; margin-bottom: 20px;
 }
+#show-write-modal {
+    margin-left: auto; /* 기존 스타일 유지 */
+    display: none; /* 기본적으로 숨김 */
+}
+#suggestions-content.tab-content.active #show-write-modal {
+    display: block; /* 버튼의 원래 display 속성에 따라 flex, inline-block 등으로 설정할 수 있습니다. */
+}
+
+
 .post-header {
     display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; font-size: 0.9rem; color: var(--text-light-color);
 }
