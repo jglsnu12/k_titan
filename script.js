@@ -217,7 +217,7 @@ async function loadCountryData() {
         return;
     }
 
-    const mapImageUrl = 'assets/world_map.jpg'; // ⚠️ 여기에 실제 지도 이미지 경로를 입력하세요.
+    const mapImageUrl = 'world_map.jpg'; // ⚠️ 여기에 실제 지도 이미지 경로를 입력하세요.
     const mapImage = document.createElement('img');
     mapImage.src = mapImageUrl;
     mapImage.alt = 'World Map';
