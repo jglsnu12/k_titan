@@ -347,7 +347,7 @@ async function loadCountryData() {
                     report_title: data.report_title || `${countryName} 국제 정세 분석 보고서`,
                     report_intro: data.report_intro || '보고서 서론 없음.',
                     categories: data.categories || [],
-                    markerClass: meta.id
+                    markerClass: meta.markerClass
                 });
             }
         } catch (error) {
