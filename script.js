@@ -515,7 +515,6 @@ async function loadCountryData() {
         });
 
         const marker = document.querySelector(`.map-marker.${country.markerClass}`);
-        console.log(Searching for marker ${country.markerClass}:, marker); 
         if (marker) {
             marker.addEventListener('click', () => {
                 document.querySelectorAll('.country-card').forEach(card => card.classList.remove('active'));
