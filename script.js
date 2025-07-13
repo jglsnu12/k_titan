@@ -194,13 +194,14 @@ async function loadPosts() {
 }
 
 // =================================================================
-// ✨ NEW: 지도 마커 위치 조정 함수 및 데이터 (DOMContentLoaded 외부)
+// ✨ 지도 마커 위치 조정 함수 및 데이터 (DOMContentLoaded 외부)
 // =================================================================
 
 // 국가별 마커의 '지도 이미지 내' 상대적 위치 (0~100% 기준)
-// 이 값들은 지도 이미지의 실제 그림 영역에서 직접 측정하여 조정해야 합니다.
-// 예시 값: 실제 지도 이미지와 해상도에 맞춰 매우 정밀하게 조정하세요.
-// 이 값은 지도 이미지의 왼쪽 상단(0,0)을 기준으로 퍼센티지를 나타냅니다.
+// 이 값들은 **사용하는 지도 이미지의 실제 픽셀 크기(예: 1920x1080)에 비례**하여 설정되어야 합니다.
+// 즉, 지도 이미지의 왼쪽 상단(0,0)을 기준으로 퍼센티지를 나타냅니다.
+// ⚠️ 중요: 이 값들을 정확히 조정해야 마커가 지도 상의 원하는 위치에 고정됩니다.
+// 예를 들어, 실제 지도 이미지에서 특정 도시가 전체 너비의 15%, 높이의 40%에 있다면 left: 15, top: 40.
 const countryMarkerPositions = {
     usa: { top: 40, left: 15 },    // 미국
     china: { top: 45, left: 75 },  // 중국
@@ -212,27 +213,31 @@ const countryMarkerPositions = {
 
 /**
  * 지도 이미지의 실제 렌더링 크기 및 위치를 기반으로 마커 위치를 업데이트합니다.
+ * 이 함수는 지도가 `object-fit: contain`으로 인해 여백이 생기더라도,
+ * 지도 이미지의 실제 '내용' 영역 위에 마커가 정확히 올라가도록 계산합니다.
  */
 function updateMapMarkerPositions() {
     const mapVisualizationWrapper = document.querySelector('.map-visualization-wrapper');
     const worldMapImage = document.querySelector('.world-map-image'); // 동적으로 추가된 img 태그
 
+    // 지도 이미지가 없거나 아직 로드되지 않았거나 (naturalWidth가 0인 경우) 함수 종료
+    // naturalWidth는 이미지의 원본 너비를 나타내며, 이미지가 로드되기 전에는 0입니다.
     if (!worldMapImage || !mapVisualizationWrapper || worldMapImage.naturalWidth === 0) {
-        // 지도 이미지가 없거나 아직 로드되지 않았거나 (naturalWidth가 0인 경우) 함수 종료
-        console.warn("Map image not ready or not found for marker positioning.");
+        console.warn("Map image not ready or not found for marker positioning. Skipping update.");
         return;
     }
 
-    // 지도 이미지의 실제 렌더링 크기와 위치를 가져옵니다.
+    // 지도 이미지가 맵 래퍼 내에서 실제로 렌더링되는 크기와 위치를 가져옵니다.
     // getBoundingClientRect()는 뷰포트를 기준으로 한 요소의 크기와 위치를 반환합니다.
-    const mapRect = worldMapImage.getBoundingClientRect();
-    const wrapperRect = mapVisualizationWrapper.getBoundingClientRect();
+    const mapRect = worldMapImage.getBoundingClientRect(); // 이미지 자체의 렌더링된 크기/위치
+    const wrapperRect = mapVisualizationWrapper.getBoundingClientRect(); // 래퍼 컨테이너의 크기/위치
 
-    // 지도가 wrapper 내에서 얼마나 떨어져 있는지 (여백) 계산
+    // 지도 이미지가 래퍼 내에서 'object-fit: contain'으로 인해 생기는 여백을 고려한 오프셋
+    // 즉, 지도 이미지의 좌측 상단 모서리가 래퍼 좌측 상단 모서리로부터 얼마나 떨어져 있는지 (픽셀 단위)
     const mapOffsetX = mapRect.left - wrapperRect.left;
     const mapOffsetY = mapRect.top - wrapperRect.top;
 
-    // 지도의 실제 표시 너비와 높이
+    // 지도의 실제 표시 너비와 높이 (컨테이너에 맞춰 스케일된 후의 크기)
     const actualMapWidth = mapRect.width;
     const actualMapHeight = mapRect.height;
 
@@ -243,31 +248,39 @@ function updateMapMarkerPositions() {
         const position = countryMarkerPositions[countryId];
 
         if (position) {
-            // 지도 이미지의 실제 표시 영역을 기준으로 마커의 픽셀 위치 계산
-            // position.left/top은 지도 이미지 자체에 대한 퍼센트이므로 실제 픽셀로 변환
-            const markerPixelLeft = mapOffsetX + (actualMapWidth * position.left / 100);
-            const markerPixelTop = mapOffsetY + (actualMapHeight * position.top / 100);
+            // 1. 지도 이미지의 실제 표시 영역을 기준으로 마커의 픽셀 위치 계산
+            //    countryMarkerPositions는 지도 이미지 자체 내에서의 상대적 퍼센티지이므로
+            //    actualMapWidth/Height를 곱하여 실제 픽셀 위치로 변환합니다.
+            const markerPixelLeftRelativeToMap = (actualMapWidth * position.left / 100);
+            const markerPixelTopRelativeToMap = (actualMapHeight * position.top / 100);
 
-            // wrapper를 기준으로 하는 최종 퍼센티지 위치 계산
-            // transform: translate(-50%, -50%)와 함께 작동하여 마커의 중앙을 맞춥니다.
-            marker.style.left = `${(markerPixelLeft / wrapperRect.width) * 100}%`;
-            marker.style.top = `${(markerPixelTop / wrapperRect.height) * 100}%`;
-            // console.log(`Marker ${countryId}: top: ${marker.style.top}, left: ${marker.style.left}`); // 디버깅용
+            // 2. 이 픽셀 위치를 다시 맵 래퍼(mapVisualizationWrapper)를 기준으로 하는 픽셀 위치로 변환
+            //    여백(mapOffsetX, mapOffsetY)을 더해줍니다.
+            const markerPixelLeftRelativeToWrapper = mapOffsetX + markerPixelLeftRelativeToMap;
+            const markerPixelTopRelativeToWrapper = mapOffsetY + markerPixelTopRelativeToMap;
+
+            // 3. 맵 래퍼의 전체 크기 대비 퍼센티지로 변환하여 CSS `left`/`top`에 적용
+            //    이렇게 하면 래퍼가 스케일될 때 마커도 함께 스케일됩니다.
+            marker.style.left = `${(markerPixelLeftRelativeToWrapper / wrapperRect.width) * 100}%`;
+            marker.style.top = `${(markerPixelTopRelativeToWrapper / wrapperRect.height) * 100}%`;
+
+            // console.log(`Marker ${countryId}: mapRect(${mapRect.width}, ${mapRect.height}), ` +
+            //             `wrapperRect(${wrapperRect.width}, ${wrapperRect.height}), ` +
+            //             `offset(${mapOffsetX}, ${mapOffsetY}), ` +
+            //             `final pos: top: ${marker.style.top}, left: ${marker.style.left}`); // 상세 디버깅용
         }
     });
 }
 
 
 // =================================================================
-// ✨ NEW: 국가 데이터 로딩 함수 (DOMContentLoaded 외부)
+// ✨ 국가 데이터 로딩 함수 (DOMContentLoaded 외부)
+// 이 함수는 세계 지도 이미지를 동적으로 삽입하고, 로드 완료 후 마커 위치를 조정합니다.
 // =================================================================
 async function loadCountryData() {
     const leftPanel = document.querySelector('.country-info-panel.left-panel');
     const rightPanel = document.querySelector('.country-info-panel.right-panel');
     const mapVisualizationWrapper = document.querySelector('.map-visualization-wrapper');
-
-    // console.log("loadCountryData called."); // 디버깅용
-    // console.log("mapVisualizationWrapper:", mapVisualizationWrapper); // 디버깅용
 
     if (!leftPanel || !rightPanel || !mapVisualizationWrapper) {
         console.error("Required map elements not found in loadCountryData.");
@@ -284,18 +297,18 @@ async function loadCountryData() {
         mapImage.alt = 'World Map';
         mapImage.className = 'world-map-image';
         mapVisualizationWrapper.prepend(mapImage);
-        // console.log("New map image appended to mapVisualizationWrapper. src:", mapImageUrl);
     } else {
-        // 이미지가 있지만 src가 다르면 업데이트 (이미지 새로고침 등)
+        // 이미지가 있지만 src가 다르면 업데이트
         if (mapImage.src.indexOf(mapImageUrl) === -1) {
              mapImage.src = mapImageUrl;
-             // console.log("Existing map image src updated to:", mapImageUrl);
         }
     }
 
     // ✨ 지도 이미지가 로드된 후 마커 위치를 업데이트하도록 이벤트 리스너 추가
     // complete 속성으로 이미 로드되었는지 확인, 아니면 'load' 이벤트 대기
+    // naturalWidth > 0 조건은 이미지가 실패 없이 로드되었는지 확인하는 데 유용합니다.
     if (mapImage.complete && mapImage.naturalWidth > 0) {
+        console.log("Map image already loaded, updating marker positions.");
         updateMapMarkerPositions();
     } else {
         mapImage.addEventListener('load', () => {
@@ -537,6 +550,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- 초기 페이지 로드 시 활성화될 탭에 따른 챗봇 버튼 상태 설정 ---
+    // 페이지 로드 시 'home-content'가 active이므로 이 부분은 챗봇 버튼을 숨깁니다.
+    // 사용자가 'dashboard' 탭을 클릭했을 때 loadCountryData가 호출되고 마커 위치가 조정됩니다.
     const initialActiveTabButton = document.querySelector('.tab-button.active');
     if (initialActiveTabButton) {
         const initialTargetContentId = initialActiveTabButton.dataset.tab + '-content';
@@ -552,6 +567,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ✨ 창 크기 변경 시 마커 위치 업데이트 이벤트 리스너 추가
+    // 이 부분은 지도가 스케일될 때마다 마커 위치를 재조정하여 정합성을 유지합니다.
     window.addEventListener('resize', updateMapMarkerPositions);
 
 
@@ -716,10 +732,6 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (error) { console.error("Error updating document: ", error); alert("수정 중 오류가 발생했습니다."); }
         });
     }
-
-    // --- 초기 대시보드 로딩 시 데이터 호출 및 마커 위치 업데이트
-    // 이 부분은 DOMContentLoaded 내부의 탭 전환 로직이 이미 처리하므로 별도 호출 불필요
-    // loadCountryData(); // 이 부분은 이제 필요 없음.
 
 }); // DOMContentLoaded 닫는 중괄호
 
