@@ -539,11 +539,13 @@ ul {
 /* 지도 마커 스타일 */
 .map-marker {
     position: absolute; /* 지도 이미지 위에 정확한 위치에 오버레이 */
-    font-size: 2.2rem;
+    font-size: 2.8rem; /* <--- 국기 이모지 크기를 충분히 크게 조정 (기존 2.2rem에서 증가) */
     cursor: pointer;
     transition: transform 0.2s ease, filter 0.2s ease;
-    filter: drop-shadow(0 0 5px rgba(0,0,0,0.3));
+    filter: drop-shadow(0 0 5px rgba(0,0,0,0.5)); /* <--- 이모지 가시성 개선을 위해 그림자 진하게 */
+    text-shadow: 0 0 5px rgba(0,0,0,0.5); /* <--- 텍스트 그림자 추가 */
     z-index: 10; /* 가장 위로 */
+    line-height: 1; /* 이모지 높이 고정 */
 }
 
 .map-marker:hover {
