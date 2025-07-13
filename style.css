@@ -1,5 +1,5 @@
 /* =================================================================
-   K-TITAN Dashboard - Final Refactored Stylesheet
+   K-TITAN Dashboard - Final Refactored Stylesheet (All-in-One)
    ================================================================= */
 
 /* 1. 변수 및 전역 스타일
@@ -18,6 +18,13 @@
     --status-resolved-text: #2f9e44;
     --status-unresolved-bg: #fff4e6;
     --status-unresolved-text: #d9480f;
+    /* 새로운 안정성 단계 색상 변수 */
+    --level-stable-bg: #e6fcf5; --level-stable-text: #2f9e44;
+    --level-moderate-bg: #fff4e6; --level-moderate-text: #d9480f;
+    --level-unstable-bg: #ffe3e3; --level-unstable-text: #c92a2a;
+    --level-severe-bg: #fae6fa; --level-severe-text: #8e1f8d;
+    --level-crisis-bg: #fce6e6; --level-crisis-text: #7f0d0d;
+    --level-unknown-bg: #e9ecef; --level-unknown-text: #495057;
 }
 
 * {
@@ -46,88 +53,93 @@ ul {
     list-style: none;
 }
 
-
-/* AI 챗봇 토글 버튼 - 디자인 개선 및 중요 스타일 강조 */
+/* AI 챗봇 토글 버튼 */
 .chat-toggle-button {
-    display: none; /* <--- 이 줄을 추가하여 기본적으로 버튼을 숨깁니다. */
-    position: fixed; /* 화면에 고정 */
-    bottom: 30px;    /* 하단에서 30px */
-    right: 30px;     /* 우측에서 30px */
-    background-color: rgba(76, 175, 80, 0.9); /* #4CAF50 색상에 90% 불투명도 적용 */
+    display: none; /* JS에 의해 active-tab-button 클래스 붙을 때 display: flex로 변경 */
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background-color: rgba(76, 175, 80, 0.9); /* 녹색 계열 */
     color: white;
     border: none;
-    border-radius: 50px; /* 완벽하게 둥근 버튼 */
+    border-radius: 50px;
     padding: 20px 35px;
-    font-size: 1.7rem;
-    font-weight: 700; /* 더 진한 글씨체 */
+    font-size: 1.15rem; /* 폰트 크기 조정 */
+    font-weight: 700;
     cursor: pointer;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); /* 더 부드러운 그림자 */
-    z-index: 9999; /* 가장 위로 오도록 매우 높은 Z-index 설정 */
-    display: flex; /* 아이콘과 텍스트를 중앙 정렬 */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    z-index: 9999; /* 최상위 */
     align-items: center;
-    gap: 8px; /* 아이콘과 텍스트 사이 간격 */
-    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    gap: 10px;
+    transition: opacity 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    opacity: 0; /* 기본적으로 투명 */
+    pointer-events: none; /* 클릭 비활성화 */
 }
 
 .chat-toggle-button:hover {
-    background-color: rgba(69, 160, 73, 0.95); /* 호버 시 약간 어두운 녹색, 불투명도 살짝 증가 */
-    transform: translateY(-3px); /* 호버 시 약간 위로 이동 */
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4); /* 그림자 진해짐 */
+    background-color: rgba(69, 160, 73, 0.95);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
 }
 
-/* AI 챗봇 팝업 창 - 중요 스타일 강조 */
+.chat-toggle-button.active-tab-button {
+    display: flex; /* 탭 활성화 시 보이게 */
+    opacity: 1; /* 불투명하게 */
+    pointer-events: auto; /* 클릭 활성화 */
+}
+
+/* AI 챗봇 팝업 창 */
 .ai-chat-popup {
-    position: fixed; /* 화면에 고정 */
-    bottom: 100px;   /* 버튼 위로 띄우기 (버튼 높이 고려) */
-    right: 30px;     /* 우측에서 30px */
-    width: 700px;
-    height: 1000px;
-    background-color: rgba(255, 255, 255, 0.9); /* 흰색 배경에 90% 불투명도 적용 */
-    border: 1px solid var(--border-color, rgba(224, 224, 224, 0.8)); /* 테두리도 살짝 투명하게 */
-    border-radius: var(--border-radius, 12px); /* 더 둥근 모서리 */
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25); /* 더 부드럽고 큰 그림자 */
-    z-index: 9998; /* 버튼보다는 낮지만 다른 요소보다 높게 */
-    display: flex;
+    position: fixed;
+    bottom: 100px;
+    right: 30px;
+    width: 500px; /* 팝업 창 너비 */
+    height: 600px; /* 팝업 창 높이 */
+    background-color: rgba(255, 255, 255, 0.9); /* 반투명 흰색 배경 */
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    z-index: 9998; /* 버튼보다 낮지만 다른 요소보다 높게 */
     flex-direction: column;
-    overflow: hidden; /* 내용이 넘치면 숨김 */
+    overflow: hidden;
 
     /* 초기에는 숨김 */
-    opacity: 0;       /* <--- !important 추가 */
-    visibility: hidden; /* <--- !important 추가 */
+    display: none; /* JS에 의해 active 클래스 붙을 때 flex로 변경 */
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
     transform: translateY(20px) scale(0.95);
-    transition: opacity 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), 
-                visibility 0.3s step-end, 
-                transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* 좀 더 부드러운 애니메이션 */
+    transition: opacity 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+                visibility 0.3s step-end,
+                transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-/* 활성화 시 애니메이션은 그대로 */
 .ai-chat-popup.active {
-    opacity: 1;       /* <--- !important 추가 */
-    visibility: visible; /* <--- !important 추가 */
+    display: flex; /* 활성화 시 보이게 */
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
     transform: translateY(0) scale(1);
-    transition: opacity 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), 
-                visibility 0.3s step-start, 
-                transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* 나타날 때 애니메이션 */
+    transition: opacity 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+                visibility 0.3s step-start,
+                transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
-
-
-
 
 .chat-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 15px;
-    background-color: rgba(58, 80, 107, 0.9); /* primary-color #3a506b 에 90% 불투명도 적용 */
+    background-color: var(--primary-color); /* 테마 primary-color */
     color: white;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* 투명한 구분선 */
-    border-top-left-radius: var(--border-radius, 12px);
-    border-top-right-radius: var(--border-radius, 12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
 }
 
 .chat-header h3 {
     margin: 0;
-    font-size: 1.15rem; /* 제목 크기 키움 */
+    font-size: 1.15rem;
     font-weight: 600;
 }
 
@@ -135,7 +147,7 @@ ul {
     background: none;
     border: none;
     color: white;
-    font-size: 1.3rem; /* 닫기 버튼 크기 키움 */
+    font-size: 1.3rem;
     cursor: pointer;
     padding: 5px;
     border-radius: 50%;
@@ -144,73 +156,73 @@ ul {
 
 .chat-close-button:hover {
     background-color: rgba(255, 255, 255, 0.2);
-    transform: rotate(90deg); /* 닫기 버튼 회전 효과 */
+    transform: rotate(90deg);
 }
 
 .messages-list {
     flex-grow: 1;
-    overflow-y: auto; /* 메시지 스크롤 */
+    overflow-y: auto;
     padding: 15px;
-    background-color: var(--card-bg-color, #ffffff);
-    display: flex; /* 메시지 간격과 정렬을 위해 flex 사용 */
+    background-color: var(--card-bg-color);
+    display: flex;
     flex-direction: column;
 }
 
 .messages-list div {
-    padding: 12px 18px; /* 패딩 증가 */
-    border-radius: 20px; /* 더 둥근 말풍선 */
+    padding: 15px 22px;
+    border-radius: 20px;
     margin-bottom: 10px;
-    max-width: 90%;
+    max-width: 95%; /* 말풍선 최대 너비 */
     word-wrap: break-word;
-    line-height: 1.5;
+    line-height: 1.6;
     font-size: 1rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* 말풍선 그림자 */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .user-message {
-    background-color: rgba(58, 80, 107, 0.9); /* primary-color #3a506b 에 90% 불투명도 적용 */
+    background-color: var(--primary-color);
     color: white;
     margin-left: auto;
-    border-bottom-right-radius: 8px; /* 끝부분 덜 둥글게 */
+    border-bottom-right-radius: 8px;
 }
 
 .ai-message {
-    background-color: rgba(240, 242, 245, 0.9); /* secondary-bg-color #f0f2f5 에 90% 불투명도 적용 */
-    color: var(--text-color, #333);
+    background-color: var(--bg-color); /* AI 메시지 배경색 */
+    color: var(--text-color);
     margin-right: auto;
-    border-bottom-left-radius: 8px; /* 끝부분 덜 둥글게 */
+    border-bottom-left-radius: 8px;
 }
 
 .chat-input-area {
     display: flex;
     padding: 15px;
-    border-top: 1px solid var(--border-color, #e0e0e0);
-    background-color: rgba(255, 255, 255, 0.9); /* 흰색 배경에 90% 불투명도 적용 */
-    gap: 10px; /* 입력창과 버튼 사이 간격 */
+    border-top: 1px solid var(--border-color);
+    background-color: var(--card-bg-color);
+    gap: 10px;
 }
 
 .chat-input-area input[type="text"] {
     flex-grow: 1;
     padding: 12px;
-    border: 1px solid var(--border-color, rgba(204, 204, 204, 0.8));
-    border-radius: 25px; /* 더 둥근 입력창 */
+    border: 1px solid var(--border-color);
+    border-radius: 25px;
     font-size: 1rem;
-    background-color: rgba(249, 249, 249, 0.8); /* input-bg-color #f9f9f9 에 80% 불투명도 적용 */
-    color: var(--text-color, #333);
-    outline: none; /* 포커스 시 외곽선 제거 */
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    outline: none;
     transition: border-color 0.2s;
 }
 
 .chat-input-area input[type="text"]:focus {
-    border-color: var(--primary-color, #3a506b);
+    border-color: var(--primary-color);
 }
 
 .chat-input-area button {
     padding: 10px 20px;
-    background-color: rgba(76, 175, 80, 0.9); /* 버튼과 동일한 녹색, 투명도 유지 */
+    background-color: var(--primary-color); /* 챗봇 버튼과 동일한 색상 */
     color: white;
     border: none;
-    border-radius: 25px; /* 더 둥근 버튼 */
+    border-radius: 25px;
     cursor: pointer;
     font-weight: 600;
     transition: background-color 0.2s ease, transform 0.1s ease;
@@ -218,7 +230,7 @@ ul {
 }
 
 .chat-input-area button:hover {
-    background-color: rgba(69, 160, 73, 0.95); /* 호버 시 투명도 살짝 감소 */
+    background-color: var(--primary-hover-color);
     transform: translateY(-1px);
 }
 
@@ -229,7 +241,7 @@ ul {
     display: flex;
     width: 100%;
     flex-grow: 1;
-    min-height: 0; /* flex 자식 요소의 높이 오류 방지 */
+    min-height: 0;
 }
 
 .side-nav {
@@ -246,15 +258,14 @@ ul {
     margin: 32px;
 }
 
-
 .content-area {
     flex-grow: 1;
-    overflow: hidden;
+    overflow: hidden; /* 자식 요소가 넘치면 숨김 */
     padding: 40px;
 }
 
 .tab-content { display: none; }
-.tab-content.active { display: block; }
+.tab-content.active { display: block; height: 100%; } /* 탭 내용이 활성화되면 높이 100% */
 
 .site-footer {
     background-color: #343a40;
@@ -297,6 +308,12 @@ ul {
     font-weight: 600;
     margin-bottom: 20px;
 }
+.content-section h2 i {
+    margin-right: 10px; /* 아이콘과 텍스트 사이 간격 */
+    font-style: normal; /* 아이콘 기울임 제거 */
+    font-size: 1.5rem;
+}
+
 
 .card {
     background-color: var(--card-bg-color);
@@ -310,7 +327,7 @@ ul {
     box-shadow: 0 4px 12px var(--shadow-color);
 }
 
-.tab-button, .submit-button, .cancel-button, .comment-submit, .post-manage-btn {
+.tab-button, .submit-button, .cancel-button, .comment-submit, .post-manage-btn, .toggle-details-btn, .toggle-signals-btn {
     border: none;
     border-radius: 6px;
     cursor: pointer;
@@ -380,7 +397,6 @@ ul {
     color: #fff;
     text-align: center;
     overflow: hidden;
-    /* ✨ 로컬 이미지 파일을 배경으로 사용합니다. */
     background-image: linear-gradient(rgba(9, 30, 66, 0.7), rgba(9, 30, 66, 0.7)), url('hero-background.jpeg');
     background-size: cover;
     background-position: center;
@@ -413,363 +429,28 @@ ul {
     padding-left: 20px;
 }
 
-/* 5. 대시보드 탭 (#dashboard-content) 스타일
------------------------------------------------------------------ */
+/* 5. 대시보드 탭 (#dashboard-content) 스타일 - 최종 리팩토링 */
 #dashboard-content.tab-content.active {
     display: grid;
-    /* 새로운 Grid 템플릿 정의:
-       첫 번째 행: 주요 국가별 안정성 현황 (map-overview-section)이 전체 너비를 차지
+    /* Grid 템플릿 정의:
+       첫 번째 행: map-overview-section (지도와 패널)이 전체 너비를 차지 (auto)
        두 번째 행: 국내 정세 상세 분석 (analysis-report)이 왼쪽 컬럼
-       세 번째 행: 캘린더 (calendar)와 뉴스 (news)가 오른쪽 컬럼
-       
-       Grid-template-columns: 왼쪽 컬럼(분석보고서) 1fr, 오른쪽 컬럼(캘린더,뉴스) 400px;
-       Grid-template-rows: 첫 번째 행(map-overview) auto (콘텐츠 높이만큼), 두 번째 행(분석보고서) 1fr (남은 공간 모두)
+       세 번째 행: 캘린더 (calendar)와 뉴스 (news)가 오른쪽 컬럼에 함께 배치
     */
-    grid-template-columns: 1fr 400px; /* 왼쪽 컬럼, 오른쪽 컬럼 */
-    grid-template-rows: auto 1fr;     /* 첫 번째 행은 map-overview-section의 높이에 따라 자동, 두 번째 행은 남은 공간 */
-    gap: 30px;
-    padding: 0; /* 부모(.content-area)에서 padding을 이미 처리했으므로 여기서는 0 */
+    grid-template-columns: 1fr 400px; /* 왼쪽 넓은 컬럼, 오른쪽 좁은 컬럼 */
+    grid-template-rows: auto minmax(0, 1fr); /* 첫 번째 행은 콘텐츠 높이, 두 번째 행은 남은 공간을 최소 0px부터 채움 */
+    gap: 30px; /* 그리드 아이템 사이 간격 */
+    padding: 0; /* .content-area에서 padding을 처리하므로 여기서는 0 */
     height: 100%; /* 부모(.content-area)의 높이를 100% 채움 */
-    overflow: hidden; /* 그리드 내에서 내용이 넘치지 않도록 */
+    overflow: hidden; /* 그리드 아이템이 컨테이너를 넘치지 않도록 */
 }
 
-
-.dashboard-analysis-report { grid-column: 1 / 2; grid-row: 2 / 3; } /* 값을 2 / 3 으로 변경 */
-.dashboard-world-map     { grid-column: 1 / 2; grid-row: 1 / 2; } /* 값을 1 / 2 으로 변경 */
-.dashboard-calendar      { grid-column: 2 / 3; grid-row: 1 / 2; } /* 변경 없음 */
-.dashboard-news          { grid-column: 2 / 3; grid-row: 2 / 3; } /* 변경 없음 */
-
-.dashboard-analysis-report,
-.dashboard-world-map,
-.dashboard-calendar,
-.dashboard-news {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 0;
-    min-height: 0; /* <-- 이 한 줄을 추가하세요! */
-}
-.report-box, .calendar-body {
-    flex-grow: 1;
-    overflow-y: auto;
-}
-.dashboard-news .news-grid {
-    flex-grow: 1;
-    overflow-y: auto; /* ✨ 이 규칙 하나로 뉴스 전체 스크롤을 관리 */
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
-    padding-right: 10px;
-}
-.dashboard-news .news-column h3 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-bottom: 10px;
-}
-.news-article {
-    background-color: var(--card-bg-color);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 20px;
-}
-.news-article:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 12px var(--shadow-color);
-}
-.news-article h2 {
-    font-size: 1.1rem;
-    display: inline;
-}
-.news-article p {
-    font-size: 0.88rem;
-    color: var(--text-light-color);
-    line-height: 1.6;
-    margin-top: 8px;
-    margin-bottom: 16px;
-}
-.article-meta {
-    font-size: 0.85rem;
-    color: #8993a4;
-}
-.news-category {
-    font-weight: 600;
-    color: var(--primary-color);
-    margin-right: 8px;
-    font-size: 0.9rem;
-}
-.calendar-body {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    font-size: 0.9rem;
-}
-.upcoming-events, .past-events {
-    background-color: #fdfdff;
-    border-radius: 8px;
-    padding: 15px;
-    border: 1px solid #eef2f7;
-    flex-grow: 1;
-    overflow-y: auto;
-    min-height: 150px;
-    color: var(--text-color); /* 모든 소제목을 기본 텍스트 색상으로 */
-}
-.upcoming-events h4, .past-events h4 {
-    font-size: 1rem;
-    font-weight: 600;
-    padding-bottom: 8px;
-    margin-bottom: 10px;
-    border-bottom: 2px solid;
-    color: var(--text-color); /* 모든 소제목을 기본 텍스트 색상으로 */
-}
-.upcoming-events h4 {
-    color: var(--text-color);
-    border-bottom-color: var(--text-color);
-    color: var(--text-color); /* 모든 소제목을 기본 텍스트 색상으로 */
-}
-.past-events h4 {
-    color: var(--text-light-color);
-    border-bottom-color: var(--text-light-color);
-}
-.calendar-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 4px;
-    border-bottom: 1px solid var(--border-color);
-}
-.calendar-item:last-child { border-bottom: none; }
-.upcoming-events .event-item .date { color: var(--text-color); }
-.past-events .event-item { color: var(--text-light-color); opacity: 0.8; }
-.past-events .event-item .date { color: var(--text-light-color); }
-.calendar-item .flags {
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-.flag-icon {
-    font-size: 14px;
-    border-radius: 2px;
-    box-shadow: 0 0 1px rgba(0,0,0,0.2);
-}
-.icon-calendar::before {
-    content: '📅';
-    font-size: 1.5rem;
-    font-style: normal; /* 기울임 제거 */
-}
-.icon-news::before {
-    content: '📰';
-    font-size: 1.5rem;
-    font-style: normal; /* 기울임 제거 */
-}
-
-/* 6. 제안사항 탭 (#suggestions-content) 스타일
------------------------------------------------------------------ */
-#show-write-modal {
-    margin-left: auto;
-}
-.post-card {
-    background-color: var(--card-bg-color);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 18px 24px;
-    margin-bottom: 20px;
-}
-.post-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-    font-size: 0.9rem;
-    color: var(--text-light-color);
-}
-.post-status {
-    font-weight: 600;
-    padding: 4px 8px;
-    border-radius: 4px;
-}
-.post-status.resolved {
-    background-color: var(--status-resolved-bg);
-    color: var(--status-resolved-text);
-}
-.post-status.unresolved {
-    background-color: var(--status-unresolved-bg);
-    color: var(--status-unresolved-text);
-}
-.post-content {
-    line-height: 1.6;
-    margin-bottom: 16px;
-    white-space: pre-wrap;
-}
-.post-content p {
-    margin: 0;
-}
-.post-actions {
-    text-align: right;
-    margin-top: -10px;
-}
-.post-manage-btn {
-    background: none;
-    border: 1px solid var(--border-color);
-    color: var(--text-light-color);
-    padding: 5px 10px;
-    font-size: 0.85rem;
-}
-.post-manage-btn:hover {
-    background-color: var(--bg-color);
-    color: var(--text-color);
-}
-.comment-section {
-    border-top: 1px solid var(--border-color);
-    padding-top: 20px;
-}
-.comment-card {
-    background: var(--bg-color);
-    border-radius: 6px;
-    padding: 16px;
-}
-.comment-card p {
-    margin: 0;
-}
-.comment-author {
-    font-weight: 600;
-    color: var(--primary-color);
-    margin-bottom: 8px !important;
-}
-.comment-form {
-    margin-top: 20px;
-    display: flex;
-    gap: 10px;
-}
-.comment-input {
-    flex-grow: 1;
-    padding: 10px;
-    border: 1px solid var(--border-color);
-    border-radius: 5px;
-}
-.comment-submit {
-    padding: 10px 15px;
-    background-color: var(--text-light-color);
-    color: white;
-}
-
-/* ▼▼▼ 이 부분을 추가하세요 ▼▼▼ */
-.map-container {
-    flex-grow: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-    padding-top: 15px;
-}
-.map-container img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    border-radius: 6px;
-}
-.icon-map::before {
-    content: '🗺️';
-    font-size: 1.5rem;
-    font-style: normal;
-}
-
-
-/* 7. 모달 스타일
------------------------------------------------------------------ */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(9, 30, 66, 0.6);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-.modal-content {
-    background-color: white;
-    padding: 30px;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 600px;
-}
-.modal-buttons {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 20px;
-}
-.cancel-button {
-    background-color: #e9ecef;
-    color: #495057;
-    font-size: 1rem;
-    font-weight: 600;
-    padding: 12px 25px;
-}
-
-/* 8. 반응형 미디어 쿼리
------------------------------------------------------------------ */
-@media (max-width: 1200px) {
-    #dashboard-content.tab-content.active {
-        grid-template-columns: 1fr;
-    }
-    .dashboard-analysis-report,
-    .dashboard-world-map, /* <-- 이 줄만 추가하시면 됩니다. */
-    .dashboard-calendar,
-    .dashboard-news {
-        grid-column: 1 / -1;
-        grid-row: auto;
-    }
-}
-
-@media (max-width: 992px) {
-    .home-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 768px) {
-    .main-container {
-        flex-direction: column;
-    }
-    .side-nav {
-        width: 100%;
-        height: auto;
-        flex-direction: row;
-        align-items: center;
-        padding: 10px 20px;
-    }
-    .side-nav h1 {
-        margin: 0 auto 0 0;
-    }
-    .tab-button {
-        width: auto;
-        margin: 0 5px;
-    }
-    .content-area {
-        padding: 20px;
-    }
-}
-
-/* 대시보드 제목 아이콘 스타일 */
-.icon-dashboard::before {
-    content: '🌐'; /* 지구본 모양 이모지 아이콘 */
-    font-size: 1.5rem; 
-    font-style: normal; /* 기울임 제거 *
-}
-
-
-/* =================================================================
-   5. 지도 기반 국가 현황 섹션
-   ================================================================= */
-/* 새로 추가된 지도 기반 안정성 현황 섹션 */
+/* 새로 추가된 지도 기반 안정성 현황 섹션 (HTML: map-overview-section) */
 .map-overview-section {
     grid-column: 1 / -1; /* 그리드 첫 번째 행에서 전체 컬럼을 차지 */
     grid-row: 1 / 2;     /* 그리드 첫 번째 행에 배치 */
     margin-bottom: 0;    /* 그리드 아이템이므로 외부 마진 없음 */
-    padding: 25px;       /* 내부 패딩은 유지 */
+    padding: 25px;       /* 내부 패딩 */
     background-color: var(--card-bg-color);
     border-radius: var(--border-radius);
     box-shadow: 0 4px 10px var(--shadow-color);
@@ -785,42 +466,43 @@ ul {
     border-bottom: 2px solid var(--border-color);
     padding-bottom: 10px;
 }
-
-.map-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start; /* 상단 정렬 */
-    gap: 20px;
-    flex-wrap: wrap; /* 작은 화면에서 줄바꿈 */
+.map-overview-section h2 i {
+    margin-right: 10px;
+    font-style: normal;
+    font-size: 1.5rem;
 }
-/* 지도와 패널을 감싸는 컨테이너 - 핵심 */
+.icon-map-overview::before {
+    content: '🌍'; /* 지구본 이모지 */
+}
+
+/* 지도와 패널을 감싸는 컨테이너 - 핵심 오버레이 설정 */
 .map-visualization-wrapper {
     position: relative; /* 자식 요소의 absolute 위치 지정을 위한 기준 */
     width: 100%;
-    flex-grow: 1; /* 남은 공간을 모두 차지하여 높이 확보 */
+    flex-grow: 1; /* 부모 섹션의 남은 높이를 모두 차지하여 지도 공간 확보 */
     overflow: hidden; /* 내용이 넘치면 숨김 */
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     background-color: #f0f4f8; /* 지도 로드 전 배경색 */
-    display: flex; /* 패널과 마커 배치를 위한 flexbox */
-    justify-content: space-between; /* 패널을 양쪽 끝으로 */
-    align-items: center; /* 세로 중앙 정렬 */
-    padding: 20px; /* 패널과 지도 경계 사이 여백 */
+    
+    display: block; /* absolute 자식 요소를 자유롭게 배치하기 위함 */
 }
+
 /* 지도 이미지 (JS에서 동적으로 삽입될 때의 스타일) */
 .map-visualization-wrapper .world-map-image {
-    position: absolute; /* 래퍼의 배경이 아니라면 absolute로 */
+    position: absolute; /* 래퍼를 기준으로 절대 위치 */
     top: 0; left: 0;
     width: 100%; height: 100%;
-    object-fit: contain; /* 지도를 잘리지 않고 컨테이너에 맞게. cover로 하면 잘릴 수 있음 */
-    z-index: 1; /* 마커와 패널 아래에 위치 */
+    object-fit: contain; /* 이미지가 잘리지 않고 컨테이너에 맞게 */
+    z-index: 1; /* 패널과 마커 아래에 위치 */
     border-radius: 8px; /* 래퍼와 동일하게 */
 }
-/* 국가 정보 패널 */
+
+/* 국가 정보 패널 - 지도 위에 오버레이 */
 .country-info-panel {
-    position: relative; /* 마커와 겹치지 않도록 */
+    position: absolute; /* 맵 래퍼를 기준으로 절대 위치 */
     width: 300px; /* 패널 너비 고정 */
-    max-height: 100%; /* 부모의 높이 제한 */
+    max-height: calc(100% - 40px); /* 부모 래퍼 높이 - 패딩 (상하 20px씩) */
     overflow-y: auto; /* 내용이 넘치면 스크롤 */
     background-color: rgba(255, 255, 255, 0.9); /* 반투명 배경 */
     border: 1px solid var(--border-color);
@@ -828,38 +510,20 @@ ul {
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     padding: 15px;
     z-index: 5; /* 지도 이미지 위에, 마커 아래 */
-    flex-shrink: 0; /* flex 컨테이너 내에서 줄어들지 않도록 */
+    flex-shrink: 0; /* flex 컨테이너 내에서 줄어들지 않도록 (현재는 absolute라 영향 적음) */
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
 .country-info-panel.left-panel {
-    margin-right: auto; /* flexbox에서 남은 공간을 밀어내 왼쪽 정렬 */
+    top: 20px; /* 상단에서 20px */
+    left: 20px; /* 왼쪽에서 20px */
 }
 .country-info-panel.right-panel {
-    margin-left: auto; /* flexbox에서 남은 공간을 밀어내 오른쪽 정렬 */
-}
-   
-.map-image-wrapper {
-    flex-grow: 1;
-    flex-basis: 600px; /* 지도가 최소 600px 너비를 차지하도록 */
-    position: relative; /* 마커 위치 지정을 위해 */
-    background-color: #f0f4f8; /* 지도 로드 전 배경색 */
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    min-height: 400px; /* 지도가 보일 최소 높이 */
-    display: flex; /* 이미지가 중앙에 오도록 */
-    justify-content: center;
-    align-items: center;
+    top: 20px; /* 상단에서 20px */
+    right: 20px; /* 오른쪽에서 20px */
 }
 
-.world-map-image {
-    width: 100%;
-    height: auto;
-    display: block;
-    object-fit: contain; /* 이미지가 잘리지 않고 컨테이너에 맞게 */
-}
 
 /* 지도 마커 스타일 */
 .map-marker {
@@ -876,14 +540,131 @@ ul {
     filter: drop-shadow(0 0 8px rgba(0,0,0,0.5));
 }
 
-/* 각 국가별 마커 위치 (지도 이미지에 따라 조정 필요) */
-/* 이 값들은 예시이며, 실제 지도 이미지와 맞춰서 정확히 조정해야 합니다. */
-.map-marker.us { top: 30%; left: 15%; }
-.map-marker.cn { top: 40%; left: 75%; }
-.map-marker.kr { top: 43%; left: 83%; }
-.map-marker.ru { top: 20%; left: 60%; }
-.map-marker.jp { top: 45%; left: 88%; }
-.map-marker.kp { top: 40%; left: 81%; } /* ⚠️ 실제 지도에 맞춰 정확한 위치로 조정하세요 */
+/* 각 국가별 마커 위치 (지도 이미지와 해상도에 따라 다시 조정해야 합니다!) */
+/* 이 값들은 예시이며, 실제 사용하실 지도 이미지에 맞춰 매우 정밀하게 조정해야 합니다. */
+/* 이미지를 삽입 후 개발자 도구로 조정하세요. */
+.map-marker.us { top: 40%; left: 15%; }
+.map-marker.cn { top: 45%; left: 75%; }
+.map-marker.kr { top: 48%; left: 83%; }
+.map-marker.ru { top: 25%; left: 60%; }
+.map-marker.jp { top: 50%; left: 88%; }
+.map-marker.kp { top: 45%; left: 80%; } /* 북한 위치 */
+
+
+/* 기존 대시보드 그리드 아이템 배치 (스크린샷에 맞춰 재조정) */
+/* .dashboard-analysis-report, .dashboard-calendar, .dashboard-news는 
+   #dashboard-content의 grid-template-rows에 따라 2번째 행에 배치됩니다.
+   스크린샷을 보면 '분석보고서'가 왼쪽에, '캘린더'와 '뉴스'가 오른쪽에 세로로 쌓여있습니다.
+   이를 구현하려면 캘린더와 뉴스는 같은 그리드 셀에 들어가야 하며, 
+   그 안에서 다시 flex-direction: column으로 배치되어야 합니다.
+*/
+.dashboard-analysis-report { 
+    grid-column: 1 / 2; /* 왼쪽 컬럼 */
+    grid-row: 2 / 3;    /* 두 번째 행 */
+    display: flex; flex-direction: column; /* 내부 콘텐츠를 세로로 */
+}
+
+/* 캘린더와 뉴스를 포함하는 우측 컬럼 */
+.dashboard-calendar { 
+    grid-column: 2 / 3; /* 오른쪽 컬럼 */
+    grid-row: 2 / 3;    /* 두 번째 행 */
+    display: flex; flex-direction: column; /* 캘린더와 뉴스가 세로로 쌓이도록 */
+    gap: 30px; /* 캘린더와 뉴스 섹션 사이 간격 */
+}
+.dashboard-news {
+    /* 캘린더 섹션의 자식으로 간주되지 않고, dashboard-calendar와 동등한 그리드 셀에 배치됩니다. */
+    /* 따라서 dashboard-calendar와 dashboard-news는 각각의 섹션으로 그리드에 배치될 수 없습니다. */
+    /* 스크린샷과 같은 레이아웃을 위해서는 dashboard-calendar와 dashboard-news를 감싸는 새로운 wrapper div가 필요합니다.
+       하지만 현재 HTML 구조상 그게 어렵다면, dashboard-calendar가 오른쪽 상단을 차지하고 
+       dashboard-news는 오른쪽 하단을 차지하도록 grid-row를 분리해야 합니다. 
+       
+       스크린샷을 보면 캘린더와 뉴스가 같은 400px 폭의 오른쪽에 세로로 배열되어 있습니다.
+       이는 #dashboard-content에 grid-template-rows를 하나 더 추가하거나,
+       dashboard-calendar와 dashboard-news를 감싸는 하나의 그리드 아이템(div)을 만들고
+       그 안에 flex-direction: column을 적용하는 것이 좋습니다.
+       
+       HTML 변경 없이 현재 CSS만으로는 완벽히 스크린샷과 동일하게 구현하기 어렵습니다.
+       가장 근접한 방법은 오른쪽 컬럼을 다시 그리드 컨테이너로 만드는 것입니다.
+       아니면 dashboard-calendar와 dashboard-news에 grid-row를 다르게 부여하는 방식.
+       스크린샷의 배치를 '오른쪽 상단 캘린더, 오른쪽 하단 뉴스'로 가정하고 수정합니다.
+    */
+    grid-column: 2 / 3; /* 오른쪽 컬럼 */
+    grid-row: 3 / 4;    /* 세 번째 행으로 분리하여 배치 */
+    display: flex; flex-direction: column;
+}
+
+
+.dashboard-world-map     { display: none; } /* 이 섹션은 계속 숨김 */
+
+/* 모든 대시보드 섹션의 공통 스타일 */
+/* .dashboard-analysis-report, .dashboard-calendar, .dashboard-news {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0;
+    min-height: 0;
+    overflow: hidden;
+} */
+/* 위 중복된 공통 스타일을 제거하고 필요한 부분만 유지합니다. */
+
+.report-box, .calendar-body, .news-grid {
+    flex-grow: 1; /* 컨테이너 내에서 남은 공간을 채움 */
+    overflow-y: auto; /* 내용이 넘치면 스크롤 */
+}
+
+/* 캘린더와 뉴스 특정 스타일 */
+.calendar-body { gap: 20px; } /* 캘린더 내부 리스트 간격 */
+.dashboard-news .news-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 30px; /* 뉴스 기사 사이 간격 */
+    padding-right: 10px; /* 스크롤바 공간 */
+}
+
+/* 뉴스 기사 및 캘린더 아이템 등 기타 스타일 (이전과 동일) */
+.news-article {
+    background-color: var(--card-bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.news-article:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px var(--shadow-color);
+}
+.news-article h2 { font-size: 1.1rem; display: inline; }
+.news-article p { font-size: 0.88rem; color: var(--text-light-color); line-height: 1.6; margin-top: 8px; margin-bottom: 16px; }
+.article-meta { font-size: 0.85rem; color: #8993a4; }
+.news-category { font-weight: 600; color: var(--primary-color); margin-right: 8px; font-size: 0.9rem; }
+
+.calendar-body { font-size: 0.9rem; }
+.upcoming-events, .past-events {
+    background-color: #fdfdff;
+    border-radius: 8px;
+    padding: 15px;
+    border: 1px solid #eef2f7;
+    flex-grow: 1;
+    overflow-y: auto;
+    min-height: 150px;
+    color: var(--text-color);
+}
+.upcoming-events h4, .past-events h4 {
+    font-size: 1rem; font-weight: 600; padding-bottom: 8px; margin-bottom: 10px; border-bottom: 2px solid;
+    color: var(--text-color);
+}
+.upcoming-events h4 { border-bottom-color: var(--text-color); }
+.past-events h4 { color: var(--text-light-color); border-bottom-color: var(--text-light-color); }
+.calendar-item {
+    display: flex; justify-content: space-between; align-items: center; padding: 12px 4px; border-bottom: 1px solid var(--border-color);
+}
+.calendar-item:last-child { border-bottom: none; }
+.upcoming-events .event-item .date { color: var(--text-color); }
+.past-events .event-item { color: var(--text-light-color); opacity: 0.8; }
+.past-events .event-item .date { color: var(--text-light-color); }
+.calendar-item .flags { flex-shrink: 0; display: flex; align-items: center; gap: 4px; }
+.flag-icon { font-size: 14px; border-radius: 2px; box-shadow: 0 0 1px rgba(0,0,0,0.2); }
+.icon-calendar::before { content: '📅'; font-size: 1.5rem; font-style: normal; }
+.icon-news::before { content: '📰'; font-size: 1.5rem; font-style: normal; }
 
 
 /* 국가 카드 내 상세 정보 관련 스타일 */
@@ -895,216 +676,153 @@ ul {
     box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
-
 .country-card:hover {
     transform: translateY(-3px);
     box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }
-
-.country-card.active { /* 지도 마커 클릭 시 활성화되는 카드 스타일 */
+.country-card.active {
     background-color: #e6f7ff; /* 연한 파랑색 배경 */
     border-color: var(--primary-color);
     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
-
 .country-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
 }
-
 .country-card h3 {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 1.25rem;
-    margin: 0;
-    color: var(--primary-color);
+    display: flex; align-items: center; gap: 10px; font-size: 1.25rem; margin: 0; color: var(--primary-color);
 }
-
-.country-card .flag-emoji {
-    font-size: 1.8rem;
-}
-
+.country-card .flag-emoji { font-size: 1.8rem; }
 .country-card .stability-rating {
-    font-weight: bold;
-    font-size: 0.95rem;
-    padding: 6px 10px;
-    border-radius: 5px;
-    display: inline-block;
-    white-space: nowrap;
+    font-weight: bold; font-size: 0.95rem; padding: 6px 10px; border-radius: 5px; display: inline-block; white-space: nowrap;
 }
 
-/* 전체 안정성 등급별 색상 */
-.stability-rating.안정, .stability-rating.stable { background-color: #e6fcf5; color: #2f9e44; }
-.stability-rating.경계, .stability-rating.moderate { background-color: #fff4e6; color: #d9480f; }
-.stability-rating.불안, .stability-rating.unstable { background-color: #ffe3e3; color: #c92a2a; }
-.stability-rating.심각, .stability-rating.severe { background-color: #fae6fa; color: #8e1f8d; }
-.stability-rating.위기, .stability-rating.crisis { background-color: #fce6e6; color: #7f0d0d; }
-.stability-rating.알수없음, .stability-rating.unknown { background-color: #e9ecef; color: #495057; }
+/* 전체 안정성 등급별 색상 (변수 사용) */
+.stability-rating.안정, .stability-rating.stable { background-color: var(--level-stable-bg); color: var(--level-stable-text); }
+.stability-rating.경계, .stability-rating.moderate { background-color: var(--level-moderate-bg); color: var(--level-moderate-text); }
+.stability-rating.불안, .stability-rating.unstable { background-color: var(--level-unstable-bg); color: var(--level-unstable-text); }
+.stability-rating.심각, .stability-rating.severe { background-color: var(--level-severe-bg); color: var(--level-severe-text); }
+.stability-rating.위기, .stability-rating.crisis { background-color: var(--level-crisis-bg); color: var(--level-crisis-text); }
+.stability-rating.알수없음, .stability-rating.unknown { background-color: var(--level-unknown-bg); color: var(--level-unknown-text); }
 
 
 .country-card .overall-briefing {
-    font-size: 0.9rem;
-    line-height: 1.6;
-    color: var(--text-light-color);
-    margin-bottom: 15px;
+    font-size: 0.9rem; line-height: 1.6; color: var(--text-light-color); margin-bottom: 15px;
 }
-
-/* '상세 분석 보고서 보기' 버튼 */
 .toggle-details-btn {
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.85rem;
-    margin-top: 10px;
-    transition: background-color 0.2s ease;
+    background-color: var(--primary-color); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 0.85rem; margin-top: 10px; transition: background-color 0.2s ease;
 }
-
-.toggle-details-btn:hover {
-    background-color: var(--primary-hover-color);
-}
-
-/* 전체 보고서 상세 내용 영역 */
+.toggle-details-btn:hover { background-color: var(--primary-hover-color); }
 .country-details {
-    margin-top: 15px;
-    padding-top: 15px;
-    border-top: 1px dashed var(--border-color);
-    transition: max-height 0.3s ease-out, opacity 0.3s ease-out; /* 부드러운 토글 애니메이션 */
-    overflow: hidden; /* 내용 넘치면 숨김 */
-    /* display: none; by default, handled by JS */
+    margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border-color); transition: max-height 0.3s ease-out, opacity 0.3s ease-out; overflow: hidden;
 }
-
 .country-details .report-intro {
-    font-size: 0.85rem;
-    line-height: 1.5;
-    margin-bottom: 15px;
-    color: var(--text-light-color);
+    font-size: 0.85rem; line-height: 1.5; margin-bottom: 15px; color: var(--text-light-color);
 }
-.country-details .report-intro strong {
-    color: var(--text-color);
-}
+.country-details .report-intro strong { color: var(--text-color); }
 
-
-/* 각 카테고리 상세 스타일 (정치, 외교 등) */
 .category-detail {
-    margin-bottom: 15px;
-    padding: 10px;
-    background-color: #f7f9fc;
-    border-left: 4px solid var(--primary-color);
-    border-radius: 4px;
+    margin-bottom: 15px; padding: 10px; background-color: #f7f9fc; border-left: 4px solid var(--primary-color); border-radius: 4px;
 }
-
-.category-detail h4 {
-    font-size: 1rem;
-    font-weight: 600;
-    margin-bottom: 5px;
-    color: var(--text-color);
+.category-detail h4 { font-size: 1rem; font-weight: 600; margin-bottom: 5px; color: var(--text-color); }
+.category-detail .category-score, .category-detail .category-level {
+    font-size: 0.85rem; font-weight: bold; margin-right: 10px; padding: 3px 6px; border-radius: 3px; white-space: nowrap;
 }
+.category-detail .category-score { background-color: #e0e0e0; color: #333; }
 
-.category-detail .category-score,
-.category-detail .category-level {
-    font-size: 0.85rem;
-    font-weight: bold;
-    margin-right: 10px;
-    padding: 3px 6px;
-    border-radius: 3px;
-    white-space: nowrap;
-}
+/* 카테고리 상세 단계별 색상 (변수 사용) */
+.category-level.안정, .category-level.stable { background-color: var(--level-stable-bg); color: var(--level-stable-text); }
+.category-level.경계, .category-level.moderate { background-color: var(--level-moderate-bg); color: var(--level-moderate-text); }
+.category-level.불안, .category-level.unstable { background-color: var(--level-unstable-bg); color: var(--level-unstable-text); }
+.category-level.심각, .category-level.severe { background-color: var(--level-severe-bg); color: var(--level-severe-text); }
+.category-level.위기, .category-level.crisis { background-color: var(--level-crisis-bg); color: var(--level-crisis-text); }
+.category-level.알수없음, .category-level.unknown { background-color: var(--level-unknown-bg); color: var(--level-unknown-text); }
 
-.category-detail .category-score {
-    background-color: #e0e0e0;
-    color: #333;
-}
-
-/* 카테고리 상세 단계별 색상 */
-.category-level.안정, .category-level.stable { background-color: #e6fcf5; color: #2f9e44; }
-.category-level.경계, .category-level.moderate { background-color: #fff4e6; color: #d9480f; }
-.category-level.불안, .category-level.unstable { background-color: #ffe3e3; color: #c92a2a; }
-.category-level.심각, .category-level.severe { background-color: #fae6fa; color: #8e1f8d; }
-.category-level.위기, .category-level.crisis { background-color: #fce6e6; color: #7f0d0d; }
-.category-level.알수없음, .category-level.unknown { background-color: #e9ecef; color: #495057; }
-
-
-/* '세부 내용 보기' 버튼 */
-.signals-toggle-area {
-    margin-top: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
+.signals-toggle-area { margin-top: 10px; display: flex; flex-direction: column; gap: 5px; }
 .toggle-signals-btn {
-    background-color: #6b778c; /* 라이트 텍스트 색상 */
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.8rem;
-    align-self: flex-start; /* 왼쪽 정렬 */
-    transition: background-color 0.2s ease;
+    background-color: var(--text-light-color); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; align-self: flex-start; transition: background-color 0.2s ease;
 }
-.toggle-signals-btn:hover {
-    background-color: #525a66;
-}
-
-/* 세부 내용 (긍정/부정 신호) 영역 */
+.toggle-signals-btn:hover { background-color: #525a66; }
 .signals-content {
-    font-size: 0.8rem;
-    line-height: 1.5;
-    color: var(--text-light-color);
-    padding: 5px 0;
-    /* display: none; by default, handled by JS */
+    font-size: 0.8rem; line-height: 1.5; color: var(--text-light-color); padding: 5px 0;
 }
-.signals-content p {
-    margin-bottom: 5px; /* 단락 사이 간격 */
+.signals-content p { margin-bottom: 5px; }
+.signals-content strong { color: var(--text-color); }
+
+
+/* 6. 제안사항 탭 (#suggestions-content) 스타일
+----------------------------------------------------------------- */
+#show-write-modal { margin-left: auto; }
+.post-card {
+    background-color: var(--card-bg-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 18px 24px; margin-bottom: 20px;
 }
-.signals-content strong {
-    color: var(--text-color);
+.post-header {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; font-size: 0.9rem; color: var(--text-light-color);
+}
+.post-status { font-weight: 600; padding: 4px 8px; border-radius: 4px; }
+.post-status.resolved { background-color: var(--status-resolved-bg); color: var(--status-resolved-text); }
+.post-status.unresolved { background-color: var(--status-unresolved-bg); color: var(--status-unresolved-text); }
+.post-content { line-height: 1.6; margin-bottom: 16px; white-space: pre-wrap; }
+.post-content p { margin: 0; }
+.post-actions { text-align: right; margin-top: -10px; }
+.post-manage-btn {
+    background: none; border: 1px solid var(--border-color); color: var(--text-light-color); padding: 5px 10px; font-size: 0.85rem;
+}
+.post-manage-btn:hover { background-color: var(--bg-color); color: var(--text-color); }
+.comment-section { border-top: 1px solid var(--border-color); padding-top: 20px; }
+.comment-card { background: var(--bg-color); border-radius: 6px; padding: 16px; }
+.comment-card p { margin: 0; }
+.comment-author { font-weight: 600; color: var(--primary-color); margin-bottom: 8px !important; }
+.comment-form { margin-top: 20px; display: flex; gap: 10px; }
+.comment-input { flex-grow: 1; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; }
+.comment-submit { padding: 10px 15px; background-color: var(--text-light-color); color: white; }
+
+
+/* 7. 모달 스타일
+----------------------------------------------------------------- */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(9, 30, 66, 0.6);
+    display: none; justify-content: center; align-items: center; z-index: 1000;
+}
+.modal-content { background-color: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 600px; }
+.modal-buttons { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+.cancel-button {
+    background-color: #e9ecef; color: #495057; font-size: 1rem; font-weight: 600; padding: 12px 25px;
 }
 
-/* 반응형 디자인 (이전 코드와 동일) */
+/* 8. 반응형 미디어 쿼리
+----------------------------------------------------------------- */
 @media (max-width: 1200px) {
     #dashboard-content.tab-content.active {
-        grid-template-columns: 1fr; /* 한 컬럼으로 변경 */
-        grid-template-rows: auto auto auto auto; /* 각 섹션이 차례대로 오도록 */
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto auto;
+        gap: 20px;
     }
     .map-overview-section {
-        grid-column: 1 / -1;
-        grid-row: auto; /* 자동 배치 */
-        min-height: 450px; /* 작은 화면에서 최소 높이 조정 */
+        grid-column: 1 / -1; grid-row: auto; min-height: 400px; padding: 15px;
     }
-    .dashboard-analysis-report,
-    .dashboard-calendar,
-    .dashboard-news {
-        grid-column: 1 / -1;
-        grid-row: auto; /* 자동 배치 */
+    .dashboard-analysis-report, .dashboard-calendar, .dashboard-news {
+        grid-column: 1 / -1; grid-row: auto;
     }
-    /* 작은 화면에서 맵 비주얼라이제이션 래퍼 내부의 flex-direction도 column으로 */
     .map-visualization-wrapper {
-        flex-direction: column; /* 패널과 마커를 세로로 정렬 */
-        align-items: center;
-        padding: 15px; /* 패딩 조정 */
-        height: auto; /* 높이 자동 조절 */
+        flex-direction: column; align-items: center; padding: 15px; height: auto;
     }
     .country-info-panel {
-        width: 90%; /* 작은 화면에서 패널 너비 조정 */
-        max-width: 400px; /* 최대 너비 제한 */
-        margin: 15px auto; /* 중앙 정렬 및 여백 */
-        order: 2; /* 패널이 지도 아래로 오도록 */
+        position: relative; top: auto; left: auto; right: auto; width: 90%; max-width: 400px; margin: 15px auto; order: 2;
     }
     .map-visualization-wrapper .world-map-image {
-        position: relative; /* 작은 화면에서 absolute 해제 */
-        order: 1; /* 이미지가 먼저 오도록 */
-        margin-bottom: 20px;
+        position: relative; order: 1; margin-bottom: 20px; width: 100%; height: auto;
     }
-    /* 작은 화면에서는 마커를 숨기는 것도 고려할 수 있습니다. */
-    .map-marker {
-        display: none; /* 작은 화면에서는 마커 숨김 (선택 사항) */
-    }
+    .map-marker { display: none; } /* 작은 화면에서는 마커 숨김 */
 }
-   
+
+@media (max-width: 992px) {
+    .home-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+    .main-container { flex-direction: column; }
+    .side-nav { width: 100%; height: auto; flex-direction: row; align-items: center; padding: 10px 20px; }
+    .side-nav h1 { margin: 0 auto 0 0; }
+    .tab-button { width: auto; margin: 0 5px; }
+    .content-area { padding: 20px; }
+}
