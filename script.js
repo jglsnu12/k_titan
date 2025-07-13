@@ -200,8 +200,8 @@ async function loadPosts() {
 const countryMarkerPositions = {
     usa: { top: 650 / 1385 * 100, left: 350 / 2048 * 100 },    // 미국
     china: { top: 650 / 1385 * 100, left: 1430 / 2048 * 100 },  // 중국
-    japan: { top: 750 / 1385 * 100, left: 1850 / 2048 * 100 },  // 일본
-    korea: { top: 650 / 1385 * 100, left: 1660 / 2048 * 100 },  // 대한민국
+    japan: { top: 750 / 1385 * 100, left: 1880 / 2048 * 100 },  // 일본
+    korea: { top: 650 / 1385 * 100, left: 1690 / 2048 * 100 },  // 대한민국
     northkorea: { top: 500 / 1385 * 100, left: 1640 / 2048 * 100 }, // 북한
     russia: { top: 450 / 1385 * 100, left: 1380 / 2048 * 100 }  // 러시아
 };
