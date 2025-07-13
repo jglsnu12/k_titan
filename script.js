@@ -197,128 +197,68 @@ async function loadPosts() {
 // ✨ 지도 마커 위치 조정 함수 및 데이터 (DOMContentLoaded 외부)
 // =================================================================
 
-// 국가별 마커의 '지도 이미지 내' 상대적 위치 (0~100% 기준)
-// 이 값들은 **사용하는 지도 이미지의 실제 픽셀 크기(예: 1920x1080)에 비례**하여 설정되어야 합니다.
-// 즉, 지도 이미지의 왼쪽 상단(0,0)을 기준으로 퍼센티지를 나타냅니다.
-// ⚠️ 중요: 이 값들을 정확히 조정해야 마커가 지도 상의 원하는 위치에 고정됩니다.
-// 예를 들어, 실제 지도 이미지에서 특정 도시가 전체 너비의 15%, 높이의 40%에 있다면 left: 15, top: 40.
 const countryMarkerPositions = {
-    usa: { top: 650/1385*100, left: 350/2048*100 },    // 미국
-    china: { top: 650/1385*100, left: 1500/2048*100 },  // 중국
-    japan: { top: 700/1385*100, left: 1770/2048*100 },  // 일본
-    korea: { top: 650/1385*100, left: 1660/2048*100 },  // 대한민국
-    northkorea: { top: 570/1385*100, left: 1640/2048*100 }, // 북한
-    russia: { top: 450/1385*100, left: 1380/2048*100 }  // 러시아
+    usa: { top: 650 / 1385 * 100, left: 350 / 2048 * 100 },    // 미국
+    china: { top: 650 / 1385 * 100, left: 1500 / 2048 * 100 },  // 중국
+    japan: { top: 700 / 1385 * 100, left: 1770 / 2048 * 100 },  // 일본
+    korea: { top: 650 / 1385 * 100, left: 1660 / 2048 * 100 },  // 대한민국
+    northkorea: { top: 570 / 1385 * 100, left: 1640 / 2048 * 100 }, // 북한
+    russia: { top: 450 / 1385 * 100, left: 1380 / 2048 * 100 }  // 러시아
 };
 
-/**
- * 지도 이미지의 실제 렌더링 크기 및 위치를 기반으로 마커 위치를 업데이트합니다.
- * 이 함수는 지도가 `object-fit: contain`으로 인해 여백이 생기더라도,
- * 지도 이미지의 실제 '내용' 영역 위에 마커가 정확히 올라가도록 계산합니다.
- */
 function updateMapMarkerPositions() {
     const mapVisualizationWrapper = document.querySelector('.map-visualization-wrapper');
-    const worldMapImage = document.querySelector('.world-map-image'); // 동적으로 추가된 img 태그
-
-    // 지도 이미지가 없거나 아직 로드되지 않았거나 (naturalWidth가 0인 경우) 함수 종료
-    // naturalWidth는 이미지의 원본 너비를 나타내며, 이미지가 로드되기 전에는 0입니다.
+    const worldMapImage = document.querySelector('.world-map-image');
     if (!worldMapImage || !mapVisualizationWrapper || worldMapImage.naturalWidth === 0) {
         console.warn("Map image not ready or not found for marker positioning. Skipping update.");
         return;
     }
-
-    // 지도 이미지가 맵 래퍼 내에서 실제로 렌더링되는 크기와 위치를 가져옵니다.
-    // getBoundingClientRect()는 뷰포트를 기준으로 한 요소의 크기와 위치를 반환합니다.
-    const mapRect = worldMapImage.getBoundingClientRect(); // 이미지 자체의 렌더링된 크기/위치
-    const wrapperRect = mapVisualizationWrapper.getBoundingClientRect(); // 래퍼 컨테이너의 크기/위치
-
-    // 지도 이미지가 래퍼 내에서 'object-fit: contain'으로 인해 생기는 여백을 고려한 오프셋
-    // 즉, 지도 이미지의 좌측 상단 모서리가 래퍼 좌측 상단 모서리로부터 얼마나 떨어져 있는지 (픽셀 단위)
+    const mapRect = worldMapImage.getBoundingClientRect();
+    const wrapperRect = mapVisualizationWrapper.getBoundingClientRect();
     const mapOffsetX = mapRect.left - wrapperRect.left;
     const mapOffsetY = mapRect.top - wrapperRect.top;
-
-    // 지도의 실제 표시 너비와 높이 (컨테이너에 맞춰 스케일된 후의 크기)
     const actualMapWidth = mapRect.width;
     const actualMapHeight = mapRect.height;
-
     const mapMarkers = document.querySelectorAll('.map-marker');
-
     mapMarkers.forEach(marker => {
         const countryId = marker.dataset.countryId;
         const position = countryMarkerPositions[countryId];
-
         if (position) {
-            // 1. 지도 이미지의 실제 표시 영역을 기준으로 마커의 픽셀 위치 계산
-            //    countryMarkerPositions는 지도 이미지 자체 내에서의 상대적 퍼센티지이므로
-            //    actualMapWidth/Height를 곱하여 실제 픽셀 위치로 변환합니다.
-            const markerPixelLeftRelativeToMap = (actualMapHeight * position.left / 100)*1.4+actualMapWidth/2-actualMapHeight/2-150;
+            const markerPixelLeftRelativeToMap = (actualMapHeight * position.left / 100) * 1.4 + actualMapWidth / 2 - actualMapHeight / 2 - 150;
             const markerPixelTopRelativeToMap = (actualMapHeight * position.top / 100);
-
-            // 2. 이 픽셀 위치를 다시 맵 래퍼(mapVisualizationWrapper)를 기준으로 하는 픽셀 위치로 변환
-            //    여백(mapOffsetX, mapOffsetY)을 더해줍니다.
             const markerPixelLeftRelativeToWrapper = mapOffsetX + markerPixelLeftRelativeToMap;
             const markerPixelTopRelativeToWrapper = mapOffsetY + markerPixelTopRelativeToMap;
-
-            // 3. 맵 래퍼의 전체 크기 대비 퍼센티지로 변환하여 CSS `left`/`top`에 적용
-            //    이렇게 하면 래퍼가 스케일될 때 마커도 함께 스케일됩니다.
             marker.style.left = `${(markerPixelLeftRelativeToWrapper / wrapperRect.width) * 100}%`;
             marker.style.top = `${(markerPixelTopRelativeToWrapper / wrapperRect.height) * 100}%`;
-
-            // console.log(`Marker ${countryId}: mapRect(${mapRect.width}, ${mapRect.height}), ` +
-            //             `wrapperRect(${wrapperRect.width}, ${wrapperRect.height}), ` +
-            //             `offset(${mapOffsetX}, ${mapOffsetY}), ` +
-            //             `final pos: top: ${marker.style.top}, left: ${marker.style.left}`); // 상세 디버깅용
         }
     });
 }
 
-/**
- * 주어진 국가 데이터에서 카테고리별 점수를 평균내고, 평균 점수에 따라 안정성 태그를 반환합니다.
- * @param {object} countryData - 개별 국가의 분석 데이터 (JSON 파싱 결과)
- * @returns {object} {averageScore: number, stabilityTag: string, stabilityClass: string}
- */
 function calculateOverallStability(countryData) {
     if (!countryData || !countryData.categories || countryData.categories.length === 0) {
         return { averageScore: 'N/A', stabilityTag: '알 수 없음', stabilityClass: 'unknown' };
     }
-
     let totalScore = 0;
     let validCategoryCount = 0;
-
     countryData.categories.forEach(category => {
         if (typeof category.score === 'number' && !isNaN(category.score)) {
             totalScore += category.score;
             validCategoryCount++;
         }
     });
-
     let averageScore = 'N/A';
     if (validCategoryCount > 0) {
-        averageScore = Math.round(totalScore / validCategoryCount); // 정수로 반올림
+        averageScore = Math.round(totalScore / validCategoryCount);
     }
-
     let stabilityTag = '알 수 없음';
     let stabilityClass = 'unknown';
-
     if (typeof averageScore === 'number') {
-        if (averageScore >= 81) {
-            stabilityTag = '안정';
-            stabilityClass = 'stable';
-        } else if (averageScore >= 61) {
-            stabilityTag = '경계';
-            stabilityClass = 'moderate';
-        } else if (averageScore >= 41) {
-            stabilityTag = '불안';
-            stabilityClass = 'unstable';
-        } else if (averageScore >= 21) {
-            stabilityTag = '심각';
-            stabilityClass = 'severe';
-        } else { // 0-20
-            stabilityTag = '위기';
-            stabilityClass = 'crisis';
-        }
+        if (averageScore >= 81) { stabilityTag = '안정'; stabilityClass = 'stable'; }
+        else if (averageScore >= 61) { stabilityTag = '경계'; stabilityClass = 'moderate'; }
+        else if (averageScore >= 41) { stabilityTag = '불안'; stabilityClass = 'unstable'; }
+        else if (averageScore >= 21) { stabilityTag = '심각'; stabilityClass = 'severe'; }
+        else { stabilityTag = '위기'; stabilityClass = 'crisis'; }
     }
-
     return { averageScore, stabilityTag, stabilityClass };
 }
 
@@ -330,18 +270,14 @@ async function loadCountryData() {
     const rightPanel = document.querySelector('.country-info-panel.right-panel');
     const mapVisualizationWrapper = document.querySelector('.map-visualization-wrapper');
 
-    // 디버깅: loadCountryData 함수 시작 로그
-    console.log("DEBUG: loadCountryData started.");
-
     if (!leftPanel || !rightPanel || !mapVisualizationWrapper) {
         console.error("Required map elements not found in loadCountryData.");
         return;
     }
 
-    const mapImageUrl = 'assets/world-map.jpg'; // ⚠️ assets/ 폴더가 있다고 가정.
+    const mapImageUrl = 'assets/world-map.jpg';
     let mapImage = mapVisualizationWrapper.querySelector('.world-map-image');
 
-    // 이미지가 없으면 새로 생성하여 추가
     if (!mapImage) {
         mapImage = document.createElement('img');
         mapImage.src = mapImageUrl;
@@ -349,26 +285,17 @@ async function loadCountryData() {
         mapImage.className = 'world-map-image';
         mapVisualizationWrapper.prepend(mapImage);
     } else {
-        // 이미지가 있지만 src가 다르면 업데이트
         if (mapImage.src.indexOf(mapImageUrl) === -1) {
-             mapImage.src = mapImageUrl;
+            mapImage.src = mapImageUrl;
         }
     }
 
-    // 지도 이미지가 로드된 후 마커 위치를 업데이트하도록 이벤트 리스너 추가
     if (mapImage.complete && mapImage.naturalWidth > 0) {
-        console.log("DEBUG: Map image already loaded, updating marker positions.");
-        setTimeout(updateMapMarkerPositions, 50); // 50ms 지연
+        setTimeout(updateMapMarkerPositions, 50);
     } else {
-        mapImage.addEventListener('load', () => {
-            console.log("DEBUG: Map image loaded, updating marker positions.");
-            setTimeout(updateMapMarkerPositions, 50); // 50ms 지연
-        });
-        mapImage.addEventListener('error', () => {
-            console.error("DEBUG: Failed to load map image:", mapImageUrl);
-        });
+        mapImage.addEventListener('load', () => setTimeout(updateMapMarkerPositions, 50));
+        mapImage.addEventListener('error', () => console.error("DEBUG: Failed to load map image:", mapImageUrl));
     }
-
 
     const countriesMeta = [
         { id: 'usa', name: '미국', flag: '🇺🇸', markerClass: 'us' },
@@ -402,7 +329,7 @@ async function loadCountryData() {
                 const data = await response.json();
                 let countryName = '';
                 let countryFlag = '';
-                switch(meta.id) {
+                switch (meta.id) {
                     case 'usa': countryName = '미국'; countryFlag = '🇺🇸'; break;
                     case 'china': countryName = '중국'; countryFlag = '🇨🇳'; break;
                     case 'japan': countryName = '일본'; countryFlag = '🇯🇵'; break;
@@ -411,7 +338,6 @@ async function loadCountryData() {
                     case 'russia': countryName = '러시아'; countryFlag = '🇷🇺'; break;
                     default: countryName = meta.id.toUpperCase(); countryFlag = '❓';
                 }
-
                 allCountriesData.push({
                     id: meta.id,
                     name: countryName,
@@ -444,7 +370,7 @@ async function loadCountryData() {
         const countryCard = document.createElement('div');
         countryCard.className = 'country-card';
         const overallStabilityClass = country.overall_stability ? country.overall_stability.toLowerCase().replace(' ', '') : 'unknown';
-        
+
         let categoriesDetailHtml = '';
         country.categories.forEach(cat => {
             const levelClass = cat.level ? cat.level.toLowerCase().replace(' ', '') : 'unknown';
@@ -477,7 +403,7 @@ async function loadCountryData() {
                 ${categoriesDetailHtml || '<p>상세 분석 데이터가 없습니다.</p>'}
             </div>
         `;
-        
+
         if (index < 3) {
             leftPanel.appendChild(countryCard);
         } else {
@@ -513,12 +439,8 @@ async function loadCountryData() {
             });
         });
 
-        // 🚨🚨🚨 이 부분의 로그를 확인하세요! 🚨🚨🚨
         const marker = document.querySelector(`.map-marker.${country.markerClass}`);
-        console.log(`DEBUG: Searching for marker .map-marker.${country.markerClass}:`, marker);
-        
         if (marker) {
-            console.log(`DEBUG: Marker ${country.markerClass} found. Attempting to add score display.`);
             marker.addEventListener('click', () => {
                 document.querySelectorAll('.country-card').forEach(card => card.classList.remove('active'));
                 countryCard.classList.add('active');
@@ -529,29 +451,20 @@ async function loadCountryData() {
                 }
             });
 
-            // ✨ NEW: 국기 마커 바로 아래에 평균 점수와 태그 표시
-            const { averageScore, stabilityTag, stabilityClass } = calculateOverallStability(country); 
-            console.log(`DEBUG: Country: ${country.name}, Avg Score: ${averageScore}, Tag: ${stabilityTag}`);
-            
+            const { averageScore, stabilityTag, stabilityClass } = calculateOverallStability(country);
             const scoreDisplay = document.createElement('div');
-            scoreDisplay.className = 'marker-score-display'; // 새로운 클래스
+            scoreDisplay.className = 'marker-score-display';
             scoreDisplay.innerHTML = `
                 <span class="avg-score">${averageScore}점</span>
                 <span class="stability-tag ${stabilityClass}">${stabilityTag}</span>
             `;
-            // 기존에 있다면 제거 후 다시 추가 (혹시 모를 중복 방지)
             const existingScoreDisplay = marker.querySelector('.marker-score-display');
             if (existingScoreDisplay) {
                 marker.removeChild(existingScoreDisplay);
-                console.log(`DEBUG: Removed existing score display for ${country.markerClass}.`);
             }
             marker.appendChild(scoreDisplay);
-            console.log(`DEBUG: Appended score display for ${country.markerClass}.`);
-        } else {
-            console.warn(`DEBUG: Marker .map-marker.${country.markerClass} not found. Cannot add score display.`);
         }
     });
-    console.log("DEBUG: loadCountryData finished.");
 }
 
 // =================================================================
@@ -578,16 +491,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const editForm = document.getElementById('edit-form');
     const closeEditModalBtn = document.getElementById('close-edit-modal');
 
-
     // --- 챗봇 버튼 및 팝업의 초기 상태 설정 함수 ---
     function hideChatbotElements() {
         if (chatToggleButton) {
             chatToggleButton.classList.remove('active-tab-button');
-            chatToggleButton.style.display = 'none'; // 강제 숨김
         }
         if (aiChatPopup) {
             aiChatPopup.classList.remove('active');
-            aiChatPopup.style.display = 'none'; // 메시지 박스도 명시적으로 display: none 적용
         }
     }
 
@@ -600,7 +510,7 @@ document.addEventListener('DOMContentLoaded', () => {
             tab.classList.add('active');
             const targetContentId = tab.dataset.tab + '-content';
             document.getElementById(targetContentId).classList.add('active');
-            
+
             // 데이터 로딩 함수 호출 및 챗봇 버튼 표시/숨김
             if (targetContentId === 'dashboard-content') { // 국제정세 대시보드 탭
                 fetchAnalysisReport();
@@ -608,81 +518,59 @@ document.addEventListener('DOMContentLoaded', () => {
                 fetchEnglishNews();
                 renderCalendar();
                 loadCountryData(); // 국가 데이터 로딩
-                // 챗봇 버튼 및 팝업 표시
+                // 챗봇 버튼 표시
                 if (chatToggleButton) {
                     chatToggleButton.classList.add('active-tab-button');
-                    chatToggleButton.style.display = 'flex'; // 명시적으로 display: flex 적용
                 }
             } else { // 'home' 탭, 'suggestions' 탭 등 그 외 모든 탭
                 if (targetContentId === 'suggestions-content') {
                     loadPosts(); // 게시판 로드
                 }
-                // 챗봇 버튼 및 팝업 숨김 (강제)
-                hideChatbotElements(); // 재사용 가능한 함수 호출
+                // 챗봇 버튼 및 팝업 숨김
+                hideChatbotElements();
             }
         });
     });
 
     // --- 초기 페이지 로드 시 활성화될 탭에 따른 챗봇 버튼 상태 설정 ---
-    // 페이지 로드 시 'home-content'가 active이므로 이 부분은 챗봇 버튼을 숨깁니다.
-    // 사용자가 'dashboard' 탭을 클릭했을 때 loadCountryData가 호출되고 마커 위치가 조정됩니다.
     const initialActiveTabButton = document.querySelector('.tab-button.active');
     if (initialActiveTabButton) {
         const initialTargetContentId = initialActiveTabButton.dataset.tab + '-content';
         if (initialTargetContentId === 'dashboard-content') {
-             if (chatToggleButton) {
+            if (chatToggleButton) {
                 chatToggleButton.classList.add('active-tab-button');
-                chatToggleButton.style.display = 'flex'; // 강제 표시
             }
-            loadCountryData(); // 초기 로드 시 대시보드 탭이면 국가 데이터 로딩
+            loadCountryData();
         } else {
-            hideChatbotElements(); // 초기 탭이 대시보드가 아니면 숨김
+            hideChatbotElements();
         }
     }
 
     // ✨ 창 크기 변경 시 마커 위치 업데이트 이벤트 리스너 추가
-    // 이 부분은 지도가 스케일될 때마다 마커 위치를 재조정하여 정합성을 유지합니다.
     window.addEventListener('resize', updateMapMarkerPositions);
 
-
     // =================================================================
-    // ✨ 챗봇 기능 이벤트 리스너 및 함수 정의
+    // ✨ 챗봇 기능 이벤트 리스너 및 함수 정의 (✅ 최종 수정 버전)
     // =================================================================
-
+    
     // 챗봇 열고 닫기 토글
-    if (chatToggleButton) {
+    if (chatToggleButton && aiChatPopup) {
         chatToggleButton.addEventListener('click', () => {
-            // 팝업이 숨김 상태일 때만 display 속성 변경 (보이게 할 때)
-            if (aiChatPopup.style.display === 'none') { // 'active' 클래스 대신 직접 display 속성 확인
-                aiChatPopup.style.display = 'flex';
-            }
-            // 
-            // visibility와 opacity 전환
-            if (aiChatPopup.style.opacity === '0' || aiChatPopup.style.opacity === '') { // 초기 상태 고려
-                aiChatPopup.style.opacity = '1';
-                aiChatPopup.style.visibility = 'visible';
-            } else {
-                aiChatPopup.style.opacity = '0';
-                aiChatPopup.style.visibility = 'hidden';
-                setTimeout(() => { // 완전히 숨긴 후 display: none
-                    aiChatPopup.style.display = 'none';
-                }, 300); // CSS transition 시간(0.3s)과 맞춤
-            }
+            // 'active' 클래스를 토글하여 CSS에서 정의된 모든 스타일을 제어
+            aiChatPopup.classList.toggle('active');
 
-            if (aiChatPopup.style.opacity === '1') { // 팝업이 보이게 될 때 스크롤 및 포커스
-                chatMessages.scrollTop = chatMessages.scrollHeight;
+            // 팝업이 활성화되면(active 클래스가 추가되면) 입력창에 포커스
+            if (aiChatPopup.classList.contains('active')) {
                 userAiInput.focus();
             }
         });
     }
 
-    if (chatCloseButton) {
+    // 챗봇 닫기 버튼
+    if (chatCloseButton && aiChatPopup) {
         chatCloseButton.addEventListener('click', () => {
-            aiChatPopup.style.opacity = '0';
-            aiChatPopup.style.visibility = 'hidden';
-            setTimeout(() => {
-                aiChatPopup.style.display = 'none';
-            }, 300); // CSS transition 시간(0.3s)과 맞춤
+            // 'active' 클래스를 제거하여 팝업을 숨김
+            aiChatPopup.classList.remove('active');
         });
     }
 
@@ -728,7 +616,6 @@ document.addEventListener('DOMContentLoaded', () => {
         chatMessages.scrollTop = chatMessages.scrollHeight;
     };
 
-
     // =================================================================
     // ✨ 게시판 기능 이벤트 리스너 정의
     // =================================================================
@@ -750,7 +637,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // postsContainerElement 변수를 DOMContentLoaded 안에서 선언하여 스코프 문제 해결
     const postsContainerElement = document.getElementById('posts-container');
     if (postsContainerElement) {
         postsContainerElement.addEventListener('submit', async (e) => {
@@ -783,7 +669,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         else if (action === '삭제') { deletePost(postId); }
                         else if (action) { alert("잘못된 입력입니다."); }
                     } else { alert("비밀번호가 일치하지 않습니다."); }
-                } catch (error) { console.error("Error managing post: ", error); alert("처리 중 오류이 발생했습니다."); }
+                } catch (error) { console.error("Error managing post: ", error); alert("처리 중 오류가 발생했습니다."); }
             }
         });
     }
