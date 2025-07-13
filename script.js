@@ -198,12 +198,12 @@ async function loadPosts() {
 // =================================================================
 
 const countryMarkerPositions = {
-    usa: { top: 650 / 1385 * 100, left: 350 / 2048 * 100 },    // 미국
-    china: { top: 650 / 1385 * 100, left: 1430 / 2048 * 100 },  // 중국
-    japan: { top: 750 / 1385 * 100, left: 1920 / 2048 * 100 },  // 일본
-    korea: { top: 650 / 1385 * 100, left: 1690 / 2048 * 100 },  // 대한민국
-    northkorea: { top: 500 / 1330 * 100, left: 1700 / 2048 * 100 }, // 북한
-    russia: { top: 450 / 1385 * 100, left: 1420 / 2048 * 100 }  // 러시아
+    usa: { top: 650 / 1385 * 100, left: 450 / 2048 * 100 },    // 미국
+    china: { top: 650 / 1385 * 100, left: 1530 / 2048 * 100 },  // 중국
+    japan: { top: 750 / 1385 * 100, left: 2020 / 2048 * 100 },  // 일본
+    korea: { top: 650 / 1385 * 100, left: 1790 / 2048 * 100 },  // 대한민국
+    northkorea: { top: 500 / 1330 * 100, left: 1800 / 2048 * 100 }, // 북한
+    russia: { top: 450 / 1385 * 100, left: 1520 / 2048 * 100 }  // 러시아
 };
 
 function updateMapMarkerPositions() {
