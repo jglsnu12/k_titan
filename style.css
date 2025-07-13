@@ -1,5 +1,5 @@
 /* =================================================================
-   K-TITAN Dashboard - Final Refactored Stylesheet (All Tabs & Layout Fixed - Final Version)
+   K-TITAN Dashboard - Final Refactored Stylesheet (2x2 Grid Layout)
    ================================================================= */
 
 /* 1. 변수 및 전역 스타일
@@ -269,6 +269,7 @@ ul {
     height: 100%; /* 부모 높이 채움 */
     overflow-y: auto; /* 내용이 넘치면 스크롤 */
     padding-bottom: 20px; /* 푸터와 겹치지 않도록 하단 여백 */
+    /* 제안사항 탭 등 개별 섹션에 필요한 패딩은 content-section이 가짐 */
 }
 .tab-content.active { display: block; }
 
@@ -440,30 +441,28 @@ ul {
 /* 5. 대시보드 탭 (#dashboard-content) 스타일 - 최종 리팩토링 및 레이아웃 조정 */
 #dashboard-content.tab-content.active {
     display: grid;
-    /* Grid 템플릿 정의:
-       첫 번째 행: map-overview-section이 전체 너비를 차지 (높이 자동 조절)
-       두 번째 행: 국내 정세 상세 분석 (왼쪽 하단)
-       세 번째 행: 캘린더 (오른쪽 상단)
-       네 번째 행: 뉴스 (오른쪽 하단)
+    /* Grid 템플릿 정의 (2x2 레이아웃):
+       행 1: 지도 섹션 (왼쪽), 캘린더 (오른쪽)
+       행 2: 분석 섹션 (왼쪽), 뉴스 (오른쪽)
     */
-    grid-template-columns: 1fr 400px; /* 왼쪽 넓은 컬럼, 오른쪽 좁은 컬럼 */
-    grid-template-rows: auto minmax(0, 0.5fr) minmax(0, 0.5fr); /* 3개 행: 지도, 분석/캘린더, 뉴스 */
+    grid-template-columns: 1fr 400px; /* 왼쪽 컬럼 (지도, 분석), 오른쪽 컬럼 (캘린더, 뉴스) */
+    grid-template-rows: minmax(0, 0.5fr) minmax(0, 0.5fr); /* 2개 행, 각각 남은 공간의 50%를 채움 (minmax(0, 1fr)도 가능) */
     gap: 30px; /* 그리드 아이템 사이 간격 */
-    padding: 0; /* .content-area에서 padding을 이미 처리하므로 여기서는 0 */
+    padding: 0; /* .content-area에서 padding을 이미 처리했으므로 여기서는 0 */
     height: 100%; /* 부모(.content-area)의 높이를 100% 채움 */
     overflow: hidden; /* 그리드 아이템이 컨테이너를 넘치지 않도록 */
 }
 
-/* 주요 국가별 안정성 현황 섹션 (지도와 패널이 함께 있는 부분) */
+/* 주요 국가별 안정성 현황 섹션 (HTML 순서상 첫 번째, Grid에서는 1행 1열) */
 .map-overview-section {
-    grid-column: 1 / -1; /* 첫 번째 행에서 전체 컬럼을 차지 */
-    grid-row: 1 / 2;     /* 첫 번째 행에 배치 */
+    grid-column: 1 / 2; /* 1행 1열 */
+    grid-row: 1 / 2;     /* 1행 1열 */
     margin-bottom: 0;    /* 그리드 아이템이므로 외부 마진 없음 */
     padding: 25px;       /* 내부 패딩 */
     background-color: var(--card-bg-color);
     border-radius: var(--border-radius);
     box-shadow: 0 4px 10px var(--shadow-color);
-    min-height: 550px; /* 지도가 보일 최소 높이 설정 (패널 높이 + 여백 고려) */
+    min-height: 450px; /* 지도가 보일 최소 높이 (조정 가능) */
     display: flex; /* 내부 요소 (h2, map-visualization-wrapper)를 세로로 정렬 */
     flex-direction: column;
 }
@@ -550,7 +549,7 @@ ul {
 }
 
 /* 각 국가별 마커 위치 (지도 이미지와 해상도에 따라 다시 조정해야 합니다!) */
-/* 이 값들은 예시이며, 실제 사용하실 지도 이미지에 맞춰 매우 정밀하게 조정해야 합니다. */
+/* 이 값들은 예시이며, 실제 사용하실 지도 이미지에 맞춰 매우 정밀하게 조정하세요. */
 /* 이미지를 삽입 후 개발자 도구로 조정하세요. */
 .map-marker.us { top: 40%; left: 15%; }
 .map-marker.cn { top: 45%; left: 75%; }
@@ -560,8 +559,8 @@ ul {
 .map-marker.kp { top: 45%; left: 80%; } /* 북한 위치 */
 
 
-/* 기존 대시보드 그리드 아이템 배치 (스크린샷 요청에 맞춰 재조정) */
-/* 왼쪽 상단: 주요 국가별 안정성 현황 (map-overview-section) - grid-column: 1/-1; grid-row: 1/2; */
+/* 기존 대시보드 그리드 아이템 배치 (요청 순서에 맞춰 재조정) */
+/* 왼쪽 상단: 주요 국가별 안정성 현황 (map-overview-section) - grid-column: 1/2; grid-row: 1/2; */
 /* 왼쪽 하단: 국내 정세 상세 분석 (dashboard-analysis-report) */
 .dashboard-analysis-report { 
     grid-column: 1 / 2; /* 왼쪽 컬럼 */
@@ -574,7 +573,7 @@ ul {
 /* 오른쪽 상단: 주요 국제 정세 캘린더 (dashboard-calendar) */
 .dashboard-calendar      { 
     grid-column: 2 / 3; /* 오른쪽 컬럼 */
-    grid-row: 1 / 2;    /* 첫 번째 행 */ /* <--- 이 부분 grid-row 1 / 2로 변경 */
+    grid-row: 1 / 2;    /* 첫 번째 행 (오른쪽 상단) */
     display: flex; flex-direction: column;
     min-height: 0;
     overflow: hidden;
@@ -582,7 +581,7 @@ ul {
 /* 오른쪽 하단: 실시간 뉴스 (dashboard-news) */
 .dashboard-news          { 
     grid-column: 2 / 3; /* 오른쪽 컬럼 */
-    grid-row: 2 / 3;    /* 두 번째 행 */ /* <--- 이 부분 grid-row 2 / 3로 변경 */
+    grid-row: 2 / 3;    /* 두 번째 행 (오른쪽 하단) */
     display: flex; flex-direction: column;
     min-height: 0;
     overflow: hidden;
