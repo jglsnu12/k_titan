@@ -203,12 +203,12 @@ async function loadPosts() {
 // ⚠️ 중요: 이 값들을 정확히 조정해야 마커가 지도 상의 원하는 위치에 고정됩니다.
 // 예를 들어, 실제 지도 이미지에서 특정 도시가 전체 너비의 15%, 높이의 40%에 있다면 left: 15, top: 40.
 const countryMarkerPositions = {
-    usa: { top: 40, left: 15 },    // 미국
-    china: { top: 45, left: 75 },  // 중국
-    japan: { top: 50, left: 88 },  // 일본
-    korea: { top: 48, left: 83 },  // 대한민국
-    northkorea: { top: 45, left: 80 }, // 북한
-    russia: { top: 25, left: 60 }  // 러시아
+    usa: { top: 650/1385*100, left: 350/2048*100 },    // 미국
+    china: { top: 650/1385*100, left: 1500/2048*100 },  // 중국
+    japan: { top: 650/1385*100, left: 1750/2048*100 },  // 일본
+    korea: { top: 650/1385*100, left: 1660/2048*100 },  // 대한민국
+    northkorea: { top: 600/1385*100, left: 1660/2048*100 }, // 북한
+    russia: { top: 450/1385*100, left: 1380/2048*100 }  // 러시아
 };
 
 /**
