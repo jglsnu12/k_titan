@@ -538,19 +538,20 @@ ul {
 
 /* 지도 마커 스타일 */
 .map-marker {
-    position: absolute; /* 지도 이미지 위에 정확한 위치에 오버레이 */
-    font-size: 2.8rem; /* <--- 국기 이모지 크기를 충분히 크게 조정 (기존 2.2rem에서 증가) */
+    position: absolute; /* (기존) 지도 이미지 위에 정확한 위치에 오버레이 */
+    font-size: 5em; /* ✨ 기존 2.2rem에서 3배 정도 커진 4em으로 조정 ✨ */
     cursor: pointer;
     transition: transform 0.2s ease, filter 0.2s ease;
-    filter: drop-shadow(0 0 5px rgba(0,0,0,0.5)); /* <--- 이모지 가시성 개선을 위해 그림자 진하게 */
-    text-shadow: 0 0 5px rgba(0,0,0,0.5); /* <--- 텍스트 그림자 추가 */
+    filter: drop-shadow(0 0 8px rgba(0,0,0,0.6)); /* ✨ 그림자 강하게 하여 가시성 개선 ✨ */
+    text-shadow: 0 0 8px rgba(0,0,0,0.6); /* ✨ 텍스트 그림자 추가하여 가시성 개선 ✨ */
     z-index: 10; /* 가장 위로 */
     line-height: 1; /* 이모지 높이 고정 */
+    transform: translate(-50%, -50%); /* ✨ 아이콘 중앙을 기준으로 위치 잡기 ✨ */
 }
 
 .map-marker:hover {
-    transform: scale(1.2);
-    filter: drop-shadow(0 0 8px rgba(0,0,0,0.5));
+    transform: scale(1.2) translate(-50%, -50%); /* ✨ 확대 시에도 중앙 유지 ✨ */
+    filter: drop-shadow(0 0 12px rgba(0,0,0,0.7)); /* ✨ 호버 시 그림자 더 강조 ✨ */
 }
 
 /* 각 국가별 마커 위치 (지도 이미지와 해상도에 따라 다시 조정해야 합니다!) */
