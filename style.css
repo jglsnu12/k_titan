@@ -1,5 +1,5 @@
 /* =================================================================
-   K-TITAN Dashboard - Final Refactored Stylesheet (Final Layout Fixes)
+   K-TITAN Dashboard - Final Refactored Stylesheet (All Tabs & Layout Fixed)
    ================================================================= */
 
 /* 1. 변수 및 전역 스타일
@@ -263,8 +263,14 @@ ul {
     padding: 40px;
 }
 
-.tab-content { display: none; }
-.tab-content.active { display: block; height: 100%; }
+.tab-content {
+    display: none;
+    height: 100%; /* 모든 탭 콘텐츠는 부모 높이를 채움 */
+    overflow-y: auto; /* 내용이 넘치면 스크롤 */
+    padding-bottom: 20px; /* 푸터와 겹치지 않도록 하단 여백 */
+}
+.tab-content.active { display: block; }
+
 
 .site-footer {
     background-color: #343a40;
@@ -300,7 +306,9 @@ ul {
 }
 
 .content-section {
-    margin-bottom: 32px;
+    margin-bottom: 32px; /* 기본 섹션 마진 복구 */
+    min-height: 0; /* flex/grid 아이템의 높이 계산 오류 방지 */
+    overflow: hidden; /* 섹션 내용이 넘치면 숨김 */
 }
 .content-section h2 {
     font-size: 1.5rem;
@@ -436,13 +444,13 @@ ul {
        두 번째 행: 국내 정세 상세 분석 (왼쪽 하단)
        세 번째 행: 캘린더 (오른쪽 상단)
        네 번째 행: 뉴스 (오른쪽 하단)
-       스크린샷의 캘린더와 뉴스가 같은 오른쪽 컬럼에 있지만, 서로 다른 높이를 가지므로 
-       별도의 행으로 분리하여 관리하는 것이 더 유연합니다.
     */
     grid-template-columns: 1fr 400px; /* 왼쪽 넓은 컬럼, 오른쪽 좁은 컬럼 */
-    grid-template-rows: auto minmax(0, 0.5fr) minmax(0, 0.5fr); /* 3개 행으로 분할: 지도, 분석/캘린더, 뉴스 */
+    /* 3개 행으로 분할: 지도 (auto), 국내분석 (1fr), 캘린더/뉴스 (1fr) */
+    /* 캘린더와 뉴스를 각각 다른 행에 배치하여 스크린샷과 유사하게 구현 */
+    grid-template-rows: auto minmax(0, 0.5fr) minmax(0, 0.5fr);
     gap: 30px; /* 그리드 아이템 사이 간격 */
-    padding: 0; /* .content-area에서 padding을 처리하므로 여기서는 0 */
+    padding: 0; /* .content-area에서 padding을 이미 처리하므로 여기서는 0 */
     height: 100%; /* 부모(.content-area)의 높이를 100% 채움 */
     overflow: hidden; /* 그리드 아이템이 컨테이너를 넘치지 않도록 */
 }
@@ -585,13 +593,21 @@ ul {
 .dashboard-world-map     { display: none; } /* 이 섹션은 계속 숨김 */
 
 /* 공통 섹션 스타일 (중복 제거 및 필요한 속성 유지) */
+/* .dashboard-analysis-report, .dashboard-calendar, .dashboard-news {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0;
+    min-height: 0;
+    overflow: hidden;
+} */ /* 위에 개별적으로 설정했으므로 이 공통 블록은 제거했습니다. */
+
 .report-box, .calendar-body, .news-grid {
     flex-grow: 1; /* 컨테이너 내에서 남은 공간을 채움 */
     overflow-y: auto; /* 내용이 넘치면 스크롤 */
 }
 
-/* 캘린더와 뉴스 특정 스타일 (이전과 동일) */
-.calendar-body { gap: 20px; }
+/* 캘린더와 뉴스 특정 스타일 */
+.calendar-body { gap: 20px; } /* 캘린더 내부 리스트 간격 */
 .dashboard-news .news-grid {
     display: flex; flex-direction: column; gap: 30px; padding-right: 10px;
 }
@@ -699,7 +715,49 @@ ul {
 .signals-content p { margin-bottom: 5px; }
 .signals-content strong { color: var(--text-color); }
 
-/* 반응형 미디어 쿼리 (이전 코드와 동일) */
+
+/* 6. 제안사항 탭 (#suggestions-content) 스타일
+----------------------------------------------------------------- */
+#show-write-modal { margin-left: auto; }
+.post-card {
+    background-color: var(--card-bg-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 18px 24px; margin-bottom: 20px;
+}
+.post-header {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; font-size: 0.9rem; color: var(--text-light-color);
+}
+.post-status { font-weight: 600; padding: 4px 8px; border-radius: 4px; }
+.post-status.resolved { background-color: var(--status-resolved-bg); color: var(--status-resolved-text); }
+.post-status.unresolved { background-color: var(--status-unresolved-bg); color: var(--status-unresolved-text); }
+.post-content { line-height: 1.6; margin-bottom: 16px; white-space: pre-wrap; }
+.post-content p { margin: 0; }
+.post-actions { text-align: right; margin-top: -10px; }
+.post-manage-btn {
+    background: none; border: 1px solid var(--border-color); color: var(--text-light-color); padding: 5px 10px; font-size: 0.85rem;
+}
+.post-manage-btn:hover { background-color: var(--bg-color); color: var(--text-color); }
+.comment-section { border-top: 1px solid var(--border-color); padding-top: 20px; }
+.comment-card { background: var(--bg-color); border-radius: 6px; padding: 16px; }
+.comment-card p { margin: 0; }
+.comment-author { font-weight: 600; color: var(--primary-color); margin-bottom: 8px !important; }
+.comment-form { margin-top: 20px; display: flex; gap: 10px; }
+.comment-input { flex-grow: 1; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; }
+.comment-submit { padding: 10px 15px; background-color: var(--text-light-color); color: white; }
+
+
+/* 7. 모달 스타일
+----------------------------------------------------------------- */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(9, 30, 66, 0.6);
+    display: none; justify-content: center; align-items: center; z-index: 1000;
+}
+.modal-content { background-color: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 600px; }
+.modal-buttons { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+.cancel-button {
+    background-color: #e9ecef; color: #495057; font-size: 1rem; font-weight: 600; padding: 12px 25px;
+}
+
+/* 8. 반응형 미디어 쿼리
+----------------------------------------------------------------- */
 @media (max-width: 1200px) {
     #dashboard-content.tab-content.active {
         grid-template-columns: 1fr;
