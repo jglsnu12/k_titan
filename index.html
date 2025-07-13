@@ -12,16 +12,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css">
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 기존의 map-marker 스타일이 깃발 아이콘에 맞게 조정될 수 있도록 필요하면 수정해주세요 */
         .map-marker {
-            /* 깃발 아이콘이 적절한 크기로 보이도록 font-size를 조정할 수 있습니다. */
-            font-size: 2em; /* 예를 들어, 기본 텍스트 크기보다 2배 크게 */
-            line-height: 1; /* 깃발 아이콘의 높이를 조정 */
-            display: inline-block; /* 깃발 아이콘이 자체 공간을 갖도록 */
-            /* 기존의 위치 지정(position: absolute 등) 스타일은 유지해야 합니다. */
+            font-size: 2em;
+            line-height: 1;
+            display: inline-block;
         }
         .map-marker .flag-icon {
-            vertical-align: middle; /* 깃발 아이콘이 요소 중앙에 오도록 정렬 */
+            vertical-align: middle;
         }
     </style>
 
@@ -51,7 +48,7 @@
                         <h2>연구개발 배경</h2>
                         <p>본 대시보드는 국방부 정책실 산하 국방정책과, 해외정책과 등의 국제정세 분석 담당 부처의 업무 효율성 및 정확성 제고를 위해 개발되었습니다. 2022 국방백서에 명시된 '경험과 직관이 아닌 통계분석 등 데이터 기반의 과학적 의사결정으로의 전환 준비' 및 'AI 학습 및 빅데이터 분석용 데이터 구축 시범사업'의 일환으로 추진 중인 프로젝트입니다.</p>
                     </section>
-            
+                
                     <section class="content-section card">
                         <h2>대시보드의 필요성</h2>
                         <ul>
@@ -93,84 +90,30 @@
                             <div class="upcoming-events">
                                 <h4>다가오는 주요 일정</h4>
                                 <ul class="event-list">
-                                    <li class="event-item">
-                                        <span class="date">7. 20. (일)</span>
-                                        <span class="description">G7 정상 회의</span>
-                                        <span class="flags">
-                                            <i class="flag-icon flag-icon-jp"></i><i class="flag-icon flag-icon-us"></i><i class="flag-icon flag-icon-gb"></i><i class="flag-icon flag-icon-fr"></i><i class="flag-icon flag-icon-de"></i><i class="flag-icon flag-icon-it"></i><i class="flag-icon flag-icon-ca"></i>
-                                        </span>
-                                    </li>
-                                    <li class="event-item">
-                                        <span class="date">7. 25. (금)</span>
-                                        <span class="description">유럽중앙은행(ECB) 통화정책회의</span>
-                                        <span class="flags"><i class="flag-icon flag-icon-eu"></i></span>
-                                    </li>
-                                    <li class="event-item">
-                                        <span class="date">8. 1. (금)</span>
-                                        <span class="description">미국-중국 전략 경제 대화</span>
-                                        <span class="flags"><i class="flag-icon flag-icon-us"></i><i class="flag-icon flag-icon-cn"></i></span>
-                                    </li>
-                                    <li class="event-item">
-                                        <span class="date">8. 15. (금)</span>
-                                        <span class="description">광복절</span>
-                                        <span class="flags"><i class="flag-icon flag-icon-kr"></i></span>
-                                    </li>
-                                    <li class="event-item">
-                                        <span class="date">9. 5. (금)</span>
-                                        <span class="description">UN 총회 개막</span>
-                                        <span class="flags"><i class="flag-icon flag-icon-un"></i></span>
-                                    </li>
-                                    <li class="event-item">
-                                        <span class="date">9. 28. (일)</span>
-                                        <span class="description">독일 총선</span>
-                                        <span class="flags"><i class="flag-icon flag-icon-de"></i></span>
-                                    </li>
-                                    <li class="event-item">
-                                        <span class="date">10. 1. (수)</span>
-                                        <span class="description">중국 국경절</span>
-                                        <span class="flags"><i class="flag-icon flag-icon-cn"></i></span>
-                                    </li>
-                                    <li class="event-item">
-                                        <span class="date">11. 5. (수)</span>
-                                        <span class="description">미국 중간선거</span>
-                                        <span class="flags"><i class="flag-icon flag-icon-us"></i></span>
-                                    </li>
-                                    <li class="event-item">
-                                        <span class="date">11. 15. (토)</span>
-                                        <span class="description">APEC 정상회의</span>
-                                        <span class="flags"><i class="flag-icon flag-icon-apec"></i></span>
-                                    </li>
+                                    <li class="event-item"><span class="date">7. 20. (일)</span><span class="description">G7 정상 회의</span><span class="flags"><i class="flag-icon flag-icon-jp"></i><i class="flag-icon flag-icon-us"></i><i class="flag-icon flag-icon-gb"></i><i class="flag-icon flag-icon-fr"></i><i class="flag-icon flag-icon-de"></i><i class="flag-icon flag-icon-it"></i><i class="flag-icon flag-icon-ca"></i></span></li>
+                                    <li class="event-item"><span class="date">7. 25. (금)</span><span class="description">유럽중앙은행(ECB) 통화정책회의</span><span class="flags"><i class="flag-icon flag-icon-eu"></i></span></li>
+                                    <li class="event-item"><span class="date">8. 1. (금)</span><span class="description">미국-중국 전략 경제 대화</span><span class="flags"><i class="flag-icon flag-icon-us"></i><i class="flag-icon flag-icon-cn"></i></span></li>
+                                    <li class="event-item"><span class="date">8. 15. (금)</span><span class="description">광복절</span><span class="flags"><i class="flag-icon flag-icon-kr"></i></span></li>
+                                    <li class="event-item"><span class="date">9. 5. (금)</span><span class="description">UN 총회 개막</span><span class="flags"><i class="flag-icon flag-icon-un"></i></span></li>
+                                    <li class="event-item"><span class="date">9. 28. (일)</span><span class="description">독일 총선</span><span class="flags"><i class="flag-icon flag-icon-de"></i></span></li>
+                                    <li class="event-item"><span class="date">10. 1. (수)</span><span class="description">중국 국경절</span><span class="flags"><i class="flag-icon flag-icon-cn"></i></span></li>
+                                    <li class="event-item"><span class="date">11. 5. (수)</span><span class="description">미국 중간선거</span><span class="flags"><i class="flag-icon flag-icon-us"></i></span></li>
+                                    <li class="event-item"><span class="date">11. 15. (토)</span><span class="description">APEC 정상회의</span><span class="flags"><i class="flag-icon flag-icon-apec"></i></span></li>
                                 </ul>
                             </div>
-            
+                        
                             <div class="past-events">
                                 <h4>최근 지난 일정</h4>
                                 <ul class="event-list">
-                                    <li class="event-item">
-                                        <span class="date">7. 4. (금)</span>
-                                        <span class="description">미국 독립기념일</span>
-                                        <span class="flags"><i class="flag-icon flag-icon-us"></i></span>
-                                    </li>
-                                    <li class="event-item">
-                                        <span class="date">6. 26. (목)</span>
-                                        <span class="description">G20 재무장관 회의</span>
-                                        <span class="flags"><i class="flag-icon flag-icon-g20"></i></span>
-                                    </li>
-                                    <li class="event-item">
-                                        <span class="date">6. 25. (수)</span>
-                                        <span class="description">6.25 전쟁일</span>
-                                        <span class="flags"><i class="flag-icon flag-icon-kr"></i></span>
-                                    </li>
-                                    <li class="event-item">
-                                        <span class="date">6. 6. (금)</span>
-                                        <span class="description">현충일</span>
-                                        <span class="flags"><i class="flag-icon flag-icon-kr"></i></span>
-                                    </li>
+                                    <li class="event-item"><span class="date">7. 4. (금)</span><span class="description">미국 독립기념일</span><span class="flags"><i class="flag-icon flag-icon-us"></i></span></li>
+                                    <li class="event-item"><span class="date">6. 26. (목)</span><span class="description">G20 재무장관 회의</span><span class="flags"><i class="flag-icon flag-icon-g20"></i></span></li>
+                                    <li class="event-item"><span class="date">6. 25. (수)</span><span class="description">6.25 전쟁일</span><span class="flags"><i class="flag-icon flag-icon-kr"></i></span></li>
+                                    <li class="event-item"><span class="date">6. 6. (금)</span><span class="description">현충일</span><span class="flags"><i class="flag-icon flag-icon-kr"></i></span></li>
                                 </ul>
                             </div>
                         </div>
                     </section>
-            
+                
                     <section class="content-section card dashboard-news">
                         <h2><i class="icon-news"></i>실시간 뉴스</h2>
                         <div class="news-grid">
@@ -187,7 +130,7 @@
                 </div>
             </div>
         
-            <div id="suggestions-content" class="tab-content">
+            <div id="suggestions-content" class="tab-content" style="border: 5px solid red;">
                 <header class="content-header">
                     <h1>제안 및 문의 게시판</h1>
                     <button id="show-write-modal" class="submit-button">새 글 작성하기</button>
@@ -198,7 +141,6 @@
             </div>
         
         </main>
-
     </div>
     
     <div id="write-modal" class="modal-overlay">
