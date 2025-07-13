@@ -206,19 +206,32 @@ async function loadPosts() {
 async function loadCountryData() {
     const leftPanel = document.querySelector('.country-info-panel.left-panel');
     const rightPanel = document.querySelector('.country-info-panel.right-panel');
-    const mapImageWrapper = document.querySelector('.map-image-wrapper');
+    const mapVisualizationWrapper = document.querySelector('.map-visualization-wrapper');
 
-    if (!leftPanel || !rightPanel || !mapImageWrapper) return;
+    // 지도 이미지 관련 로그 추가
+    console.log("loadCountryData called.");
+    console.log("mapVisualizationWrapper:", mapVisualizationWrapper); // 이 요소가 null인지 확인
 
-    const mapImageUrl = 'assets/world_map.png';
+    if (!leftPanel || !rightPanel || !mapVisualizationWrapper) {
+        console.error("Required map elements not found."); // 요소가 없으면 여기서 리턴
+        return;
+    }
+
+    const mapImageUrl = 'assets/world_map.png'; // ⚠️ 여기에 실제 지도 이미지 경로를 입력하세요.
     const mapImage = document.createElement('img');
     mapImage.src = mapImageUrl;
     mapImage.alt = 'World Map';
     mapImage.className = 'world-map-image';
     
-    const existingMapImage = mapImageWrapper.querySelector('.world-map-image');
-    if (existingMapImage) { mapImageWrapper.removeChild(existingMapImage); }
-    mapImageWrapper.prepend(mapImage);
+    // 기존 이미지가 있다면 제거하고 새로 추가 (탭 전환 시 중복 추가 방지)
+    const existingMapImage = mapVisualizationWrapper.querySelector('.world-map-image');
+    if (existingMapImage) {
+        mapVisualizationWrapper.removeChild(existingMapImage);
+        console.log("Existing map image removed.");
+    }
+    
+    mapVisualizationWrapper.prepend(mapImage);
+    console.log("New map image appended to mapVisualizationWrapper. src:", mapImageUrl);
 
     const countriesMeta = [
         { id: 'usa', name: '미국', flag: '🇺🇸', markerClass: 'us' },
