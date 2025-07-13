@@ -445,8 +445,8 @@ ul {
        행 1: 지도 섹션 (왼쪽), 캘린더 (오른쪽)
        행 2: 분석 섹션 (왼쪽), 뉴스 (오른쪽)
     */
-    grid-template-columns: 1fr 400px; /* 왼쪽 컬럼 (지도, 분석), 오른쪽 컬럼 (캘린더, 뉴스) */
-    grid-template-rows: minmax(0, 0.5fr) minmax(0, 0.5fr); /* 2개 행, 각각 남은 공간의 50%를 채움 (minmax(0, 1fr)도 가능) */
+    grid-template-columns: 1fr 450px; /* 왼쪽 컬럼 (지도, 분석), 오른쪽 컬럼 (캘린더, 뉴스) */
+    grid-template-rows: minmax(0, 0.25fr) minmax(0, 0.75fr);
     gap: 30px; /* 그리드 아이템 사이 간격 */
     padding: 0; /* .content-area에서 padding을 이미 처리했으므로 여기서는 0 */
     height: 100%; /* 부모(.content-area)의 높이를 100% 채움 */
