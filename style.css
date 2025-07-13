@@ -5,7 +5,7 @@
 /* 1. 변수 및 전역 스타일
 ----------------------------------------------------------------- */
 :root {
-    --bg-color: #f7f8fa;
+    --bg-color: #f7f8fa
     --nav-bg-color: #ffffff;
     --card-bg-color: #ffffff;
     --primary-color: #0052cc;
@@ -271,13 +271,13 @@ ul {
 
 /* 모든 탭 콘텐츠에 공통으로 적용될 기본 스타일 */
 .tab-content {
-    display: none;
+    display: none !important;
     height: 100%; /* 부모 높이 채움 */
     overflow-y: auto; /* 내용이 넘치면 스크롤 */
     padding-bottom: 20px; /* 푸터와 겹치지 않도록 하단 여백 */
     /* 제안사항 탭 등 개별 섹션에 필요한 패딩은 content-section이 가짐 */
 }
-.tab-content.active { display: block; }
+.tab-content.active { display: block !important; }
 
 
 .site-footer {
@@ -446,7 +446,7 @@ ul {
 
 /* 5. 대시보드 탭 (#dashboard-content) 스타일 - 최종 리팩토링 및 레이아웃 조정 */
 #dashboard-content.tab-content.active {
-    display: grid;
+    display: grid !important;
     /* Grid 템플릿 정의 (2x2 레이아웃):
        행 1: 지도 섹션 (왼쪽), 캘린더 (오른쪽)
        행 2: 분석 섹션 (왼쪽), 뉴스 (오른쪽)
