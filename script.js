@@ -209,7 +209,7 @@ async function loadCountryData() {
         return;
     }
 
-    const mapImageUrl = 'assets/world_map.png'; // ⚠️ assets/ 폴더가 있다고 가정.
+    const mapImageUrl = 'assets/world-map.jpg'; // ⚠️ assets/ 폴더가 있다고 가정.
     const mapImage = document.createElement('img');
     mapImage.src = mapImageUrl;
     mapImage.alt = 'World Map';
