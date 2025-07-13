@@ -1,5 +1,5 @@
 /* =================================================================
-   K-TITAN Dashboard - Final Refactored Stylesheet (Final Layout Fixes)
+   K-TITAN Dashboard - Final Refactored Stylesheet (All Tabs & Layout Fixed - Final Version)
    ================================================================= */
 
 /* 1. 변수 및 전역 스타일
@@ -263,9 +263,10 @@ ul {
     padding: 40px;
 }
 
+/* 모든 탭 콘텐츠에 공통으로 적용될 기본 스타일 */
 .tab-content {
     display: none;
-    height: 100%;
+    height: 100%; /* 부모 높이 채움 */
     overflow-y: auto; /* 내용이 넘치면 스크롤 */
     padding-bottom: 20px; /* 푸터와 겹치지 않도록 하단 여백 */
 }
@@ -306,7 +307,7 @@ ul {
 }
 
 .content-section {
-    margin-bottom: 32px; /* 기본 섹션 마진 */
+    margin-bottom: 32px; /* 각 섹션 하단 마진 복구 */
     min-height: 0;
     overflow: hidden; /* 섹션 내용이 넘치면 숨김 */
 }
@@ -439,19 +440,14 @@ ul {
 /* 5. 대시보드 탭 (#dashboard-content) 스타일 - 최종 리팩토링 및 레이아웃 조정 */
 #dashboard-content.tab-content.active {
     display: grid;
-    /* Grid 템플릿 정의 (요청 순서에 맞춰 재배치):
-       area:
-       "map-overview map-overview"   <- 지도 섹션 (왼쪽 상단 + 오른쪽 상단 합쳐서 전체 행)
-       "analysis    calendar"        <- 국내 분석 (왼쪽 하단), 캘린더 (오른쪽 상단)
-       "analysis    news"            <- 국내 분석 (왼쪽 하단), 뉴스 (오른쪽 하단)
+    /* Grid 템플릿 정의:
+       첫 번째 행: map-overview-section이 전체 너비를 차지 (높이 자동 조절)
+       두 번째 행: 국내 정세 상세 분석 (왼쪽 하단)
+       세 번째 행: 캘린더 (오른쪽 상단)
+       네 번째 행: 뉴스 (오른쪽 하단)
     */
     grid-template-columns: 1fr 400px; /* 왼쪽 넓은 컬럼, 오른쪽 좁은 컬럼 */
-    grid-template-rows: auto minmax(0, 0.5fr) minmax(0, 0.5fr); /* 지도, 분석/캘린더, 뉴스 */
-    /* grid-template-areas:
-        "map_area map_area"
-        "analysis_area calendar_area"
-        "analysis_area news_area"; */ /* grid-area를 사용하려면 HTML에 grid-area를 정의해야 함 */
-
+    grid-template-rows: auto minmax(0, 0.5fr) minmax(0, 0.5fr); /* 3개 행: 지도, 분석/캘린더, 뉴스 */
     gap: 30px; /* 그리드 아이템 사이 간격 */
     padding: 0; /* .content-area에서 padding을 이미 처리하므로 여기서는 0 */
     height: 100%; /* 부모(.content-area)의 높이를 100% 채움 */
@@ -564,8 +560,8 @@ ul {
 .map-marker.kp { top: 45%; left: 80%; } /* 북한 위치 */
 
 
-/* 기존 대시보드 그리드 아이템 배치 (요청 순서에 맞춰 재조정) */
-/* 왼쪽 상단: 주요 국가별 안정성 현황 (map-overview-section) - 이미 grid-row: 1/2, grid-column: 1/-1 로 전체 차지 */
+/* 기존 대시보드 그리드 아이템 배치 (스크린샷 요청에 맞춰 재조정) */
+/* 왼쪽 상단: 주요 국가별 안정성 현황 (map-overview-section) - grid-column: 1/-1; grid-row: 1/2; */
 /* 왼쪽 하단: 국내 정세 상세 분석 (dashboard-analysis-report) */
 .dashboard-analysis-report { 
     grid-column: 1 / 2; /* 왼쪽 컬럼 */
@@ -721,6 +717,18 @@ ul {
 
 /* 6. 제안사항 탭 (#suggestions-content) 스타일
 ----------------------------------------------------------------- */
+/* 제안사항 탭 전체에 패딩과 기본 레이아웃 적용 */
+#suggestions-content {
+    padding: 24px; /* 기존 content-area 패딩과 유사하게 설정 */
+    display: block; /* 기본적으로 block으로 시작하여 내용이 흐르도록 */
+}
+#suggestions-content .content-header {
+    margin-bottom: 32px; /* 헤더와 섹션 사이 마진 */
+}
+#suggestions-content .content-section {
+    margin-bottom: 0; /* 단일 섹션이므로 하단 마진 제거 */
+}
+
 #show-write-modal { margin-left: auto; }
 .post-card {
     background-color: var(--card-bg-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 18px 24px; margin-bottom: 20px;
