@@ -648,7 +648,7 @@ ul {
     grid-template-rows: minmax(0, 0.3fr) minmax(0, 0.7fr); 
     /* 또는: grid-template-rows: 2fr 3fr; */
     /* 또는 캘린더의 고정 높이와 뉴스의 유동 높이: grid-template-rows: 250px 1fr; */
-    gap: 30px; /* 캘린더와 뉴스 섹션 사이의 간격 */
+    gap: 20px; /* 캘린더와 뉴스 섹션 사이의 간격 */
     height: 100%; /* 부모 (#dashboard-content)의 할당된 높이를 꽉 채움 */
     overflow: hidden; /* 내부 콘텐츠가 넘칠 경우 대비 */
 }
