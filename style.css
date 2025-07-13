@@ -554,15 +554,7 @@ ul {
     filter: drop-shadow(0 0 12px rgba(0,0,0,0.7)); /* ✨ 호버 시 그림자 더 강조 ✨ */
 }
 
-/* 각 국가별 마커 위치 (지도 이미지와 해상도에 따라 다시 조정해야 합니다!) */
-/* 이 값들은 예시이며, 실제 사용하실 지도 이미지에 맞춰 매우 정밀하게 조정하세요. */
-/* 이미지를 삽입 후 개발자 도구로 조정하세요. */
-.map-marker.us { top: 40%; left: 15%; }
-.map-marker.cn { top: 45%; left: 75%; }
-.map-marker.kr { top: 48%; left: 83%; }
-.map-marker.ru { top: 25%; left: 60%; }
-.map-marker.jp { top: 50%; left: 88%; }
-.map-marker.kp { top: 45%; left: 80%; } /* 북한 위치 */
+
 
 
 /* 기존 대시보드 그리드 아이템 배치 (요청 순서에 맞춰 재조정) */
