@@ -250,7 +250,7 @@ function updateMapMarkerPositions() {
 
             // wrapper를 기준으로 하는 최종 퍼센티지 위치 계산
             // transform: translate(-50%, -50%)와 함께 작동하여 마커의 중앙을 맞춥니다.
-            marker.style.left = `${(markerPixelLeft / wrapperRect.width) * 100}%`;
+            marker.style.left = `${(markerPixelLeft / wrapperRect.width) * 50}%`;
             marker.style.top = `${(markerPixelTop / wrapperRect.height) * 100}%`;
             // console.log(`Marker ${countryId}: top: ${marker.style.top}, left: ${marker.style.left}`); // 디버깅용
         }
