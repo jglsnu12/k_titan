@@ -417,13 +417,22 @@ ul {
 ----------------------------------------------------------------- */
 #dashboard-content.tab-content.active {
     display: grid;
-    grid-template-columns: 1fr 400px;
-    /* ▼▼▼ 이 부분을 수정하세요 ▼▼▼ */
-    grid-template-rows: 50% 1fr; /* 위쪽 행이 45%, 아래쪽 행이 나머지 공간을 차지 */
+    /* 새로운 Grid 템플릿 정의:
+       첫 번째 행: 주요 국가별 안정성 현황 (map-overview-section)이 전체 너비를 차지
+       두 번째 행: 국내 정세 상세 분석 (analysis-report)이 왼쪽 컬럼
+       세 번째 행: 캘린더 (calendar)와 뉴스 (news)가 오른쪽 컬럼
+       
+       Grid-template-columns: 왼쪽 컬럼(분석보고서) 1fr, 오른쪽 컬럼(캘린더,뉴스) 400px;
+       Grid-template-rows: 첫 번째 행(map-overview) auto (콘텐츠 높이만큼), 두 번째 행(분석보고서) 1fr (남은 공간 모두)
+    */
+    grid-template-columns: 1fr 400px; /* 왼쪽 컬럼, 오른쪽 컬럼 */
+    grid-template-rows: auto 1fr;     /* 첫 번째 행은 map-overview-section의 높이에 따라 자동, 두 번째 행은 남은 공간 */
     gap: 30px;
-    padding: 0;
+    padding: 0; /* 부모(.content-area)에서 padding을 이미 처리했으므로 여기서는 0 */
     height: 100%; /* 부모(.content-area)의 높이를 100% 채움 */
+    overflow: hidden; /* 그리드 내에서 내용이 넘치지 않도록 */
 }
+
 
 .dashboard-analysis-report { grid-column: 1 / 2; grid-row: 2 / 3; } /* 값을 2 / 3 으로 변경 */
 .dashboard-world-map     { grid-column: 1 / 2; grid-row: 1 / 2; } /* 값을 1 / 2 으로 변경 */
@@ -755,12 +764,18 @@ ul {
 /* =================================================================
    5. 지도 기반 국가 현황 섹션
    ================================================================= */
+/* 새로 추가된 지도 기반 안정성 현황 섹션 */
 .map-overview-section {
-    margin-top: 30px;
-    padding: 25px;
+    grid-column: 1 / -1; /* 그리드 첫 번째 행에서 전체 컬럼을 차지 */
+    grid-row: 1 / 2;     /* 그리드 첫 번째 행에 배치 */
+    margin-bottom: 0;    /* 그리드 아이템이므로 외부 마진 없음 */
+    padding: 25px;       /* 내부 패딩은 유지 */
     background-color: var(--card-bg-color);
     border-radius: var(--border-radius);
     box-shadow: 0 4px 10px var(--shadow-color);
+    min-height: 550px; /* 지도가 보일 최소 높이 설정 (패널 높이 + 여백 고려) */
+    display: flex; /* 내부 요소 (h2, map-visualization-wrapper)를 세로로 정렬 */
+    flex-direction: column;
 }
 
 .map-overview-section h2 {
@@ -778,7 +793,53 @@ ul {
     gap: 20px;
     flex-wrap: wrap; /* 작은 화면에서 줄바꿈 */
 }
-
+/* 지도와 패널을 감싸는 컨테이너 - 핵심 */
+.map-visualization-wrapper {
+    position: relative; /* 자식 요소의 absolute 위치 지정을 위한 기준 */
+    width: 100%;
+    flex-grow: 1; /* 남은 공간을 모두 차지하여 높이 확보 */
+    overflow: hidden; /* 내용이 넘치면 숨김 */
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    background-color: #f0f4f8; /* 지도 로드 전 배경색 */
+    display: flex; /* 패널과 마커 배치를 위한 flexbox */
+    justify-content: space-between; /* 패널을 양쪽 끝으로 */
+    align-items: center; /* 세로 중앙 정렬 */
+    padding: 20px; /* 패널과 지도 경계 사이 여백 */
+}
+/* 지도 이미지 (JS에서 동적으로 삽입될 때의 스타일) */
+.map-visualization-wrapper .world-map-image {
+    position: absolute; /* 래퍼의 배경이 아니라면 absolute로 */
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    object-fit: contain; /* 지도를 잘리지 않고 컨테이너에 맞게. cover로 하면 잘릴 수 있음 */
+    z-index: 1; /* 마커와 패널 아래에 위치 */
+    border-radius: 8px; /* 래퍼와 동일하게 */
+}
+/* 국가 정보 패널 */
+.country-info-panel {
+    position: relative; /* 마커와 겹치지 않도록 */
+    width: 300px; /* 패널 너비 고정 */
+    max-height: 100%; /* 부모의 높이 제한 */
+    overflow-y: auto; /* 내용이 넘치면 스크롤 */
+    background-color: rgba(255, 255, 255, 0.9); /* 반투명 배경 */
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    padding: 15px;
+    z-index: 5; /* 지도 이미지 위에, 마커 아래 */
+    flex-shrink: 0; /* flex 컨테이너 내에서 줄어들지 않도록 */
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.country-info-panel.left-panel {
+    margin-right: auto; /* flexbox에서 남은 공간을 밀어내 왼쪽 정렬 */
+}
+.country-info-panel.right-panel {
+    margin-left: auto; /* flexbox에서 남은 공간을 밀어내 오른쪽 정렬 */
+}
+   
 .map-image-wrapper {
     flex-grow: 1;
     flex-basis: 600px; /* 지도가 최소 600px 너비를 차지하도록 */
@@ -802,12 +863,12 @@ ul {
 
 /* 지도 마커 스타일 */
 .map-marker {
-    position: absolute;
-    font-size: 2.2rem; /* 국기 이모지 크기 */
+    position: absolute; /* 지도 이미지 위에 정확한 위치에 오버레이 */
+    font-size: 2.2rem;
     cursor: pointer;
     transition: transform 0.2s ease, filter 0.2s ease;
-    filter: drop-shadow(0 0 5px rgba(0,0,0,0.3)); /* 그림자 추가 */
-    z-index: 10;
+    filter: drop-shadow(0 0 5px rgba(0,0,0,0.3));
+    z-index: 10; /* 가장 위로 */
 }
 
 .map-marker:hover {
@@ -1008,20 +1069,42 @@ ul {
 
 /* 반응형 디자인 (이전 코드와 동일) */
 @media (max-width: 1200px) {
-    .map-container {
-        flex-direction: column;
+    #dashboard-content.tab-content.active {
+        grid-template-columns: 1fr; /* 한 컬럼으로 변경 */
+        grid-template-rows: auto auto auto auto; /* 각 섹션이 차례대로 오도록 */
+    }
+    .map-overview-section {
+        grid-column: 1 / -1;
+        grid-row: auto; /* 자동 배치 */
+        min-height: 450px; /* 작은 화면에서 최소 높이 조정 */
+    }
+    .dashboard-analysis-report,
+    .dashboard-calendar,
+    .dashboard-news {
+        grid-column: 1 / -1;
+        grid-row: auto; /* 자동 배치 */
+    }
+    /* 작은 화면에서 맵 비주얼라이제이션 래퍼 내부의 flex-direction도 column으로 */
+    .map-visualization-wrapper {
+        flex-direction: column; /* 패널과 마커를 세로로 정렬 */
         align-items: center;
+        padding: 15px; /* 패딩 조정 */
+        height: auto; /* 높이 자동 조절 */
     }
     .country-info-panel {
-        flex-basis: 100%;
-        width: 100%;
-        order: 2;
+        width: 90%; /* 작은 화면에서 패널 너비 조정 */
+        max-width: 400px; /* 최대 너비 제한 */
+        margin: 15px auto; /* 중앙 정렬 및 여백 */
+        order: 2; /* 패널이 지도 아래로 오도록 */
     }
-    .map-image-wrapper {
-        flex-basis: 100%;
-        width: 100%;
-        order: 1;
+    .map-visualization-wrapper .world-map-image {
+        position: relative; /* 작은 화면에서 absolute 해제 */
+        order: 1; /* 이미지가 먼저 오도록 */
         margin-bottom: 20px;
+    }
+    /* 작은 화면에서는 마커를 숨기는 것도 고려할 수 있습니다. */
+    .map-marker {
+        display: none; /* 작은 화면에서는 마커 숨김 (선택 사항) */
     }
 }
    
