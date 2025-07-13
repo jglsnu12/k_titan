@@ -469,7 +469,7 @@ ul {
 
 .map-overview-section h2 {
     font-size: 1.6rem;
-    color: var(--primary-color); /* 요청하신 파란색 제목 */
+    color: var(--text-color); /* 🚨 기존 var(--primary-color) 대신 검은색 계열 변수 사용 */
     margin-bottom: 20px;
     border-bottom: 2px solid var(--border-color);
     padding-bottom: 10px;
