@@ -751,3 +751,155 @@ ul {
     font-style: normal; /* 기울임 제거 *
 }
 
+
+/* =================================================================
+   5. 지도 기반 국가 현황 섹션
+   ================================================================= */
+.map-overview-section {
+    margin-top: 30px;
+    padding: 25px;
+    background-color: var(--card-bg-color);
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 10px var(--shadow-color);
+}
+
+.map-overview-section h2 {
+    font-size: 1.6rem;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 10px;
+}
+
+.map-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start; /* 상단 정렬 */
+    gap: 20px;
+    flex-wrap: wrap; /* 작은 화면에서 줄바꿈 */
+}
+
+.map-image-wrapper {
+    flex-grow: 1;
+    flex-basis: 600px; /* 지도가 최소 600px 너비를 차지하도록 */
+    position: relative; /* 마커 위치 지정을 위해 */
+    background-color: #f0f4f8; /* 지도 로드 전 배경색 */
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    min-height: 400px; /* 지도가 보일 최소 높이 */
+    display: flex; /* 이미지가 중앙에 오도록 */
+    justify-content: center;
+    align-items: center;
+}
+
+.world-map-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain; /* 이미지가 잘리지 않고 컨테이너에 맞게 */
+}
+
+/* 지도 마커 스타일 */
+.map-marker {
+    position: absolute;
+    font-size: 2.2rem; /* 국기 이모지 크기 */
+    cursor: pointer;
+    transition: transform 0.2s ease, filter 0.2s ease;
+    filter: drop-shadow(0 0 5px rgba(0,0,0,0.3)); /* 그림자 추가 */
+    z-index: 10;
+}
+
+.map-marker:hover {
+    transform: scale(1.2);
+    filter: drop-shadow(0 0 8px rgba(0,0,0,0.5));
+}
+
+/* 각 국가별 마커 위치 (지도 이미지에 따라 조정 필요) */
+/* 이 값들은 예시이며, 실제 지도 이미지와 맞춰서 정확히 조정해야 합니다. */
+.map-marker.us { top: 30%; left: 15%; }
+.map-marker.cn { top: 40%; left: 75%; }
+.map-marker.kr { top: 43%; left: 83%; }
+.map-marker.ru { top: 20%; left: 60%; }
+.map-marker.jp { top: 45%; left: 88%; }
+.map-marker.gb { top: 28%; left: 45%; }
+
+
+.country-info-panel {
+    flex-basis: 300px; /* 패널 너비 */
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+    background-color: var(--card-bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.country-card {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 15px;
+    background-color: var(--bg-color); /* 카드 배경색 */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.country-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.country-card h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.25rem;
+    margin-bottom: 10px;
+    color: var(--primary-color);
+}
+
+.country-card .flag-emoji {
+    font-size: 1.8rem;
+}
+
+.country-card .stability-rating {
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: inline-block;
+}
+
+/* 안정성 등급별 색상 */
+.stability-rating.stable { background-color: #e6fcf5; color: #2f9e44; } /* 녹색 계열 */
+.stability-rating.moderate { background-color: #fff4e6; color: #d9480f; } /* 주황색 계열 */
+.stability-rating.unstable { background-color: #ffe3e3; color: #c92a2a; } /* 빨간색 계열 */
+.stability-rating.neutral { background-color: #e9ecef; color: #495057; } /* 회색 계열 */
+
+
+.country-card p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text-light-color);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 1200px) {
+    .map-container {
+        flex-direction: column;
+        align-items: center;
+    }
+    .country-info-panel {
+        flex-basis: 100%; /* 작은 화면에서 패널이 전체 너비를 차지 */
+        width: 100%;
+    }
+    .map-image-wrapper {
+        flex-basis: 100%;
+        width: 100%;
+    }
+}
+
+   
