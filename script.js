@@ -251,7 +251,7 @@ function updateMapMarkerPositions() {
             // 1. 지도 이미지의 실제 표시 영역을 기준으로 마커의 픽셀 위치 계산
             //    countryMarkerPositions는 지도 이미지 자체 내에서의 상대적 퍼센티지이므로
             //    actualMapWidth/Height를 곱하여 실제 픽셀 위치로 변환합니다.
-            const markerPixelLeftRelativeToMap = (actualMapHeight * position.top / 100)+actualMapWidth/2-actualMapHeight/2;
+            const markerPixelLeftRelativeToMap = (actualMapHeight * position.top / 100)+actualMapWidth/2+actualMapHeight/2;
             const markerPixelTopRelativeToMap = (actualMapHeight * position.top / 100);
 
             // 2. 이 픽셀 위치를 다시 맵 래퍼(mapVisualizationWrapper)를 기준으로 하는 픽셀 위치로 변환
