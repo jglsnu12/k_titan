@@ -504,9 +504,9 @@ ul {
     object-fit: contain; /* 이미지가 잘리지 않고 컨테이너에 맞게 */
     z-index: 1; /* 패널과 마커 아래에 위치 */
     border-radius: 8px; /* 래퍼와 동일하게 */
-    /* 지도 이미지가 아예 안 보이는 문제 해결을 위한 추가 */
-    display: block !important; /* <--- 이미지 강제 표시 */
-    opacity: 1 !important;     /* <--- 투명도 강제 100% */
+    /* JS 로딩 전 깜빡임 방지 및 처음부터 보이도록 */
+    display: block;
+    opacity: 1;
 }
 
 /* 국가 정보 패널 - 지도 위에 오버레이 */
