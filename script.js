@@ -272,6 +272,55 @@ function updateMapMarkerPositions() {
     });
 }
 
+/**
+ * 주어진 국가 데이터에서 카테고리별 점수를 평균내고, 평균 점수에 따라 안정성 태그를 반환합니다.
+ * @param {object} countryData - 개별 국가의 분석 데이터 (JSON 파싱 결과)
+ * @returns {object} {averageScore: number, stabilityTag: string, stabilityClass: string}
+ */
+function calculateOverallStability(countryData) {
+    if (!countryData || !countryData.categories || countryData.categories.length === 0) {
+        return { averageScore: 'N/A', stabilityTag: '알 수 없음', stabilityClass: 'unknown' };
+    }
+
+    let totalScore = 0;
+    let validCategoryCount = 0;
+
+    countryData.categories.forEach(category => {
+        if (typeof category.score === 'number' && !isNaN(category.score)) {
+            totalScore += category.score;
+            validCategoryCount++;
+        }
+    });
+
+    let averageScore = 'N/A';
+    if (validCategoryCount > 0) {
+        averageScore = Math.round(totalScore / validCategoryCount); // 정수로 반올림
+    }
+
+    let stabilityTag = '알 수 없음';
+    let stabilityClass = 'unknown';
+
+    if (typeof averageScore === 'number') {
+        if (averageScore >= 81) {
+            stabilityTag = '안정';
+            stabilityClass = 'stable';
+        } else if (averageScore >= 61) {
+            stabilityTag = '경계';
+            stabilityClass = 'moderate';
+        } else if (averageScore >= 41) {
+            stabilityTag = '불안';
+            stabilityClass = 'unstable';
+        } else if (averageScore >= 21) {
+            stabilityTag = '심각';
+            stabilityClass = 'severe';
+        } else { // 0-20
+            stabilityTag = '위기';
+            stabilityClass = 'crisis';
+        }
+    }
+
+    return { averageScore, stabilityTag, stabilityClass };
+}
 
 // =================================================================
 // ✨ 국가 데이터 로딩 함수 (DOMContentLoaded 외부)
@@ -416,6 +465,7 @@ async function loadCountryData() {
             `;
         });
 
+
         countryCard.innerHTML = `
             <div class="country-header">
                 <h3><span class="flag-emoji">${country.flag}</span> ${country.name}</h3>
@@ -475,6 +525,21 @@ async function loadCountryData() {
                     toggleReportBtn.textContent = '보고서 간략히 보기';
                 }
             });
+            // ✨ NEW: 국기 마커 바로 아래에 평균 점수와 태그 표시
+            const { averageScore, stabilityTag, stabilityClass } = calculateOverallStability(allCountriesData.find(d => d.id === country.id));
+
+            const scoreDisplay = document.createElement('div');
+            scoreDisplay.className = 'marker-score-display'; // 새로운 클래스
+            scoreDisplay.innerHTML = `
+                <span class="avg-score">${averageScore}점</span>
+                <span class="stability-tag ${stabilityClass}">${stabilityTag}</span>
+            `;
+            // 기존에 있다면 제거 후 다시 추가 (혹시 모를 중복 방지)
+            const existingScoreDisplay = marker.querySelector('.marker-score-display');
+            if (existingScoreDisplay) {
+                marker.removeChild(existingScoreDisplay);
+            }
+            marker.appendChild(scoreDisplay);
         }
     });
 }
