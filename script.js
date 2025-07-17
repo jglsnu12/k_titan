@@ -314,7 +314,7 @@ const allCountriesData = [];
 
 for (const meta of countriesMeta) {
 try {
-const response = await fetch(`http://localhost:5000/get_country_data/${meta.id}`);
+const response = await fetch(`http://localhost:3135/get_country_data/${meta.id}`);
 if (!response.ok) {
 const errorText = await response.text();
 console.error(`DEBUG: Failed to load data for ${meta.id}: ${response.status} - ${errorText}`);
@@ -593,7 +593,7 @@ chatMessages.appendChild(loadingDiv);
 chatMessages.scrollTop = chatMessages.scrollHeight;
 
 try {
-const response = await fetch('http://localhost:5000/chat_ai', {
+const response = await fetch('http://localhost:3135/chat_ai', {
 method: 'POST',
 headers: { 'Content-Type': 'application/json' },
 body: JSON.stringify({ message: message, user_id: USER_ID })
