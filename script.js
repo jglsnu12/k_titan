@@ -592,7 +592,7 @@ document.addEventListener('DOMContentLoaded', () => {
         chatMessages.scrollTop = chatMessages.scrollHeight;
 
         try {
-            const response = await fetch('http://localhost:5000/chat_ai', {
+            const response = await fetch('https://k-titan.live/chat_ai', { 
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message: message, user_id: USER_ID })
